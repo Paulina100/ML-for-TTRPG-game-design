@@ -1,3 +1,5 @@
+from typing import Union
+
 import pandas as pd
 import numpy as np
 import pandas.core.frame
@@ -22,7 +24,8 @@ def import_merged_bestiaries(books: list[str]) -> pandas.core.frame.DataFrame:
 
 def unpack_column(
     df: pandas.core.frame.DataFrame, column_name: str
-) -> pandas.core.frame.DataFrame:
+) -> Union[pandas.core.frame.DataFrame, None]:
+    # sth wrong with typing
     """
     Unpacks dict and changes it to DataFrame
 
