@@ -25,7 +25,7 @@ def import_merged_bestiaries(books: list[str]) -> pandas.core.frame.DataFrame:
 def unpack_column(
     df: pandas.core.frame.DataFrame, column_name: str
 ) -> Union[pandas.core.frame.DataFrame, None]:
-    # sth wrong with typing
+    # sth wrong with Series
     """
     Unpacks dict and changes it to DataFrame
 
