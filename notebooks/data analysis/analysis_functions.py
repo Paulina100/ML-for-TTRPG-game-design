@@ -23,12 +23,15 @@ def import_merged_bestiaries(books: list[str]) -> pandas.core.frame.DataFrame:
 
 
 def unpack_column(
-    df: pandas.core.frame.DataFrame, column_name: str
+    df: pandas.core.frame.DataFrame, column_name: str, print_info: bool = False
 ) -> Union[pandas.core.frame.DataFrame, None]:
     # sth wrong with Series
     """
     Unpacks dict and changes it to DataFrame
 
+    :param print_info:
+        print or not: first row and Len of that row
+        default: False
     :param df: DataFrame
         with column with dict
     :param column_name: name of the colum with dict
@@ -36,6 +39,10 @@ def unpack_column(
         DataFrame with values from chosen column
     """
     new_df = df[column_name].apply(pd.Series)
+    if print_info:
+        print("First row:")
+        print(new_df.iloc[0])
+        print(f"Len = {len(new_df.iloc[0])}")
     return new_df
 
 
