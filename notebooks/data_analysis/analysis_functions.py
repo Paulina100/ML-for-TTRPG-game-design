@@ -65,29 +65,3 @@ def remove_redundant_level(
         for i, row in df.iterrows():
             row[col] = row[col].get(value)
     return df
-
-
-# TODO
-# finish or delete - idk
-#
-# def check_diff_values(series: pandas.core.series.Series, values: list[str]) -> bool:
-#     """
-#     Checks whether there are different keys then values in dictionaries in series
-#     :param series:  (column from DataFrame) with dict
-#     :param values: list of string keys
-#     :return:
-#         True if there are
-#     """
-#     df = pd.DataFrame(data=series)
-#     return (
-#             len(
-#                 [
-#                     None
-#                     for i, row in df.iterrows()
-#                     for col in df.columns
-#                     for val in values
-#                     if len(row[col]) != len(values) or val not in row[col].keys()
-#                 ]
-#             )
-#             > 0
-#     )
