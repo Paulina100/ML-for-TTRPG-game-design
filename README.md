@@ -1,15 +1,14 @@
 # Pathfinder Monster Creator
 Project supporting pen & paper RPG game design using machine learning. It offers such functionalities as calculating 
-monster's Challenge Rating (CR) based on its properties and generating new, similar monsters with a different CR value 
-modified by user.
+monster's Challenge Rating (CR) based on its properties and generating suggestions how to increase/decrease its CR.
 
 This project was created as the core of the Engineering Thesis titled "Application of machine learning to support 
 pen & paper RPG game design".
 
-## Authors
-* Paulina Jędrychowska
-* Bogumiła Papiernik
-* Jolanta Śliwa
+### Authors
+* Paulina Jędrychowska ([github](https://github.com/Paulina100))
+* Bogumiła Papiernik ([github](https://github.com/bogumilap))
+* Jolanta Śliwa ([github](https://github.com/tunczyk101))
 
 ## Table of contents
 * [Technologies](#technologies)

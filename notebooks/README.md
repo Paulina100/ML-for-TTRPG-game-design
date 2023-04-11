@@ -16,44 +16,19 @@ of it will not be used in finished project.
 ## data_analysis/abomination_vaults_bestiary_analysis.ipynb
 Analysis of `pathfinder_2e_data/abomination-vaults-bestiary.db`.
 
-Columns present in the database:
-
-| column           | usefulness          |
-|------------------|---------------------|
-| `_id`            | probably not useful |
-| `img`            | not useful          |
-| `items/_id`      | probably not useful |
-| `items/img`      | probably not useful |
-| `items/name`     | probably not useful |
-| `items/sort`     |                     |
-| `items/system`   |                     |
-| `items/type`     |                     |
-| `items/flags`    |                     |
-| `name`           | not useful          |
-| `system`         |                     |
-| `type`           | probably useful     |
-| `flags`          |                     |
-| `prototypeToken` | probably not useful |
-
 ## data_analysis/pathfinder_analysis_of_other_columns.ipynb
 Analysis of some columns from bestiaries.
 
-| column              | usefulness                                                                                                            |
-|---------------------|-----------------------------------------------------------------------------------------------------------------------|
-| `_id`               | probably not useful                                                                                                   |
-| `img`               | not useful                                                                                                            |
-| `items`             |                                                                                                                       |
-| `name`              | not useful                                                                                                            |
-| `system/abilities`  | analysed in [pathfinder_system_abilities_attributes.ipynb](#data_analysispathfinder_system_abilities_attributesipynb) |
-| `system/attributes` | analysed in [pathfinder_system_abilities_attributes.ipynb](#data_analysispathfinder_system_abilities_attributesipynb) |
-| `system/details`    | analysed in [pathfinder_system_other_columns.ipynb](#data_analysispathfinder_system_other_columnsipynb)               |
-| `system/resources`  | analysed in [pathfinder_system_other_columns.ipynb](#data_analysispathfinder_system_other_columnsipynb)               |
-| `system/saves`      | analysed in [pathfinder_system_other_columns.ipynb](#data_analysispathfinder_system_other_columnsipynb)               |
-| `system/traits`     | analysed in [pathfinder_system_other_columns.ipynb](#data_analysispathfinder_system_other_columnsipynb)               |
-| `system/schema`     |                                                                                                                       |
-| `type`              | not useful (always has value of "npc")                                                                                |
-| `flags`             | not useful                                                                                                            |
-| `prototypeToken`    | not useful                                                                                                            |
+| column           | usefulness                                                                                                                                                                                                            |
+|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `_id`            | probably not useful                                                                                                                                                                                                   |
+| `img`            | not useful                                                                                                                                                                                                            |
+| `items`          |                                                                                                                                                                                                                       |
+| `name`           | not useful                                                                                                                                                                                                            |
+| `system`         | analysed in [pathfinder_system_abilities_attributes.ipynb](#data_analysispathfinder_system_abilities_attributesipynb) and [pathfinder_system_other_columns.ipynb](#data_analysispathfinder_system_other_columnsipynb) |
+| `type`           | probably useful                                                                                                                                                                                                       |
+| `flags`          | not useful                                                                                                                                                                                                            |
+| `prototypeToken` | not useful                                                                                                                                                                                                            |
 
 
 ## data_analysis/pathfinder_system_abilities_attributes.ipynb
@@ -90,18 +65,18 @@ Each of above subcolumns stores a dict with key `mod` and a numerical value.
 
 
 ## data_analysis/pathfinder_system_other_columns.ipynb
-Analysis of columns `system/details`, `system/resources`, `system/saves` and `system/traits` from bestiaries.
+Analysis of columns `system/details`, `system/resources`, `system/saves`, `system/traits` and `system/schema` from bestiaries.
 
 ### `system/details`
-| column         | usefulness                                   |
-|----------------|----------------------------------------------|
-| `alignment`    | could be useful                              |
-| `blurb`        | not useful                                   |
-| `creatureType` | probably useful                              |
-| `level`        | useful (monster's Challenge Rating)          |
-| `privateNotes` | not useful                                   |
-| `publicNotes`  | not useful                                   |
-| `source`       | could be useful (name of monster's bestiary) |
+| column         | usefulness                               |
+|----------------|------------------------------------------|
+| `alignment`    | could be useful (but not for regression) |
+| `blurb`        | not useful                               |
+| `creatureType` | probably useful (but not for regression) |
+| `level`        | useful (monster's Challenge Rating)      |
+| `privateNotes` | not useful                               |
+| `publicNotes`  | not useful                               |
+| `source`       | useful (name of monster's bestiary)      |
 
 ### `system/resources`
 | column  | usefulness      |
@@ -116,14 +91,20 @@ Analysis of columns `system/details`, `system/resources`, `system/saves` and `sy
 | `will`      | useful     |
 
 ### `system/traits`
-| column      | usefulness          |
-|-------------|---------------------|
-| `languages` | probably not useful |
-| `rarity`    | could be useful     |
-| `senses`    | probably not useful |
-| `size`      | could be useful     |
-| `value`     | could be useful     |
-| `attitude`  | could be useful     |
+| column      | usefulness                                   |
+|-------------|----------------------------------------------|
+| `languages` | probably not useful                          |
+| `rarity`    | could be useful (but not for regression)     |
+| `senses`    | probably not useful (but not for regression) |
+| `size`      | could be useful (but not for regression)     |
+| `value`     | could be useful (but not for regression)     |
+| `attitude`  | could be useful (but not for regression)     |
+
+### `system/schema`
+| column          | usefulness          |
+|-----------------|---------------------|
+| `version`       | probably not useful |
+| `lastMigration` | probably not useful |
 
 ## models/system_linear_regression.ipynb
 Linear regression for predicting monster's Challenge Rating (stored originally in `system/details/level`) based on 
