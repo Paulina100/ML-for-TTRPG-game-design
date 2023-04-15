@@ -3,65 +3,60 @@ from copy import deepcopy
 import pytest
 import pandas as pd
 from training.creating_dataset import (
-    get_sub_column,
+    get_subcolumn,
     move_values_level_up,
-    check_paths,
-    load_sub_column_as_value,
-    create_df_with_basic_values,
+    is_path_correct,
+    load_subcolumn_as_value,
+    _create_df_with_basic_values,
     create_dataframe,
 )
-from training.analysis_functions import import_merged_bestiaries, unpack_column
+from training.analysis_functions import get_merged_bestiaries, unpack_column
 
-paths = [
-    "../pathfinder_2e_data/pathfinder-bestiary.db",
-    "../pathfinder_2e_data/pathfinder-bestiary-2.db",
-    "../pathfinder_2e_data/pathfinder-bestiary-3.db",
+
+PATHS = [
+    "pathfinder_2e_data/pathfinder-bestiary.db",
+    "pathfinder_2e_data/pathfinder-bestiary-2.db",
+    "pathfinder_2e_data/pathfinder-bestiary-3.db",
 ]
-bestiaries = import_merged_bestiaries(paths)
+BESTIARY = get_merged_bestiaries(PATHS)
 
 
-# check_paths
-
-
+# is_path_correct
 def test_check_paths_wrong_path():
-    path = "../pathfinder_2e_data/pathfinder-bestiar.db"
-    with pytest.raises(Exception) as excinfo:
-        check_paths([path])
-    # print(excinfo.value)
-    assert f"Path {path} does not exist" in str(excinfo.value)
+    assert False is is_path_correct("pathfinder_2e_data/pathfinder-bestiar.db")
 
 
 def test_check_paths_wrong_file_type():
-    path = "../requirements.txt"
-    with pytest.raises(Exception) as excinfo:
-        check_paths([path])
-    # print(excinfo.value)
-    assert f"Expected db or json file, got {path}" in str(excinfo.value)
+    assert is_path_correct("requirements.txt") is False
 
 
 def test_check_right_path():
-    path = "../pathfinder_2e_data/pathfinder-bestiary.db"
-    assert check_paths([path]) is None
+    assert is_path_correct(PATHS[0]) is True
 
 
-# get_sub_column
-def test_get_sub_column():
-    system = unpack_column(bestiaries, "system")
-    pd.testing.assert_frame_equal(system, get_sub_column(bestiaries, "system"))
+# get_subcolumn
+def test_get_subcolumn():
+    system = unpack_column(BESTIARY, "system")
+    pd.testing.assert_frame_equal(system, get_subcolumn(BESTIARY, "system"))
 
     abilities = unpack_column(system, "abilities")
     pd.testing.assert_frame_equal(
-        abilities, get_sub_column(bestiaries, "system/abilities")
+        abilities, get_subcolumn(BESTIARY, "system/abilities")
     )
+
+
+def test_wrong_key_get_subcolumn():
+    with pytest.raises(KeyError):
+        get_subcolumn(BESTIARY, "abilities/system")
 
 
 # move_values_level_up
 def test_move_values_level_up():
-    level_up_results = move_values_level_up("mod")
-    abilities = get_sub_column(bestiaries, "system/abilities")
+    level_up_function = move_values_level_up("mod")
+    abilities = get_subcolumn(BESTIARY, "system/abilities")
     test_abilities = deepcopy(abilities)
 
-    level_up_abilities = level_up_results(abilities)
+    level_up_abilities = level_up_function(abilities)
     for col in test_abilities.columns:
         for i, row in test_abilities.iterrows():
             row[col] = row[col].get("mod")
@@ -71,12 +66,12 @@ def test_move_values_level_up():
     pd.testing.assert_frame_equal(level_up_abilities, test_abilities)
 
 
-# load_sub_column_as_value
-def test_load_sub_column_as_value():
-    ac = get_sub_column(bestiaries, "system/attributes/ac")
+# load_subcolumn_as_value
+def test_load_subcolumn_as_value():
+    ac = get_subcolumn(BESTIARY, "system/attributes/ac")
     ac_test = deepcopy(ac)
 
-    load_ac = load_sub_column_as_value("ac")
+    load_ac = load_subcolumn_as_value("ac")
     ac = load_ac(ac)
     ac_test = pd.DataFrame(data=ac_test.value)
     ac_test.columns = ["ac"]
@@ -84,15 +79,15 @@ def test_load_sub_column_as_value():
     pd.testing.assert_frame_equal(ac, ac_test)
 
 
-# create_df_with_basic_values
+# _create_df_with_basic_values
 def test_create_df_with_basic_values():
-    basic_bestiary = create_df_with_basic_values(bestiaries)
+    basic_bestiary = _create_df_with_basic_values(BESTIARY)
 
-    books = load_sub_column_as_value("book")(
-        get_sub_column(bestiaries, "system/details/source")
+    books = load_subcolumn_as_value("book")(
+        get_subcolumn(BESTIARY, "system/details/source")
     )
-    levels = load_sub_column_as_value("level")(
-        get_sub_column(bestiaries, "system/details/level")
+    levels = load_subcolumn_as_value("level")(
+        get_subcolumn(BESTIARY, "system/details/level")
     )
 
     pd.testing.assert_frame_equal(pd.DataFrame(data=basic_bestiary["book"]), books)
@@ -102,14 +97,14 @@ def test_create_df_with_basic_values():
 
 # create_dataframe
 def test_create_dataframe():
-    test_dataframe = pd.read_json("../output/bestiary_system_basic.json")
-    books = load_sub_column_as_value("book")(
-        get_sub_column(bestiaries, "system/details/source")
+    test_dataframe = pd.read_json("output/bestiary_system_basic.json")
+    books = load_subcolumn_as_value("book")(
+        get_subcolumn(BESTIARY, "system/details/source")
     )
 
     test_dataframe["book"] = books["book"]
 
-    bestiary_dataframe = create_dataframe()
+    bestiary_dataframe = create_dataframe(PATHS)
     pd.testing.assert_frame_equal(
         test_dataframe.sort_index(axis=1), bestiary_dataframe.sort_index(axis=1)
     )

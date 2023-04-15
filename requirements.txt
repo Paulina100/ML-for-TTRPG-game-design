@@ -1,1 +1,5 @@
 pre-commit
+
+pytest==7.1.1
+pandas==1.4.2
+numpy==1.21.5
