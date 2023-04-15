@@ -46,10 +46,10 @@ def test_check_right_path():
 
 # get_sub_column
 def test_get_sub_column():
-    system = unpack_column(bestiaries, "system").reset_index(drop=True)
+    system = unpack_column(bestiaries, "system")
     pd.testing.assert_frame_equal(system, get_sub_column(bestiaries, "system"))
 
-    abilities = unpack_column(system, "abilities").reset_index(drop=True)
+    abilities = unpack_column(system, "abilities")
     pd.testing.assert_frame_equal(
         abilities, get_sub_column(bestiaries, "system/abilities")
     )

@@ -78,9 +78,7 @@ def move_values_level_up(value_name: str):
     """
 
     def level_up_result(df: DataFrameType):
-        return df.applymap(lambda x: x.get(value_name), na_action="ignore").reset_index(
-            drop=True
-        )
+        return df.applymap(lambda x: x.get(value_name), na_action="ignore")
 
     return level_up_result
 
@@ -94,7 +92,7 @@ def get_sub_column(book: DataFrameType, sub_column_path: str) -> DataFrameType:
     """
     sub_col = deepcopy(book)
     for col in sub_column_path.split("/"):
-        sub_col = pd.DataFrame(data=unpack_column(sub_col, col)).reset_index(drop=True)
+        sub_col = pd.DataFrame(data=unpack_column(sub_col, col))
 
     return sub_col
 
@@ -110,7 +108,7 @@ def load_sub_column_as_value(column_name: str, value_name: str = "value"):
     def sub_column_as_value(df: DataFrameType):
         result_df = pd.DataFrame(data=df[value_name])
         result_df.columns = [column_name]
-        return result_df.reset_index(drop=True)
+        return result_df
 
     return sub_column_as_value
 

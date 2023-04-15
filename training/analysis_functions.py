@@ -21,7 +21,7 @@ def import_merged_bestiaries(books: List[str]) -> DataFrameType:
     out : (pandas.core.frame.DataFrame)
     """
     b = [pd.read_json(book, lines=True) for book in books]
-    return pd.concat(b, join="outer", axis=0).fillna(np.nan)
+    return pd.concat(b, join="outer", axis=0).fillna(np.nan).reset_index(drop=True)
 
 
 def unpack_column(
