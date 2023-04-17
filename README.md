@@ -14,6 +14,7 @@ pen & paper RPG game design".
 * [Technologies](#technologies)
 * [Features](#features)
 * [Project Structure](#project-structure)
+* [Testing](#testing)
 
 ## Technologies
 * Python 3.8 or higher
@@ -32,3 +33,13 @@ pen & paper RPG game design".
 * `serving`: app's API
 * `test`: tests
 * `training`: scripts for creating datasets and training model
+
+## Testing
+To run prepared tests in `test` directory using:
+* terminal: run `pytest path_to_file.py` command
+  * e.g. `pytest .\test\test_creating_dataset.py`
+
+
+* PyCharm: edit running configuration
+  * **Run|Edit Configuration** -> delete */test* ending from **Working directory**
+  * run file using run button 
