@@ -36,7 +36,7 @@ pen & paper RPG game design".
 
 ## Testing
 To run prepared tests in `test` directory using:
-* terminal: use `pytest path_to_file.py` command
+* terminal: run `pytest path_to_file.py` command
   * e.g. `pytest .\test\test_creating_dataset.py`
 
 

@@ -1,7 +1,6 @@
 import os.path
-import traceback
 from copy import deepcopy
-from typing import List
+from typing import List, Callable
 
 import pandas as pd
 
@@ -59,7 +58,7 @@ def create_dataframe(
 
 def is_path_correct(path: str) -> bool:
     """
-    Throws exception if file does not exist or has a wrong extension
+    Checks whether given path is correct: file exists and correct file extension - json or db
     :param path: path to book to load
     :return: True if path is correct otherwise False
     """
@@ -72,14 +71,14 @@ def is_path_correct(path: str) -> bool:
     return True
 
 
-def move_values_level_up(value_name: str):
+def move_values_level_up(value_name: str) -> Callable[[DataFrameType], DataFrameType]:
     """
     Assigns values of chosen key in columns' dictionaries to that columns
     :param value_name: name of value that should be moved one level up as value of current column/columns
     :return: function which create DataFrame with values of current column(s) changed to value of chosen sub column
     """
 
-    def inner_move_values_level_up(df: DataFrameType):
+    def inner_move_values_level_up(df: DataFrameType) -> DataFrameType:
         return df.applymap(lambda x: x.get(value_name), na_action="ignore")
 
     return inner_move_values_level_up
@@ -99,15 +98,18 @@ def get_subcolumn(book: DataFrameType, subcolumn_path: str) -> DataFrameType:
     return subcol
 
 
-def load_subcolumn_as_value(original_column_name: str, value_name: str = "value"):
+def load_subcolumn_as_value(
+    original_column_name: str, value_name: str = "value"
+) -> Callable[[DataFrameType], DataFrameType]:
     """
-    Returned function creates DataFrame with chosen value_name of given DataFrame and changes column name to chosen one
+    Returns a function that creates DataFrame with chosen value_name of given DataFrame
+    and changes column name to chosen one
     :param original_column_name: name that should be given to result dataframe column
     :param value_name: name of sub column which value will be returned
     :return: function to create Dataframe with chosen column name and values from a chosen sub column of current column
     """
 
-    def subcolumn_as_value(df: DataFrameType):
+    def subcolumn_as_value(df: DataFrameType) -> DataFrameType:
         result_df = pd.DataFrame(data=df[value_name])
         result_df.columns = [original_column_name]
         return result_df
