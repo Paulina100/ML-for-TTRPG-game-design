@@ -75,7 +75,7 @@ def move_values_level_up(value_name: str) -> Callable[[DataFrameType], DataFrame
     """
     Assigns values of chosen key in columns' dictionaries to that columns
     :param value_name: name of value that should be moved one level up as value of current column/columns
-    :return: function which create DataFrame with values of current column(s) changed to value of chosen sub column
+    :return: function which create DataFrame with values of current column(s) changed to value of chosen subcolumn
     """
 
     def inner_move_values_level_up(df: DataFrameType) -> DataFrameType:
@@ -89,7 +89,7 @@ def get_subcolumn(book: DataFrameType, subcolumn_path: str) -> DataFrameType:
     Gets subcolumn of given DataFrame according to given path
     :param book: DataFrame with all data from book(s)
     :param subcolumn_path: path to subcolumn
-    :return: chosen sub column as DataFrame
+    :return: chosen subcolumn as DataFrame
     """
     subcol = deepcopy(book)
     for col in subcolumn_path.split("/"):
@@ -99,19 +99,19 @@ def get_subcolumn(book: DataFrameType, subcolumn_path: str) -> DataFrameType:
 
 
 def load_subcolumn_as_value(
-    original_column_name: str, value_name: str = "value"
+    column_name: str, original_column_name: str = "value"
 ) -> Callable[[DataFrameType], DataFrameType]:
     """
     Returns a function that creates DataFrame with chosen value_name of given DataFrame
     and changes column name to chosen one
-    :param original_column_name: name that should be given to result dataframe column
-    :param value_name: name of sub column which value will be returned
-    :return: function to create Dataframe with chosen column name and values from a chosen sub column of current column
+    :param column_name: name that should be given to result dataframe column
+    :param original_column_name: name of subcolumn which value will be returned
+    :return: function to create Dataframe with chosen column name and values from a chosen subcolumn of current column
     """
 
     def subcolumn_as_value(df: DataFrameType) -> DataFrameType:
-        result_df = pd.DataFrame(data=df[value_name])
-        result_df.columns = [original_column_name]
+        result_df = pd.DataFrame(data=df[original_column_name])
+        result_df.columns = [column_name]
         return result_df
 
     return subcolumn_as_value
