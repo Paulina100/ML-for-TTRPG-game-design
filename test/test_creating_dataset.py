@@ -23,15 +23,15 @@ BESTIARY = get_merged_bestiaries(PATHS)
 
 # is_path_correct
 def test_check_paths_wrong_path():
-    assert False is is_path_correct("pathfinder_2e_data/pathfinder-bestiar.db")
+    assert not is_path_correct("pathfinder_2e_data/pathfinder-bestiar.db")
 
 
 def test_check_paths_wrong_file_type():
-    assert is_path_correct("requirements.txt") is False
+    assert not is_path_correct("requirements.txt")
 
 
 def test_check_right_path():
-    assert is_path_correct(PATHS[0]) is True
+    assert is_path_correct(PATHS[0])
 
 
 # get_subcolumn
