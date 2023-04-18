@@ -14,9 +14,9 @@ from training.analysis_functions import get_merged_bestiaries, unpack_column
 
 
 PATHS = [
-    "pathfinder_2e_data/pathfinder-bestiary.db",
-    "pathfinder_2e_data/pathfinder-bestiary-2.db",
-    "pathfinder_2e_data/pathfinder-bestiary-3.db",
+    "../pathfinder_2e_data/pathfinder-bestiary.db",
+    "../pathfinder_2e_data/pathfinder-bestiary-2.db",
+    "../pathfinder_2e_data/pathfinder-bestiary-3.db",
 ]
 BESTIARY = get_merged_bestiaries(PATHS)
 
@@ -97,7 +97,7 @@ def test_create_df_with_basic_values():
 
 # create_dataframe
 def test_create_dataframe():
-    test_dataframe = pd.read_json("output/bestiary_system_basic.json")
+    test_dataframe = pd.read_json("../output/bestiary_system_basic.json")
     books = load_subcolumn_as_value("book")(
         get_subcolumn(BESTIARY, "system/details/source")
     )
