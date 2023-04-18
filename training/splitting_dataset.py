@@ -71,14 +71,15 @@ def _get_dataframe_with_oldest_books(
 
 
 def _get_chronological_split_results(
-    dataframe: DataFrameType,
+    dataframe: DataFrameType, test_size: float = _DEFAULT_TEST_SIZE
 ) -> Tuple[DataFrameType, DataFrameType, DataFrameType, DataFrameType]:
     """
     Splits dataframe into training and testing sets chronologically.\n
     :param dataframe: Processed dataframe.
+    :param test_size: Fraction of the dataset to include in test split. It should be a float number between 0.0 and 1.0.
     :return: Two dataframes (first one for training and second one for testing) and two columns in the same order.
     """
-    X_train = _get_dataframe_with_oldest_books(dataframe)
+    X_train = _get_dataframe_with_oldest_books(dataframe, test_size)
     if not X_train.empty:
         X_test = dataframe.drop(X_train.index)
         y_train = X_train.pop("level")
@@ -126,6 +127,6 @@ def split_dataframe(
         raise ValueError('Dataframe must contain "level" column.')
 
     if random_split:
-        return _get_random_split_results(dataframe)
+        return _get_random_split_results(dataframe, test_size)
 
-    return _get_chronological_split_results(dataframe)
+    return _get_chronological_split_results(dataframe, test_size)
