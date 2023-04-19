@@ -27,7 +27,8 @@ def _get_book_names_from_dataframe(dataframe: DataFrameType) -> List[str]:
 
 def _get_grouped_book_names(dataframe: pd.DataFrame) -> Dict[int, List[str]]:
     """
-    Groups names of books present in "book" column in dataframe by the year the books were published.\n
+    Groups names of books present in "book" column in dataframe by the year the books were published.
+    For each year the list of books is sorted by their names.\n
     :param dataframe: Processed dataframe.
     :return: Dictionary containing list of books for each year.
     """
@@ -41,6 +42,9 @@ def _get_grouped_book_names(dataframe: pd.DataFrame) -> Dict[int, List[str]]:
             grouped_books_per_year[book_year].append(book_name)
         else:
             grouped_books_per_year[0].append(book_name)
+
+    for year, books in grouped_books_per_year.items():
+        grouped_books_per_year[year] = sorted(books)
     return grouped_books_per_year
 
 
@@ -48,8 +52,9 @@ def _get_dataframe_with_oldest_books(
     dataframe: DataFrameType, test_size: float = _DEFAULT_TEST_SIZE
 ) -> DataFrameType:
     """
-    Extracts from dataframe rows with the oldest books. Number of extracted rows is equal to
-    a fraction of initial number of rows defined in test_size.\n
+    Extracts from dataframe rows with the oldest books. Number of extracted rows is bigger or equal to
+    a fraction of initial number of rows defined in test_size. Number of returned rows can be bigger than
+    expected to avoid splitting one book into different dataframes.\n
     :param dataframe: Processed dataframe.
     :param test_size: Fraction of the dataset to include in test split. It should be a float number between 0.0 and 1.0.
     :return: Dataframe containing extracted rows.
@@ -60,12 +65,9 @@ def _get_dataframe_with_oldest_books(
     for year in sorted(books_per_year.keys()):
         for book_name in books_per_year[year]:
             book_df = dataframe.loc[dataframe["book"] == book_name]
-            included_rows_num = min(remaining_rows_num, book_df.shape[0])
-            filtered_dataframe = pd.concat(
-                [filtered_dataframe, book_df[:included_rows_num]]
-            )
-            remaining_rows_num -= included_rows_num
-            if remaining_rows_num == 0:
+            filtered_dataframe = pd.concat([filtered_dataframe, book_df])
+            remaining_rows_num -= book_df.shape[0]
+            if remaining_rows_num <= 0:
                 return filtered_dataframe
     return filtered_dataframe
 
@@ -74,10 +76,10 @@ def _get_chronological_split_results(
     dataframe: DataFrameType, test_size: float = _DEFAULT_TEST_SIZE
 ) -> Tuple[DataFrameType, DataFrameType, DataFrameType, DataFrameType]:
     """
-    Splits dataframe into training and testing sets chronologically.\n
+    Splits dataframe into training and testing sets chronologically, extracting "level" column as label vector.\n
     :param dataframe: Processed dataframe.
     :param test_size: Fraction of the dataset to include in test split. It should be a float number between 0.0 and 1.0.
-    :return: Two dataframes (first one for training and second one for testing) and two columns in the same order.
+    :return: Two feature matrices (X_train, X_test) and two label vectors (y_train, y_test).
     """
     X_train = _get_dataframe_with_oldest_books(dataframe, test_size)
     if not X_train.empty:
@@ -96,29 +98,31 @@ def _get_random_split_results(
     dataframe: DataFrameType, test_size: float = _DEFAULT_TEST_SIZE
 ) -> Tuple[DataFrameType, DataFrameType, DataFrameType, DataFrameType]:
     """
-    Splits dataframe into training and testing sets randomly.\n
+    Splits dataframe into training and testing sets randomly, extracting "level" column as label vector.\n
     :param dataframe: Processed dataframe.
     :param test_size: Fraction of the dataset to include in test split. It should be a float number between 0.0 and 1.0.
-    :return: Two dataframes (first one for training and second one for testing) and two columns in the same order.
+    :return: Two feature matrices (X_train, X_test) and two label vectors (y_train, y_test).
     """
     X, y = dataframe.drop("level", axis="columns"), dataframe["level"]
-    return train_test_split(X, y, test_size=test_size, random_state=0, shuffle=True)
+    return train_test_split(
+        X, y, test_size=test_size, random_state=0, shuffle=True, stratify=y
+    )
 
 
 def split_dataframe(
     dataframe: DataFrameType,
     test_size: float = _DEFAULT_TEST_SIZE,
-    random_split: bool = False,
+    chronological_split: bool = True,
 ) -> Tuple[DataFrameType, DataFrameType, DataFrameType, DataFrameType]:
     """
     Splits dataframe to dataframes allowing training and testing of ML models. Requires "level" column to be
-    present in initial dataframe.\n
+    present in initial dataframe - it is used to split dataframe to feature matrix and label vector.\n
     :param dataframe: Processed dataframe.
     :param test_size: Fraction of the dataset to include in test split. It should be a float number between 0.0 and 1.0.
-    :param random_split: If False, splits dataframe chronologically so that training set contains rows with
+    :param chronological_split: If True, splits dataframe chronologically so that training set contains rows with
     the oldest books from initial dataframe and testing set contains the newest. Otherwise, the dataframe is
     split randomly.
-    :return: Two dataframes (first one for training and second one for testing) and two columns in the same order.
+    :return: Two feature matrices (X_train, X_test) and two label vectors (y_train, y_test).
     """
     if not 0.0 < test_size < 1.0:
         raise ValueError("test_size must be between 0.0 and 1.0.")
@@ -126,7 +130,7 @@ def split_dataframe(
     if "level" not in dataframe:
         raise ValueError('Dataframe must contain "level" column.')
 
-    if random_split:
-        return _get_random_split_results(dataframe, test_size)
+    if chronological_split:
+        return _get_chronological_split_results(dataframe, test_size)
 
-    return _get_chronological_split_results(dataframe, test_size)
+    return _get_random_split_results(dataframe, test_size)
