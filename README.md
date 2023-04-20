@@ -18,7 +18,7 @@ pen & paper RPG game design".
 * [Testing](#testing)
 
 ## Technologies
-* Python 3.8 or higher
+* Python 3.10
 * Jupyter Notebook
 
 
