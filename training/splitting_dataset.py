@@ -1,56 +1,33 @@
-import json
-from collections import defaultdict
-from typing import Dict, List, Tuple
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from training.analysis_functions import DataFrameType
 
-
-_DEFAULT_TEST_SIZE: float = 0.25
+DEFAULT_TEST_SIZE: float = 0.25
 """Default value of fraction of the dataset to include in test split."""
 
+PATH_TO_MAPPINGS: str = "../training/books_with_dates.csv"
+"""Path to CSV file containing mappings between books and their publishing dates."""
 
-def _get_book_names_from_dataframe(dataframe: DataFrameType) -> List[str]:
+
+def get_date_books_mapping() -> pd.DataFrame:
     """
-    Collects unique values of "book" column in dataframe.\n
-    :param dataframe: Processed dataframe.
-    :return: List of books' names.
+    Creates dataframe mapping publishing date to list of corresponding books. Each list of books is
+    sorted by their names and dataframe is sorted by the "date" column.\n
+    :return: Dataframe containing list of books for each date.
     """
-    try:
-        return dataframe.book.unique()
-    except AttributeError as e:
-        print(f"_get_book_names_from_dataframe: Error occurred: {e}.")
-        return []
+    date_books_mapping = pd.read_csv(PATH_TO_MAPPINGS)
+    date_books_mapping = (
+        date_books_mapping.groupby("date")["book"].apply(list).reset_index(name="books")
+    )
+    date_books_mapping["books"] = date_books_mapping.books.sort_values().apply(
+        lambda books: sorted(books)
+    )
+    return date_books_mapping.sort_values(by="date", ignore_index=True)
 
 
-def _get_grouped_book_names(dataframe: pd.DataFrame) -> Dict[int, List[str]]:
-    """
-    Groups names of books present in "book" column in dataframe by the year the books were published.
-    For each year the list of books is sorted by their names.\n
-    :param dataframe: Processed dataframe.
-    :return: Dictionary containing list of books for each year.
-    """
-    with open("../training/book_year_mapping.json", "r") as mapping_file:
-        book_year_mapping = json.loads("".join(mapping_file.readlines()))
-
-    grouped_books_per_year = defaultdict(list)
-    book_names = _get_book_names_from_dataframe(dataframe)
-    for book_name in book_names:
-        if book_year := book_year_mapping.get(book_name):
-            grouped_books_per_year[book_year].append(book_name)
-        else:
-            grouped_books_per_year[0].append(book_name)
-
-    for year, books in grouped_books_per_year.items():
-        grouped_books_per_year[year] = sorted(books)
-    return grouped_books_per_year
-
-
-def _get_dataframe_with_oldest_books(
-    dataframe: DataFrameType, test_size: float = _DEFAULT_TEST_SIZE
-) -> DataFrameType:
+def get_dataframe_with_oldest_books(
+    dataframe: pd.DataFrame, test_size: float = DEFAULT_TEST_SIZE
+) -> pd.DataFrame:
     """
     Extracts from dataframe rows with the oldest books. Number of extracted rows is bigger or equal to
     a fraction of initial number of rows defined in test_size. Number of returned rows can be bigger than
@@ -59,11 +36,11 @@ def _get_dataframe_with_oldest_books(
     :param test_size: Fraction of the dataset to include in test split. It should be a float number between 0.0 and 1.0.
     :return: Dataframe containing extracted rows.
     """
-    books_per_year = _get_grouped_book_names(dataframe)
+    books_per_year = get_date_books_mapping()
     filtered_dataframe = pd.DataFrame(columns=dataframe.columns)
     remaining_rows_num = int((1 - test_size) * dataframe.shape[0])
-    for year in sorted(books_per_year.keys()):
-        for book_name in books_per_year[year]:
+    for index, row in books_per_year.iterrows():
+        for book_name in row["books"]:
             book_df = dataframe.loc[dataframe["book"] == book_name]
             filtered_dataframe = pd.concat([filtered_dataframe, book_df])
             remaining_rows_num -= book_df.shape[0]
@@ -72,31 +49,30 @@ def _get_dataframe_with_oldest_books(
     return filtered_dataframe
 
 
-def _get_chronological_split_results(
-    dataframe: DataFrameType, test_size: float = _DEFAULT_TEST_SIZE
-) -> Tuple[DataFrameType, DataFrameType, DataFrameType, DataFrameType]:
+def get_chronological_split_results(
+    dataframe: pd.DataFrame, test_size: float = DEFAULT_TEST_SIZE
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     """
-    Splits dataframe into training and testing sets chronologically, extracting "level" column as label vector.\n
+    Splits dataframe into training and testing sets chronologically, extracting "level" column as label vector.
     :param dataframe: Processed dataframe.
     :param test_size: Fraction of the dataset to include in test split. It should be a float number between 0.0 and 1.0.
     :return: Two feature matrices (X_train, X_test) and two label vectors (y_train, y_test).
     """
-    X_train = _get_dataframe_with_oldest_books(dataframe, test_size)
-    if not X_train.empty:
-        X_test = dataframe.drop(X_train.index)
-        y_train = X_train.pop("level")
-        y_test = X_test.pop("level")
-        return X_train, X_test, y_train, y_test
-    else:
-        print(
-            "_get_chronological_split_results: No books were found in dataframe. Dataframe will be split randomly."
+    if "book" not in dataframe:
+        raise ValueError(
+            "No books were found in dataframe - chronological split is not possible."
         )
-        return _get_random_split_results(dataframe)
+
+    X_train = get_dataframe_with_oldest_books(dataframe, test_size)
+    X_test = dataframe.drop(X_train.index)
+    y_train = X_train.pop("level")
+    y_test = X_test.pop("level")
+    return X_train, X_test, y_train, y_test
 
 
-def _get_random_split_results(
-    dataframe: DataFrameType, test_size: float = _DEFAULT_TEST_SIZE
-) -> Tuple[DataFrameType, DataFrameType, DataFrameType, DataFrameType]:
+def get_random_split_results(
+    dataframe: pd.DataFrame, test_size: float = DEFAULT_TEST_SIZE
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     """
     Splits dataframe into training and testing sets randomly, extracting "level" column as label vector.\n
     :param dataframe: Processed dataframe.
@@ -104,16 +80,19 @@ def _get_random_split_results(
     :return: Two feature matrices (X_train, X_test) and two label vectors (y_train, y_test).
     """
     X, y = dataframe.drop("level", axis="columns"), dataframe["level"]
-    return train_test_split(
-        X, y, test_size=test_size, random_state=0, shuffle=True, stratify=y
-    )
+    try:
+        return train_test_split(
+            X, y, test_size=test_size, random_state=0, shuffle=True, stratify=y
+        )
+    except ValueError:  # caused by setting stratify=y if there is a class in y that has only 1 member
+        return train_test_split(X, y, test_size=test_size, random_state=0, shuffle=True)
 
 
 def split_dataframe(
-    dataframe: DataFrameType,
-    test_size: float = _DEFAULT_TEST_SIZE,
+    dataframe: pd.DataFrame,
+    test_size: float = DEFAULT_TEST_SIZE,
     chronological_split: bool = True,
-) -> Tuple[DataFrameType, DataFrameType, DataFrameType, DataFrameType]:
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     """
     Splits dataframe to dataframes allowing training and testing of ML models. Requires "level" column to be
     present in initial dataframe - it is used to split dataframe to feature matrix and label vector.\n
@@ -131,6 +110,6 @@ def split_dataframe(
         raise ValueError('Dataframe must contain "level" column.')
 
     if chronological_split:
-        return _get_chronological_split_results(dataframe, test_size)
+        return get_chronological_split_results(dataframe, test_size)
 
-    return _get_random_split_results(dataframe, test_size)
+    return get_random_split_results(dataframe, test_size)

@@ -9,9 +9,9 @@ authors = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-pandas = "1.4.*"
 numpy = "1.21.*"
+pandas = "1.4.*"
+python = "3.10"
 scikit-learn = "1.2.*"
 
 [tool.poetry.group.style.dependencies]
