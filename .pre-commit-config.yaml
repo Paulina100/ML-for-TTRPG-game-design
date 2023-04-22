@@ -3,5 +3,7 @@ repos:
     rev: 22.10.0
     hooks:
     -   id: black-jupyter
+        exclude_types:
+            - python
     -   id: black
         language_version: python3.10
