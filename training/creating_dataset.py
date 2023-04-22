@@ -1,19 +1,24 @@
 import os.path
+import pathlib
 from copy import deepcopy
-from typing import List, Callable
 
 import pandas as pd
 
 from training.analysis_functions import get_merged_bestiaries, unpack_column
 
 
+DATASETS_DIR = pathlib.Path(__file__).parent.parent / "pathfinder_2e_data"
+DATASET_FILES = [
+    "pathfinder-bestiary.db",
+    "pathfinder-bestiary-2.db",
+    "pathfinder-bestiary-3.db",
+]
+DATASET_PATHS = [f"{DATASETS_DIR}/{file}" for file in DATASET_FILES]
+
+
 def create_dataframe(
-    books: List[str] = [
-        "../pathfinder_2e_data/pathfinder-bestiary.db",
-        "../pathfinder_2e_data/pathfinder-bestiary-2.db",
-        "../pathfinder_2e_data/pathfinder-bestiary-3.db",
-    ],
-    characteristics: List[str] = [
+    books: list[str] = DATASET_PATHS,
+    characteristics: list[str] = [
         "system/abilities",
         "system/attributes/ac",
         "system/attributes/hp",
@@ -67,7 +72,7 @@ def is_path_correct(path: str) -> bool:
     return True
 
 
-def move_values_level_up(value_name: str) -> Callable[[pd.DataFrame], pd.DataFrame]:
+def move_values_level_up(value_name: str) -> callable:
     """
     Assigns values of chosen key in columns' dictionaries to that columns
     :param value_name: name of value that should be moved one level up as value of current column/columns
@@ -96,7 +101,7 @@ def get_subcolumn(book: pd.DataFrame, subcolumn_path: str) -> pd.DataFrame:
 
 def load_subcolumn_as_value(
     column_name: str, original_column_name: str = "value"
-) -> Callable[[pd.DataFrame], pd.DataFrame]:
+) -> callable:
     """
     Returns a function that creates DataFrame with chosen value_name of given DataFrame
     and changes column name to chosen one
