@@ -1,3 +1,4 @@
+import pathlib
 from copy import deepcopy
 
 import pytest
@@ -13,12 +14,14 @@ from training.creating_dataset import (
 from training.analysis_functions import get_merged_bestiaries, unpack_column
 
 
-PATHS = [
-    "pathfinder_2e_data/pathfinder-bestiary.db",
-    "pathfinder_2e_data/pathfinder-bestiary-2.db",
-    "pathfinder_2e_data/pathfinder-bestiary-3.db",
+DATASETS_DIR = pathlib.Path(__file__).parent.parent / "pathfinder_2e_data"
+DATASET_FILES = [
+    "pathfinder-bestiary.db",
+    "pathfinder-bestiary-2.db",
+    "pathfinder-bestiary-3.db",
 ]
-BESTIARY = get_merged_bestiaries(PATHS)
+DATASET_PATHS = [f"{DATASETS_DIR}/{file}" for file in DATASET_FILES]
+BESTIARY = get_merged_bestiaries(DATASET_PATHS)
 
 
 # is_path_correct
@@ -31,7 +34,7 @@ def test_check_paths_wrong_file_type():
 
 
 def test_check_right_path():
-    assert is_path_correct(PATHS[0])
+    assert is_path_correct(DATASET_PATHS[0])
 
 
 # get_subcolumn
@@ -97,14 +100,14 @@ def test_create_df_with_basic_values():
 
 # create_dataframe
 def test_create_dataframe():
-    test_dataframe = pd.read_json("output/bestiary_system_basic.json")
+    test_dataframe = pd.read_json("../output/bestiary_system_basic.json")
     books = load_subcolumn_as_value("book")(
         get_subcolumn(BESTIARY, "system/details/source")
     )
 
     test_dataframe["book"] = books["book"]
 
-    bestiary_dataframe = create_dataframe(PATHS)
+    bestiary_dataframe = create_dataframe(DATASET_PATHS)
     pd.testing.assert_frame_equal(
         test_dataframe.sort_index(axis=1), bestiary_dataframe.sort_index(axis=1)
     )

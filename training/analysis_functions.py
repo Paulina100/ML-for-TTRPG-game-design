@@ -1,14 +1,10 @@
-from typing import List, Optional, NewType
+from typing import List, Optional
 
 import pandas as pd
 import numpy as np
-import pandas.core.frame
-import pandas.core.series
-
-DataFrameType = NewType("DataFrameType", pandas.core.frame.DataFrame)
 
 
-def get_merged_bestiaries(paths_to_bestiaries: List[str]) -> DataFrameType:
+def get_merged_bestiaries(paths_to_bestiaries: List[str]) -> pd.DataFrame:
     """
     Returns merged books
 
@@ -20,8 +16,8 @@ def get_merged_bestiaries(paths_to_bestiaries: List[str]) -> DataFrameType:
 
 
 def unpack_column(
-    df: DataFrameType, column_name: str, print_info: bool = False
-) -> Optional[DataFrameType]:
+    df: pd.DataFrame, column_name: str, print_info: bool = False
+) -> Optional[pd.DataFrame]:
     """
     Unpacks dict and changes it to DataFrame
 

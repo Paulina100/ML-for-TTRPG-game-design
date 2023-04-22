@@ -12,13 +12,21 @@ pen & paper RPG game design".
 
 ## Table of contents
 * [Technologies](#technologies)
+* [Setup](#setup)
 * [Features](#features)
 * [Project Structure](#project-structure)
 * [Testing](#testing)
 
 ## Technologies
-* Python 3.8 or higher
+* Python 3.10
 * Jupyter Notebook
+
+
+## Setup
+To install required packages, run
+
+    pip install -r requirements.txt
+
 
 ## Features
 * calculating Challenge Rating based on given properties
@@ -36,10 +44,15 @@ pen & paper RPG game design".
 
 ## Testing
 To run prepared tests in `test` directory using:
-* terminal: run `pytest path_to_file.py` command
-  * e.g. `pytest .\test\test_creating_dataset.py`
+* terminal: 
+  * enter `test` directory:
+  ```shell
+  cd test
+  ```
+  * run `pytest` with test file as argument, e.g.:
+  ```shell
+  pytest test_creating_dataset.py
+  ```
 
-
-* PyCharm: edit running configuration
-  * **Run|Edit Configuration** -> delete */test* ending from **Working directory**
+* PyCharm: 
   * run file using run button 

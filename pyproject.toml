@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "pathfinder-monster-creator"
+version = "0.1.0"
+description = "Project supporting pen & paper RPG game design using machine learning."
+authors = [
+    "Paulina Jędrychowska <>",
+    "Bogumiła Papiernik <>",
+    "Jolanta Śliwa <>"
+]
+
+[tool.poetry.dependencies]
+numpy = "1.24.*"
+pandas = "1.4.*"
+python = "3.10"
+scikit-learn = "1.2.*"
+
+[tool.poetry.group.style.dependencies]
+pre-commit = "2.20.*"
+
+[tool.poetry.group.test.dependencies]
+pytest = "7.1.*"
+
+
+# poetry export --without-hashes --format=requirements.txt --with="style,test" --output=requirements.txt
