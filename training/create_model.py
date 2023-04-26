@@ -1,34 +1,46 @@
+from typing import Union
+
+import numpy as np
+import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import RidgeCV
-import pandas.core.frame
-import pandas.core.series
 from sklearn.model_selection import RandomizedSearchCV
-import numpy as np
+
+from training.constants import RANDOM_STATE
 
 
-def create_model(
+def get_fitted_model(
     classifier_name: str,
-    X_train: pandas.core.frame.DataFrame,
-    y_train: pandas.core.series.Series,
-):
+    X_train: pd.DataFrame,
+    y_train: pd.Series,
+) -> Union[RidgeCV, RandomizedSearchCV]:
     """
-    Creates chosen model, performs tuning and fit
+    Creates chosen model, performs tuning and fits
     :param X_train: train set with features to use during fitting
     :param y_train: train set with values to predict
     :param classifier_name: name of a chosen classifier:
             train_linear_regression or train_random_forest
     :return: trained classifier of a chosen type
     """
-    if "book" in X_train.columns:
-        print("You have to drop column 'book' first")
-        # X_train = X_train.drop(columns=["book"]) - alternatywa
-        return None
+    model = fit_model(X_train, y_train, create_model(classifier_name))
 
+    return model
+
+
+def create_model(
+    classifier_name: str,
+):
+    """
+    Creates chosen model
+    :param classifier_name: name of a chosen classifier:
+            train_linear_regression or train_random_forest
+    :return: chosen classifier
+    """
     match classifier_name:
         case "train_linear_regression":
             model = RidgeCV(alphas=np.linspace(1e-3, 1, 10000))
         case "train_random_forest":
-            rf = RandomForestRegressor(random_state=0, n_jobs=-1)
+            rf = RandomForestRegressor(random_state=RANDOM_STATE, n_jobs=-1)
             hyper_params = {
                 "n_estimators": [x for x in range(200, 2001, 200)],
                 "max_features": [0.1, 0.2, 0.3, 0.4, 0.5],
@@ -43,11 +55,27 @@ def create_model(
                 scoring="neg_mean_absolute_error",
                 cv=3,
                 verbose=2,
-                random_state=42,
+                random_state=RANDOM_STATE,
                 return_train_score=True,
             )
         case _:
-            return None
+            raise ValueError(f"Classifier {classifier_name} is unsupported")
+
+    return model
+
+
+def fit_model(
+    X_train: pd.DataFrame, y_train: pd.Series, model: Union[RidgeCV, RandomizedSearchCV]
+) -> Union[RidgeCV, RandomizedSearchCV]:
+    """
+    Performs fitting using given model and train data
+    :param X_train: train set with features to use during fitting
+    :param y_train: train set with values to predict
+    :param model: model to fit
+    :return: trained model
+    """
+    if "book" in X_train.columns:
+        raise ValueError("You have to drop column 'book' first")
 
     model.fit(X_train, y_train)
 
