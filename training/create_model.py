@@ -21,7 +21,7 @@ def create_model(
     """
     if "book" in X_train.columns:
         print("You have to drop column 'book' first")
-        # drop_source_column(X_train)
+        # X_train = X_train.drop(columns=["book"]) - alternatywa
         return None
 
     match classifier_name:
