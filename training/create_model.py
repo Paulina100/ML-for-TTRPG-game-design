@@ -1,15 +1,9 @@
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LassoCV
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import RidgeCV
 import pandas.core.frame
 import pandas.core.series
-from sklearn.model_selection import GridSearchCV
-
-CLASSIFIERS = {
-    "train_linear_regression": LassoCV(n_alphas=1000, random_state=0),
-    "train_random_forest": RandomForestClassifier(
-        random_state=0, n_jobs=-1
-    ),  # czy jakiś inny? RandomForestRegressor?
-}
+from sklearn.model_selection import RandomizedSearchCV
+import numpy as np
 
 
 def create_model(
@@ -18,46 +12,43 @@ def create_model(
     y_train: pandas.core.series.Series,
 ):
     """
-    Creates chosen model, makes tuning and fits it
-    :param y_train: dataframe with
-    :param X_train:
-    :param classifier_name: name of a chosen classifier
+    Creates chosen model, performs tuning and fit
+    :param X_train: train set with features to use during fitting
+    :param y_train: train set with values to predict
+    :param classifier_name: name of a chosen classifier:
+            train_linear_regression or train_random_forest
     :return: trained classifier of a chosen type
     """
-    clf = create_clf_with_tuning(classifier_name)
+    if "book" in X_train.columns:
+        print("You have to drop column 'book' first")
+        # drop_source_column(X_train)
+        return None
 
-    if clf is None:
-        return
+    match classifier_name:
+        case "train_linear_regression":
+            model = RidgeCV(alphas=np.linspace(1e-3, 1, 10000))
+        case "train_random_forest":
+            rf = RandomForestRegressor(random_state=0, n_jobs=-1)
+            hyper_params = {
+                "n_estimators": [x for x in range(200, 2001, 200)],
+                "max_features": [0.1, 0.2, 0.3, 0.4, 0.5],
+                "max_depth": np.concatenate(
+                    ([int(x) for x in np.linspace(10, 110, num=11)], [None])
+                ),
+            }
+            model = RandomizedSearchCV(
+                estimator=rf,
+                param_distributions=hyper_params,
+                n_iter=100,
+                scoring="neg_mean_absolute_error",
+                cv=3,
+                verbose=2,
+                random_state=42,
+                return_train_score=True,
+            )
+        case _:
+            return None
 
-    # palce for tuning
+    model.fit(X_train, y_train)
 
-    clf.fit(X_train, y_train)
-
-    return clf
-
-
-def create_clf_with_tuning(classifier_name: str):
-    """
-    tuning the hyper-parameters of an estimator
-    :param clf: classifier
-    :param classifier_name: name of classifier
-    :return: classifier after tuning
-    """
-    base_clf = CLASSIFIERS.get(classifier_name)
-    if classifier_name == "train_linear_regression" or base_clf is None:
-        return base_clf
-
-    hyper_params = {
-        "n_estimators": [100, 200, 300, 400, 500],
-        "max_features": ["sqrt", "log2", 0.1, 0.2, 0.3, 0.4, 0.5, None],
-        "max_depth": [3, 6, 9],
-        "max_leaf_nodes": [3, 6, 9],
-    }
-    clf = GridSearchCV(
-        estimator=base_clf,
-        param_grid=hyper_params,
-        verbose=2,
-        return_train_score=True,
-    )
-
-    return clf
+    return model
