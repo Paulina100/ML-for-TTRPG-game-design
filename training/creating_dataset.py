@@ -125,6 +125,7 @@ def _create_df_with_basic_values(df: pd.DataFrame) -> pd.DataFrame:
     :return: DataFrame with two obligatory values from df
     """
     lvl = load_subcolumn_as_value("level")(get_subcolumn(df, "system/details/level"))
+    lvl.loc[lvl["level"] > 20, "level"] = 21
     book = load_subcolumn_as_value("book")(get_subcolumn(df, "system/details/source"))
 
     return pd.concat([lvl, book], axis=1)
