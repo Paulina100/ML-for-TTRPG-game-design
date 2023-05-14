@@ -40,11 +40,11 @@ def create_model(
         case "train_random_forest":
             rf = RandomForestRegressor(random_state=RANDOM_STATE, n_jobs=-1)
             hyper_params = {
-                "n_estimators": [x for x in range(200, 2001, 200)],
+                "n_estimators": [
+                    int(x) for x in np.linspace(start=100, stop=800, num=8)
+                ],
                 "max_features": [0.1, 0.2, 0.3, 0.4, 0.5],
-                "max_depth": np.concatenate(
-                    ([int(x) for x in np.linspace(10, 110, num=11)], [None])
-                ),
+                "max_depth": list(range(10, 111, 10)) + [None],
             }
             model = RandomizedSearchCV(
                 estimator=rf,
