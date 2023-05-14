@@ -14,6 +14,7 @@ from training.creating_dataset import (
     move_values_level_up,
 )
 
+
 DATASETS_DIR = pathlib.Path(__file__).parent.parent / "pathfinder_2e_data"
 DATASET_FILES = [
     "pathfinder-bestiary.db",

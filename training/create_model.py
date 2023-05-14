@@ -1,5 +1,3 @@
-from typing import Union
-
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
@@ -13,9 +11,9 @@ def get_fitted_model(
     classifier_name: str,
     X_train: pd.DataFrame,
     y_train: pd.Series,
-) -> Union[RidgeCV, RandomizedSearchCV]:
+) -> RidgeCV | RandomizedSearchCV:
     """
-    Creates chosen model, performs tuning and fits
+    Creates chosen model, performs tuning and fits\n
     :param X_train: train set with features to use during fitting
     :param y_train: train set with values to predict
     :param classifier_name: name of a chosen classifier:
@@ -31,7 +29,7 @@ def create_model(
     classifier_name: str,
 ):
     """
-    Creates chosen model
+    Creates chosen model\n
     :param classifier_name: name of a chosen classifier:
             train_linear_regression or train_random_forest
     :return: chosen classifier
@@ -65,10 +63,10 @@ def create_model(
 
 
 def fit_model(
-    X_train: pd.DataFrame, y_train: pd.Series, model: Union[RidgeCV, RandomizedSearchCV]
-) -> Union[RidgeCV, RandomizedSearchCV]:
+    X_train: pd.DataFrame, y_train: pd.Series, model: RidgeCV | RandomizedSearchCV
+) -> RidgeCV | RandomizedSearchCV:
     """
-    Performs fitting using given model and train data
+    Performs fitting using given model and train data\n
     :param X_train: train set with features to use during fitting
     :param y_train: train set with values to predict
     :param model: model to fit
