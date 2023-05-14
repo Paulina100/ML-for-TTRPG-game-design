@@ -34,6 +34,11 @@ def create_dataframe(
         "system/abilities": move_values_level_up(value_name="mod"),
         "system/attributes/ac": load_subcolumn_as_value("ac"),
         "system/attributes/hp": load_subcolumn_as_value("hp"),
+        "system/attributes/perception": load_subcolumn_as_value("perception"),
+        "system/saves": move_values_level_up(value_name="value"),
+        "system/saves/fortitude": load_subcolumn_as_value("fortitude"),
+        "system/saves/reflex": load_subcolumn_as_value("reflex"),
+        "system/saves/will": load_subcolumn_as_value("will"),
     }
     for i in range(len(books) - 1, -1, -1):
         if not is_path_correct(books[i]):
