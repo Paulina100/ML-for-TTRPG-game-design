@@ -1,0 +1,152 @@
+@import url("https://fonts.googleapis.com/css?family=Bruno+Ace+SC");
+
+:root {
+    --theme-color: rgb(9, 74, 32);
+    --theme-font: "Bruno Ace SC", sans-serif;
+}
+
+#page-background {
+    background-color: lightgray;
+    background-position: center;
+    background-size: cover;
+    width: 100%;
+    justify-content: center;
+    height: fit-content;
+}
+
+#page-content {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 67%;
+    margin: 80px 0 15px 0;
+    border-radius: 25px;
+    justify-content: center;
+    padding: 15px;
+    height: fit-content;
+}
+
+.content-header {
+    font-family: var(--theme-font);
+    color: var(--theme-color);
+    font-size: xx-large;
+    padding: 10px;
+}
+
+p {
+    margin-bottom: 10px;
+}
+
+* {
+    transition-duration: 0.3s;
+}
+
+/* HEADER */
+#header {
+    align-items: center;
+    padding: 0.9rem;
+    background-color: var(--theme-color);
+    justify-content: center;
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+}
+
+#header > h1 {
+    font-family: var(--theme-font);
+    color: white;
+}
+
+/* PAGE INFO */
+.page-info {
+    text-align: center;
+    padding: 0 40px 0 40px;
+}
+
+/* FORMS */
+#forms-grid {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    padding: 20px;
+    width: 100%;
+}
+
+button[type="submit"], #file-input-button {
+    padding: 10px;
+    margin: 5% 10% 5% 10%;
+    background-color: var(--theme-color);
+    font-family: var(--theme-font);
+    color: white;
+    border-radius: 25px;
+    width: 80%;
+    text-align: center;
+}
+
+button[type="submit"]:hover, #file-input-button:hover {
+    background-color: black;
+}
+
+#properties-form-container, #file-form-container {
+    padding: 0 20px 10px 20px;
+    border: 1px solid black;
+    width: 95%;
+}
+
+/* PROPERTIES FORM */
+#properties-form-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#properties-form-row {
+    display: grid;
+    grid-template-columns: 55% 45%;
+    padding: 5px 30px 5px 5px;
+    width: 100%;
+}
+
+#properties-form-label {
+    text-align: right;
+    padding-right: 10px;
+    line-height: 35px;
+}
+
+/* FILE FORM */
+#file-input-button {
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+#file-input {
+    display: none;
+}
+
+#selected-file {
+    margin-top: 10%;
+    border: 1px solid gray;
+    padding: 5px 10px 5px 10px;
+}
+
+/* HOVERS */
+#properties-form-container:hover, #file-form-container:hover {
+    box-shadow: 0 0 5px 4px lightgray;
+    transform: scale(1.03);
+}
+
+#forms-grid:has(#file-form-container:hover) > #properties-form-container,
+#forms-grid:has(#properties-form-container:hover) > #file-form-container {
+    transform: scale(0.97);
+    background-color: rgba(9, 74, 32, 0.05);
+}
+
+/* FOOTER */
+#footer {
+    width: 100%;
+    padding: 10px 20px 10px 20px;
+    background-color: gray;
+}
+
+a:link {
+    text-decoration-line: underline;
+}

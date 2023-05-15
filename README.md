@@ -13,6 +13,7 @@ pen & paper RPG game design".
 ## Table of contents
 * [Technologies](#technologies)
 * [Setup](#setup)
+* [Usage](#usage)
 * [Features](#features)
 * [Project Structure](#project-structure)
 * [Testing](#testing)
@@ -24,8 +25,36 @@ pen & paper RPG game design".
 
 ## Setup
 To install required packages, run
+```shell
+pip install -r requirements.txt
+```
 
-    pip install -r requirements.txt
+
+## Usage
+### Server
+To start server, first enter `serving` directory:
+```shell
+cd serving
+```
+
+Then run following command:
+```shell
+uvicorn server:app --reload
+```
+The frontend app should now be available on [localhost:8000](http://localhost:8000).
+
+### Frontend
+Frontend is written in React.js. To run it, you will need `npm` downloaded from [nodejs.org](https://nodejs.org/en/download).
+
+Then, to install project's dependencies and start server, run:
+```shell
+cd serving/frontend
+npm install
+npm start
+```
+After `npm` finishes setup, the frontend view will be available on [localhost:3000](http://localhost:3000/).
+
+Please ensure that your browser has enabled the CSS `:has` selector, especially if you are using Firefox.
 
 
 ## Features
@@ -34,6 +63,7 @@ To install required packages, run
 * searching for similar monsters in Pathfinder's resources
 * suggesting hints of properties that can be added to user's monster based on similar monsters
 
+
 ## Project Structure
 * `config`: files with environmental variables
 * `docker`: Docker-related files
@@ -41,6 +71,7 @@ To install required packages, run
 * `serving`: app's API
 * `test`: tests
 * `training`: scripts for creating datasets and training model
+
 
 ## Testing
 To run prepared tests in `test` directory using:
