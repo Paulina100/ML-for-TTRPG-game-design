@@ -1,11 +1,3 @@
-import {
-    FormControl,
-    FormLabel, NumberDecrementStepper,
-    NumberIncrementStepper,
-    NumberInput,
-    NumberInputField,
-    NumberInputStepper
-} from "@chakra-ui/react";
 import {renderHeader} from "../utils";
 
 const properties = ["Armor Class (AC)", "Hit Points (HP)", "Strength (Str)", "Dexterity (Dex)",
@@ -17,29 +9,38 @@ function extractBracketedWord(property) {
 }
 
 function renderPropertiesFormRow(property) {
+    const propertyShort = extractBracketedWord(property);
     return (
-        <FormControl key={extractBracketedWord(property)}>
-            <div id="properties-form-row">
-                <FormLabel as={extractBracketedWord(property)} htmlFor={extractBracketedWord(property)}
-                           id="properties-form-label">{property}</FormLabel>
-                <NumberInput isRequired>
-                    <NumberInputField/>
-                    <NumberInputStepper>
-                        <NumberIncrementStepper/>
-                        <NumberDecrementStepper/>
-                    </NumberInputStepper>
-                </NumberInput>
-            </div>
-        </FormControl>
+        <div id="properties-form-row">
+            <label htmlFor={propertyShort} id="properties-form-label">{property}</label>
+            <input id={propertyShort} name={propertyShort} type="number" pattern="[0-9]+" required/>
+        </div>
     );
+}
+
+function handleSubmit(e) {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const formJson = Object.fromEntries(formData.entries());
+
+    fetch("http://localhost:8000/properties/upload-form", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(formJson)
+    }).catch(e => {
+        alert(e);
+    });
 }
 
 const PropertiesForm = () => {
     return (
         <div id="properties-form-container">
             {renderHeader("Insert monster's properties")}
-            {properties.map(value => renderPropertiesFormRow(value))}
-            <button type="submit">Submit</button>
+            <form method="POST" onSubmit={handleSubmit}>
+                {properties.map(value => renderPropertiesFormRow(value))}
+                <button type="submit">Submit</button>
+            </form>
         </div>
     );
 }

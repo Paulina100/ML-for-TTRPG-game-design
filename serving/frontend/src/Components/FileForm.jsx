@@ -18,7 +18,7 @@ const FileForm = () => {
         e.preventDefault();
         const formData = new FormData();
         formData.append("file", selectedFile);
-        await fetch("http://localhost:8000/upload-file", {
+        await fetch("http://localhost:8000/properties/upload-file", {
             method: "POST",
             body: formData
         })

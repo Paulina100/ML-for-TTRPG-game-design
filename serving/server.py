@@ -29,7 +29,7 @@ async def get_properties() -> dict:
     return properties
 
 
-@app.post("/upload-file")
+@app.post("/properties/upload-file")
 async def upload_file(file: UploadFile = File(...)):
     file_content = await file.read()
     file_dict = json.loads(file_content)
@@ -40,3 +40,9 @@ async def upload_file(file: UploadFile = File(...)):
         properties[p] = system_dict["attributes"][p]["value"]
     for p in properties_abilities:
         properties[p] = system_dict["abilities"][p]["mod"]
+
+
+@app.post("/properties/upload-form")
+async def upload_properties(props: dict[str, str]):
+    for k, v in props.items():
+        properties[k] = int(v)
