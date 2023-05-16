@@ -2,9 +2,14 @@ import os.path
 import pathlib
 from copy import deepcopy
 
+import numpy as np
 import pandas as pd
 
-from training.analysis_functions import get_merged_bestiaries, unpack_column
+from training.analysis_functions import (
+    get_merged_bestiaries,
+    unpack_column,
+    unpack_column_without_null_values,
+)
 
 
 DATASETS_DIR = pathlib.Path(__file__).parent.parent / "pathfinder_2e_data"
@@ -14,52 +19,6 @@ DATASET_FILES = [
     "pathfinder-bestiary-3.db",
 ]
 DATASET_PATHS = [f"{DATASETS_DIR}/{file}" for file in DATASET_FILES]
-
-
-def create_dataframe(
-    books: list[str] = DATASET_PATHS,
-    characteristics: list[str] = [
-        "system/abilities",
-        "system/attributes/ac",
-        "system/attributes/hp",
-    ],
-) -> pd.DataFrame:
-    """
-    Creates dataframe containing chosen characteristics, level (CR) and source book of monsters from chosen books
-    :param books: list of paths of books to load
-    :param characteristics: list of characteristics to load
-    :return: DataFrame with monsters (NPC) form chosen books and with chosen characteristics and their origin book
-    """
-    loading_methods = {
-        "system/abilities": move_values_level_up(value_name="mod"),
-        "system/attributes/ac": load_subcolumn_as_value("ac"),
-        "system/attributes/hp": load_subcolumn_as_value("hp"),
-        "system/attributes/perception": load_subcolumn_as_value("perception"),
-        "system/saves": move_values_level_up(value_name="value"),
-        "system/saves/fortitude": load_subcolumn_as_value("fortitude"),
-        "system/saves/reflex": load_subcolumn_as_value("reflex"),
-        "system/saves/will": load_subcolumn_as_value("will"),
-    }
-    for i in range(len(books) - 1, -1, -1):
-        if not is_path_correct(books[i]):
-            books.pop(i)
-
-    bestiary = get_merged_bestiaries(books)
-    bestiary = bestiary[bestiary["type"] == "npc"]
-    df = _create_df_with_basic_values(bestiary)
-
-    for characteristic in characteristics:
-        if (loading_method := loading_methods.get(characteristic)) is not None:
-            part = loading_method(get_subcolumn(bestiary, characteristic))
-            df = pd.concat(
-                [
-                    df,
-                    part,
-                ],
-                axis=1,
-            )
-
-    return df
 
 
 def is_path_correct(path: str) -> bool:
@@ -92,7 +51,8 @@ def move_values_level_up(value_name: str) -> callable:
 
 def get_subcolumn(book: pd.DataFrame, subcolumn_path: str) -> pd.DataFrame:
     """
-    Gets subcolumn of given DataFrame according to given path
+    Gets subcolumn of given DataFrame according to given path or one level up column in the path if it is known that the next colum have missing data
+
     :param book: DataFrame with all data from book(s)
     :param subcolumn_path: path to subcolumn
     :return: chosen subcolumn as DataFrame
@@ -100,6 +60,9 @@ def get_subcolumn(book: pd.DataFrame, subcolumn_path: str) -> pd.DataFrame:
     subcol = deepcopy(book)
     for col in subcolumn_path.split("/"):
         subcol = pd.DataFrame(data=unpack_column(subcol, col))
+
+        if col == "resources":
+            return subcol
 
     return subcol
 
@@ -123,6 +86,47 @@ def load_subcolumn_as_value(
     return subcolumn_as_value
 
 
+def series_replace_nan_val(
+    df: pd.DataFrame, column_name: str, nan_replace_val: int
+) -> pd.Series:
+    """
+    Replaces all nan values in chosen column in DataFrame with replacement value and returns it as Series with chosen name.
+
+    :param df: DataFrame with chosen column
+    :param column_name: Name of the chosen column
+    :param nan_replace_val: Replacement value for nan
+    :return:
+    """
+    return pd.Series(
+        data=df[df[column_name].isnull()].replace(np.nan, nan_replace_val)[column_name],
+        name=column_name,
+    )
+
+
+def load_data_with_nan_val(
+    column_name: str, value_name: str, nan_replace_val: int
+) -> callable:
+    """
+    Returns a function that creates Series with chosen values from chosen columns and name same as column_name.
+    Nan values are replaced by nan_replace_val
+
+    :param column_name: Name of column in which there are chosen values
+    :param value_name: Name of chosen values
+    :param nan_replace_val: Value for replacing nan values
+    :return:
+    """
+
+    def inner_load_data_with_nan_val(df: pd.DataFrame) -> pd.Series:
+        return pd.concat(
+            [
+                unpack_column_without_null_values(df, column_name)[value_name],
+                series_replace_nan_val(df, column_name, nan_replace_val),
+            ]
+        ).sort_index()
+
+    return inner_load_data_with_nan_val
+
+
 def _create_df_with_basic_values(df: pd.DataFrame) -> pd.DataFrame:
     """
     Creates Dataframes which are obligatory for every dataset
@@ -134,3 +138,50 @@ def _create_df_with_basic_values(df: pd.DataFrame) -> pd.DataFrame:
     book = load_subcolumn_as_value("book")(get_subcolumn(df, "system/details/source"))
 
     return pd.concat([lvl, book], axis=1)
+
+
+def create_dataframe(
+    books: list[str] = DATASET_PATHS,
+    characteristics: list[str] = [
+        "system/abilities",
+        "system/attributes/ac",
+        "system/attributes/hp",
+    ],
+) -> pd.DataFrame:
+    """
+    Creates dataframe containing chosen characteristics, level (CR) and source book of monsters from chosen books
+    :param books: list of paths of books to load
+    :param characteristics: list of characteristics to load
+    :return: DataFrame with monsters (NPC) form chosen books and with chosen characteristics and their origin book
+    """
+    loading_methods = {
+        "system/abilities": move_values_level_up(value_name="mod"),
+        "system/attributes/ac": load_subcolumn_as_value("ac"),
+        "system/attributes/hp": load_subcolumn_as_value("hp"),
+        "system/attributes/perception": load_subcolumn_as_value("perception"),
+        "system/saves": move_values_level_up(value_name="value"),
+        "system/saves/fortitude": load_subcolumn_as_value("fortitude"),
+        "system/saves/reflex": load_subcolumn_as_value("reflex"),
+        "system/saves/will": load_subcolumn_as_value("will"),
+        "system/resources/focus": load_data_with_nan_val("focus", "max", -1),
+    }
+    for i in range(len(books) - 1, -1, -1):
+        if not is_path_correct(books[i]):
+            books.pop(i)
+
+    bestiary = get_merged_bestiaries(books)
+    bestiary = bestiary[bestiary["type"] == "npc"]
+    df = _create_df_with_basic_values(bestiary)
+
+    for characteristic in characteristics:
+        if (loading_method := loading_methods.get(characteristic)) is not None:
+            part = loading_method(get_subcolumn(bestiary, characteristic))
+            df = pd.concat(
+                [
+                    df,
+                    part,
+                ],
+                axis=1,
+            )
+
+    return df

@@ -32,3 +32,16 @@ def unpack_column(
         print(new_df.iloc[0])
         print(f"Len = {len(new_df.iloc[0])}")
     return new_df
+
+
+def unpack_column_without_null_values(
+    df: pd.DataFrame, column_name: str
+) -> pd.DataFrame:
+    """
+    Unpacks chosen dictionary column without rows with null values in that column and changes it to DataFrame.
+
+    :param df: DataFrame with column with dict
+    :param column_name: name of the colum with dict - column should contain dictionary
+    :return: DataFrame with values from chosen column
+    """
+    return unpack_column(df[df[column_name].notnull()], column_name)

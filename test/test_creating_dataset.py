@@ -10,6 +10,8 @@ from training.creating_dataset import (
     load_subcolumn_as_value,
     _create_df_with_basic_values,
     create_dataframe,
+    load_data_with_nan_val,
+    series_replace_nan_val,
 )
 from training.analysis_functions import get_merged_bestiaries, unpack_column
 
@@ -82,6 +84,27 @@ def test_load_subcolumn_as_value():
     pd.testing.assert_frame_equal(ac, ac_test)
 
 
+# load_data_with_nan_val
+def test_series_replace_nan_val():
+    df = get_subcolumn(BESTIARY, "system/resources/focus")
+
+    nan_focus_val = series_replace_nan_val(df, "focus", -1)
+
+    assert (nan_focus_val[df["focus"].isnull()] == -1).all()
+
+
+def test_load_data_with_nan_val():
+    df = get_subcolumn(BESTIARY, "system/resources/focus")
+
+    get_focus_func = load_data_with_nan_val("focus", "max", -1)
+    focus = get_focus_func(df)
+
+    assert (focus[df["focus"].isnull()] == -1).all()
+
+    for indx in df[df["focus"].notnull()].index.to_list():
+        assert focus.loc[indx] == df.loc[indx]["focus"]["max"]
+
+
 # _create_df_with_basic_values
 def test_create_df_with_basic_values():
     basic_bestiary = _create_df_with_basic_values(BESTIARY)
@@ -92,6 +115,7 @@ def test_create_df_with_basic_values():
     levels = load_subcolumn_as_value("level")(
         get_subcolumn(BESTIARY, "system/details/level")
     )
+    levels.loc[levels["level"] > 20, "level"] = 21
 
     pd.testing.assert_frame_equal(pd.DataFrame(data=basic_bestiary["book"]), books)
 
@@ -106,6 +130,8 @@ def test_create_dataframe():
     )
 
     test_dataframe["book"] = books["book"]
+    test_dataframe = test_dataframe.reset_index(drop=True)
+    test_dataframe.loc[test_dataframe["level"] > 20, "level"] = 21
 
     bestiary_dataframe = create_dataframe(DATASET_PATHS)
     pd.testing.assert_frame_equal(
