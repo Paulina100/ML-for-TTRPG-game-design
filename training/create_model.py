@@ -32,7 +32,7 @@ def create_model(
     """
     Creates chosen model\n
     :param classifier_name: name of a chosen classifier:
-            train_linear_regression or train_random_forest
+            linear_regression or random_forest
     :return: chosen classifier
     """
     match classifier_name:
