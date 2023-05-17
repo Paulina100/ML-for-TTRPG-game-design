@@ -1,3 +1,4 @@
+import warnings
 from typing import List, Optional
 
 import pandas as pd
@@ -26,7 +27,10 @@ def unpack_column(
     :param print_info: print or not: first row and Len of that row
     :return: DataFrame with values from chosen column
     """
-    new_df = df[column_name].apply(pd.Series)
+    with warnings.catch_warnings():
+        warnings.simplefilter(action="ignore", category=FutureWarning)
+        new_df = df[column_name].apply(pd.Series)
+
     if print_info:
         print("unpack_column: First row:")
         print(new_df.iloc[0])
