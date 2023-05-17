@@ -30,17 +30,39 @@ def create_dataframe(
     :param characteristics: list of characteristics to load
     :return: DataFrame with monsters (NPC) form chosen books and with chosen characteristics and their origin book
     """
-    loading_methods = {
-        "system/abilities": move_values_level_up(value_name="mod"),
-        "system/attributes/ac": load_subcolumn_as_value("ac"),
-        "system/attributes/hp": load_subcolumn_as_value("hp"),
-    }
+
     for i in range(len(books) - 1, -1, -1):
         if not is_path_correct(books[i]):
             books.pop(i)
 
     bestiary = get_merged_bestiaries(books)
     bestiary = bestiary[bestiary["type"] == "npc"]
+
+    df = standardize_dataframe(bestiary, characteristics)
+
+    return df
+
+
+def standardize_dataframe(
+    bestiary: pd.DataFrame,
+    characteristics: list[str] = [
+        "system/abilities",
+        "system/attributes/ac",
+        "system/attributes/hp",
+    ],
+) -> pd.DataFrame:
+    """
+    Creates dataframe containing chosen characteristics, level (CR) and source book of monsters from chosen books
+    :param books: list of paths of books to load
+    :param characteristics: list of characteristics to load
+    :return: DataFrame with monsters (NPC) form chosen books and with chosen characteristics and their origin book
+    """
+    loading_methods = {
+        "system/abilities": move_values_level_up(value_name="mod"),
+        "system/attributes/ac": load_subcolumn_as_value("ac"),
+        "system/attributes/hp": load_subcolumn_as_value("hp"),
+    }
+
     df = _create_df_with_basic_values(bestiary)
 
     for characteristic in characteristics:
