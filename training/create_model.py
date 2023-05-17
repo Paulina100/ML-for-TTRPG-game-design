@@ -20,7 +20,8 @@ def get_fitted_model(
             train_linear_regression or train_random_forest
     :return: trained classifier of a chosen type
     """
-    model = fit_model(X_train, y_train, create_model(classifier_name))
+    model = create_model(classifier_name)
+    model.fit(X_train, y_train)
 
     return model
 
@@ -35,9 +36,9 @@ def create_model(
     :return: chosen classifier
     """
     match classifier_name:
-        case "train_linear_regression":
+        case "linear_regression":
             model = RidgeCV(alphas=np.linspace(1e-3, 1, 10000))
-        case "train_random_forest":
+        case "random_forest":
             rf = RandomForestRegressor(random_state=RANDOM_STATE, n_jobs=-1)
             hyper_params = {
                 "n_estimators": [
@@ -58,23 +59,5 @@ def create_model(
             )
         case _:
             raise ValueError(f"Classifier {classifier_name} is unsupported")
-
-    return model
-
-
-def fit_model(
-    X_train: pd.DataFrame, y_train: pd.Series, model: RidgeCV | RandomizedSearchCV
-) -> RidgeCV | RandomizedSearchCV:
-    """
-    Performs fitting using given model and train data\n
-    :param X_train: train set with features to use during fitting
-    :param y_train: train set with values to predict
-    :param model: model to fit
-    :return: trained model
-    """
-    if "book" in X_train.columns:
-        raise ValueError("You have to drop column 'book' first")
-
-    model.fit(X_train, y_train)
 
     return model
