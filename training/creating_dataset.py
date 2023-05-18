@@ -38,12 +38,12 @@ def create_dataframe(
     bestiary = get_merged_bestiaries(books)
     bestiary = bestiary[bestiary["type"] == "npc"]
 
-    df = standardize_dataframe(bestiary, characteristics)
+    df = standardize_bestiary(bestiary, characteristics)
 
     return df
 
 
-def standardize_dataframe(
+def standardize_bestiary(
     bestiary: pd.DataFrame,
     characteristics: list[str] = [
         "system/abilities",
@@ -52,9 +52,9 @@ def standardize_dataframe(
     ],
 ) -> pd.DataFrame:
     """
-    Creates dataframe containing chosen characteristics, level (CR) and source book of monsters from chosen books
-    :param books: list of paths of books to load
-    :param characteristics: list of characteristics to load
+    Standardizes a bestiary DataFrame by extracting specific characteristics from nested columns and creating new columns with standardized values.
+    :param bestiary: DataFrame with monsters read from file
+    :param characteristics: list of characteristics to extract
     :return: DataFrame with monsters (NPC) form chosen books and with chosen characteristics and their origin book
     """
     loading_methods = {

@@ -1,25 +1,30 @@
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import RandomizedSearchCV
-
-from training.creating_dataset import standardize_dataframe
+from training.creating_dataset import standardize_bestiary
 import numpy as np
 import pandas as pd
 
 from training.save_load_model_to_file import load_model_from_file
 
 
-def calculate_level(monster_json: str) -> str:
-    model = load_model_from_file("../output/current_model.pkl")
+def calculate_level(monster_json: str, standardized: bool = False) -> str:
+    """
+    Calculates the monster's level based on its statistics
+    :param monster_json: JSON string with monster's statistics to load
+    :param standardized: True if given input is already standardized otherwise False
+    :return: string containing calculated monster's level
+    """
 
-    # Z potwora musimy wyciągnąć takie same cechy jakie mamy w X
-    monster_X = pd.read_json(monster_json)
-    monster_X = standardize_dataframe(monster_X)
+    model = load_model_from_file()
 
-    predict = model.predict(monster_X)
-    predict = np.where(
-        (predict % 1) > 0.33, np.ceil(predict), np.floor(predict)
+    monster_X = pd.read_json(monster_json, lines=True)
+    if not standardized:
+        monster_X = standardize_bestiary(monster_X)
+        monster_X = monster_X.drop(columns=["book", "level"])
+
+    monster_y = model.predict(monster_X)
+    monster_y = np.where(
+        (monster_y % 1) > 0.33, np.ceil(monster_y), np.floor(monster_y)
     ).astype("int")
 
-    if predict == 21:
+    if monster_y == 21:
         return ">20"
-    return predict
+    return str(monster_y[0])
