@@ -17,7 +17,7 @@ def get_fitted_model(
     :param X_train: train set with features to use during fitting
     :param y_train: train set with values to predict
     :param classifier_name: name of a chosen classifier:
-            train_linear_regression or train_random_forest
+            linear_regression or random_forest
     :return: trained classifier of a chosen type
     """
     model = create_model(classifier_name)
