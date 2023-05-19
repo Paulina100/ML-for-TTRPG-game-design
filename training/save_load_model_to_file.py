@@ -1,5 +1,6 @@
 import joblib
-from sklearn.ensemble import RandomForestRegressor
+
+from training.create_model import get_fitted_model
 from training.creating_dataset import create_dataframe
 
 
@@ -15,11 +16,7 @@ def save_model_to_file(model=None, filename: str = "../saved_models/current_mode
         X.pop("book")
         y = X.pop("level")
 
-        # Trenuje las losowy (tu będzie funkcja od Joli)
-        model = RandomForestRegressor(
-            random_state=0, n_jobs=-1, n_estimators=100, max_features=0.5, max_depth=7
-        )
-        model.fit(X, y)
+        model = get_fitted_model(classifier_name="random_forest", X_train=X, y_train=y)
 
     joblib.dump(model, filename)
 
@@ -31,6 +28,3 @@ def load_model_from_file(filename: str = "../saved_models/current_model.pkl"):
     :return: loaded machine learning model
     """
     return joblib.load(filename)
-
-
-save_model_to_file()
