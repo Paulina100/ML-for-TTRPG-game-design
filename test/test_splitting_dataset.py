@@ -2,9 +2,9 @@ import pytest
 
 from training.creating_dataset import create_dataframe
 from training.splitting_dataset import (
-    get_date_books_mapping,
-    get_dataframe_with_oldest_books,
     get_chronological_split_results,
+    get_dataframe_with_oldest_books,
+    get_date_books_mapping,
     get_random_split_results,
     split_dataframe,
 )
