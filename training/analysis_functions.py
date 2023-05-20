@@ -49,3 +49,33 @@ def unpack_column_without_null_values(
     :return: DataFrame with values from chosen column
     """
     return unpack_column(df[df[column_name].notnull()], column_name)
+
+
+def _create_null_dataframe(index: list[int], columns: list[str]):
+    """
+    Creates a dataframe which contains only null values
+
+    :param index: List of indices to use for resulting frame
+    :param columns: Column labels to use for resulting frame
+    :return: DataFrame with given labels and columns and null data
+    """
+    return pd.DataFrame(index=index, columns=columns)
+
+
+def unpack_column_with_null(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    """
+    Unpacks chosen dictionary column even if there are with rows with only null value in that column and changes it to DataFrame.
+
+    :param df: DataFrame with column with dict
+    :param column_name: name of the colum with dict - column should contain dictionary
+    :return: DataFrame with values from chosen column, nulls in a row if there was no data in that row
+    """
+    notnull_df = unpack_column(df[df[column_name].notnull()], column_name)
+    return pd.concat(
+        [
+            notnull_df,
+            _create_null_dataframe(
+                list(df[df[column_name].isnull()].index.values), notnull_df.columns
+            ),
+        ]
+    ).sort_index()

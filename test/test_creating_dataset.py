@@ -11,7 +11,6 @@ from training.creating_dataset import (
     _create_df_with_basic_values,
     create_dataframe,
     load_data_with_nan_val,
-    series_replace_nan_val,
 )
 from training.analysis_functions import get_merged_bestiaries, unpack_column
 
@@ -85,24 +84,22 @@ def test_load_subcolumn_as_value():
 
 
 # load_data_with_nan_val
-def test_series_replace_nan_val():
-    df = get_subcolumn(BESTIARY, "system/resources/focus")
-
-    nan_focus_val = series_replace_nan_val(df, "focus", -1)
-
-    assert (nan_focus_val[df["focus"].isnull()] == -1).all()
-
-
 def test_load_data_with_nan_val():
     df = get_subcolumn(BESTIARY, "system/resources/focus")
 
-    get_focus_func = load_data_with_nan_val("focus", "max", -1)
+    get_focus_func = load_data_with_nan_val(
+        column_name="focus", original_column_name="max", nan_replace_val=-1
+    )
     focus = get_focus_func(df)
 
-    assert (focus[df["focus"].isnull()] == -1).all()
+    assert list(focus.columns) == ["focus"]
 
-    for indx in df[df["focus"].notnull()].index.to_list():
-        assert focus.loc[indx] == df.loc[indx]["focus"]["max"]
+    assert (focus[df["max"].isnull()]["focus"] == -1).all()
+
+    pd.testing.assert_series_equal(
+        df[df["max"].notnull()]["max"].rename("focus"),
+        focus[focus["focus"] != -1]["focus"],
+    )
 
 
 # _create_df_with_basic_values
