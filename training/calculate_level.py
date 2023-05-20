@@ -1,7 +1,7 @@
-from training.creating_dataset import standardize_bestiary
 import numpy as np
 import pandas as pd
 
+from training.creating_dataset import standardize_bestiary
 from training.save_load_model_to_file import load_model_from_file
 
 

@@ -26,9 +26,7 @@ def get_fitted_model(
     return model
 
 
-def create_model(
-    classifier_name: str,
-):
+def create_model(classifier_name: str):
     """
     Creates chosen model\n
     :param classifier_name: name of a chosen classifier:

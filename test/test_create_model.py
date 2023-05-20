@@ -1,5 +1,3 @@
-import random
-
 import pandas as pd
 import pytest
 from sklearn.ensemble import RandomForestRegressor

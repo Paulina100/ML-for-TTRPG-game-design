@@ -84,7 +84,9 @@ def get_random_split_results(
         return train_test_split(
             X, y, test_size=test_size, random_state=0, shuffle=True, stratify=y
         )
-    except ValueError:  # caused by setting stratify=y if there is a class in y that has only 1 member
+    except (
+        ValueError
+    ):  # caused by setting stratify=y if there is a class in y that has only 1 member
         return train_test_split(X, y, test_size=test_size, random_state=0, shuffle=True)
 
 
