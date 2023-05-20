@@ -1,4 +1,4 @@
-from training.calculate_level import calculate_level
+from serving.backend.calculate_level import calculate_level
 
 
 def test_calculate_level_standardized():
