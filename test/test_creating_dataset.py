@@ -1,8 +1,10 @@
 import pathlib
 from copy import deepcopy
 
-import pytest
 import pandas as pd
+import pytest
+
+from training.analysis_functions import get_merged_bestiaries, unpack_column
 from training.creating_dataset import (
     get_subcolumn,
     move_values_level_up,
@@ -12,7 +14,6 @@ from training.creating_dataset import (
     create_dataframe,
     load_data_with_nan_val,
 )
-from training.analysis_functions import get_merged_bestiaries, unpack_column
 
 
 DATASETS_DIR = pathlib.Path(__file__).parent.parent / "pathfinder_2e_data"
