@@ -5,10 +5,7 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 
-from training.analysis_functions import (
-    get_merged_bestiaries,
-    unpack_column,
-)
+from training.analysis_functions import get_merged_bestiaries, unpack_column
 
 
 DATASETS_DIR = pathlib.Path(__file__).parent.parent / "pathfinder_2e_data"
@@ -135,7 +132,7 @@ def create_dataframe(
 
     :param books: list of paths of books to load
     :param characteristics: list of characteristics to load
-    :return: DataFrame with monsters (NPC) form chosen books and with chosen characteristics and their origin book
+    :return: DataFrame with monsters (NPC) from chosen books and with chosen characteristics and their origin book
     """
     loading_methods = {
         "system/abilities": move_values_level_up(value_name="mod"),

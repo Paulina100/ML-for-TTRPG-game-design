@@ -6,13 +6,13 @@ import pytest
 
 from training.analysis_functions import get_merged_bestiaries, unpack_column
 from training.creating_dataset import (
-    get_subcolumn,
-    move_values_level_up,
-    is_path_correct,
-    load_subcolumn_as_value,
     _create_df_with_basic_values,
     create_dataframe,
+    get_subcolumn,
+    is_path_correct,
     load_data_with_nan_val,
+    load_subcolumn_as_value,
+    move_values_level_up,
 )
 
 
@@ -93,14 +93,17 @@ def test_load_data_with_nan_val():
     )
     focus = get_focus_func(df)
 
-    assert list(focus.columns) == ["focus"]
+    assert list(focus.columns) == ["focus"]  # right column name
 
-    assert (focus[df["max"].isnull()]["focus"] == -1).all()
+    assert (
+        focus[df["max"].isnull()]["focus"] == -1
+    ).all()  # all rows with null have nan_replace_val
 
     pd.testing.assert_series_equal(
         df[df["max"].notnull()]["max"].rename("focus"),
         focus[focus["focus"] != -1]["focus"],
     )
+    # rows with non-null values have values from original df
 
 
 # _create_df_with_basic_values

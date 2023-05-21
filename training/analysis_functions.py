@@ -1,11 +1,10 @@
 import warnings
-from typing import List, Optional
 
 import numpy as np
 import pandas as pd
 
 
-def get_merged_bestiaries(paths_to_bestiaries: List[str]) -> pd.DataFrame:
+def get_merged_bestiaries(paths_to_bestiaries: list[str]) -> pd.DataFrame:
     """
     Returns merged books
 
@@ -18,7 +17,7 @@ def get_merged_bestiaries(paths_to_bestiaries: List[str]) -> pd.DataFrame:
 
 def unpack_column(
     df: pd.DataFrame, column_name: str, print_info: bool = False
-) -> Optional[pd.DataFrame]:
+) -> pd.DataFrame:
     """
     Unpacks dict and changes it to DataFrame
 
@@ -28,6 +27,9 @@ def unpack_column(
     :return: DataFrame with values from chosen column
     """
     with warnings.catch_warnings():
+        # ignore future warning - warning about deprecated features
+        # FutureWarning: The default dtype for empty Series will be 'object'
+        # Project have fixed pandas version
         warnings.simplefilter(action="ignore", category=FutureWarning)
         new_df = df[column_name].apply(pd.Series)
 
@@ -38,7 +40,7 @@ def unpack_column(
     return new_df
 
 
-def _create_null_dataframe(index: list[int], columns: list[str]):
+def _create_null_dataframe(index: list[int], columns: list[str]) -> pd.DataFrame:
     """
     Creates a dataframe which contains only null values
 
@@ -51,11 +53,26 @@ def _create_null_dataframe(index: list[int], columns: list[str]):
 
 def unpack_column_with_null(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     """
-    Unpacks chosen dictionary column even if there are with rows with only null value in that column and changes it to DataFrame.
+    Unpacks chosen dictionary column even if there are rows with null value in that column and changes it to DataFrame.
+
+    >>> df = pd.DataFrame({'col1':[{"s": "s", "x": 1}, np.nan], 'col2':[3, 4]})
+    >>> df
+            col1              col2
+    0   {"s": "s", "x": 1}     3
+    1        NaN               4
+
+    If we want to unpack col1 function will use *unpack_column* to deal with non-null rows (like 0 here)
+    and for null rows it will fill every subcolumn from col1 with nulls (like 1 here)
+
+    >>> unpack_column_with_null(df, "col1")
+         s      x
+    0    s      1
+    1   NaN    NaN
 
     :param df: DataFrame with column with dict
     :param column_name: name of the colum with dict - column should contain dictionary
     :return: DataFrame with values from chosen column, nulls in a row if there was no data in that row
+
     """
     notnull_df = unpack_column(df[df[column_name].notnull()], column_name)
     return pd.concat(
