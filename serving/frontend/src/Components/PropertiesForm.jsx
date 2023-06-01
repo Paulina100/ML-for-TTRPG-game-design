@@ -24,7 +24,7 @@ function handleSubmit(e) {
     const formData = new FormData(e.target);
     const formJson = Object.fromEntries(formData.entries());
 
-    fetch("http://localhost:8000/properties/upload-form", {
+    fetch("http://localhost:8000/properties/upload", {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(formJson)

@@ -1,6 +1,4 @@
-import json
-
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 
@@ -29,20 +27,7 @@ async def get_properties() -> dict:
     return properties
 
 
-@app.post("/properties/upload-file")
-async def upload_file(file: UploadFile = File(...)):
-    file_content = await file.read()
-    file_dict = json.loads(file_content)
-    system_dict = file_dict["system"]
-    properties_attributes = ["ac", "hp"]
-    properties_abilities = ["str", "dex", "con", "int", "wis", "cha"]
-    for p in properties_attributes:
-        properties[p] = system_dict["attributes"][p]["value"]
-    for p in properties_abilities:
-        properties[p] = system_dict["abilities"][p]["mod"]
-
-
-@app.post("/properties/upload-form")
+@app.post("/properties/upload")
 async def upload_properties(props: dict[str, str]):
     for k, v in props.items():
         properties[k] = int(v)
