@@ -120,7 +120,7 @@ button[type="submit"]:hover, #file-input-button:hover {
     line-height: 35px;
 }
 
-input[type="number"] {
+input[type="text"] {
     border: 1px solid black;
     border-radius: 5px;
     padding: 0 10px 0 10px;

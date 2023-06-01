@@ -29,5 +29,6 @@ async def get_properties() -> dict:
 
 @app.post("/properties/upload")
 async def upload_properties(props: dict[str, str]):
+    properties["name"] = props.pop("name")
     for k, v in props.items():
         properties[k] = int(v)

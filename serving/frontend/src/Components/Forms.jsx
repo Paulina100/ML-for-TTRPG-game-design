@@ -14,13 +14,13 @@ function renderCaption() {
 }
 
 const Forms = () => {
-    const [monsterProperties, setMonsterProperties] = useState(null);
+    const [monsterProperties, setMonsterProperties] = useState({});
 
     return (
         <div>
             { renderCaption() }
             <div id="forms-grid">
-                { PropertiesForm(monsterProperties) }
+                { PropertiesForm(monsterProperties, setMonsterProperties) }
                 { FileForm(setMonsterProperties) }
             </div>
         </div>

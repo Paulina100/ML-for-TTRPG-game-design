@@ -26,6 +26,7 @@ const FileForm = (setMonsterProperties) => {
         const systemDict = fileDict.system;
         let resultDict = {};
         try {
+            resultDict["name"] = fileDict.name;
             systemProperties.forEach((subproperties, property) => {
                 const valuesKey = propertiesValuesKey.get(property);
                 for (let subproperty of subproperties) {
