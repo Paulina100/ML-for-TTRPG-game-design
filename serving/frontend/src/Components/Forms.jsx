@@ -1,5 +1,6 @@
 import FileForm from "./FileForm";
 import PropertiesForm from "./PropertiesForm";
+import {useState} from "react";
 
 function renderCaption() {
     return(
@@ -12,14 +13,18 @@ function renderCaption() {
     );
 }
 
-export default function renderForms() {
+const Forms = () => {
+    const [monsterProperties, setMonsterProperties] = useState(null);
+
     return (
         <div>
             { renderCaption() }
-        <div id="forms-grid">
-            { PropertiesForm() }
-            { FileForm() }
-        </div>
+            <div id="forms-grid">
+                { PropertiesForm(monsterProperties) }
+                { FileForm(setMonsterProperties) }
             </div>
+        </div>
     );
 }
+
+export default Forms;

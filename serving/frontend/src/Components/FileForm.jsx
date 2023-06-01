@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {renderHeader} from "../utils";
 
-const FileForm = () => {
+const FileForm = (setMonsterProperties) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("");
     const systemProperties = new Map([
@@ -39,6 +39,7 @@ const FileForm = () => {
             alert(e);
             return null;
         }
+        setMonsterProperties(resultDict);
         return resultDict;
     };
 

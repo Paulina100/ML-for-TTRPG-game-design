@@ -15,13 +15,14 @@ function validateInput(event) {
     }
 }
 
-function renderPropertiesFormRow(property) {
+function renderPropertiesFormRow(property, monsterProperties) {
     const propertyShort = extractBracketedWord(property);
     return (
         <div id="properties-form-row">
             <label htmlFor={propertyShort} id="properties-form-label">{property}</label>
             <input id={propertyShort} name={propertyShort} type="number" required
-            onKeyDown={(event) => { validateInput(event); }} />
+                onKeyDown={(event) => { validateInput(event); }}
+                defaultValue={(monsterProperties === null) ? "" :  monsterProperties[propertyShort]} />
         </div>
     );
 }
@@ -55,12 +56,12 @@ function handleSubmit(e) {
     });
 }
 
-const PropertiesForm = () => {
+const PropertiesForm = (monsterProperties) => {
     return (
         <div id="properties-form-container">
             {renderHeader("Insert monster's properties")}
             <form method="POST" onSubmit={handleSubmit} id="properties-form">
-                {properties.map(value => renderPropertiesFormRow(value))}
+                {properties.map(value => renderPropertiesFormRow(value, monsterProperties))}
                 <button type="submit" id="submit-button">Submit</button>
             </form>
         </div>
