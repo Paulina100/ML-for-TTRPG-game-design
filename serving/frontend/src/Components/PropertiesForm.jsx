@@ -8,12 +8,20 @@ function extractBracketedWord(property) {
     return property.substring(property.indexOf("(") + 1, property.indexOf(")")).toLowerCase();
 }
 
+function validateInput(event) {
+    const allowedKeys = ["Backspace", "Enter", "Tab"];
+    if (!/[0-9]/.test(event.key) && !allowedKeys.includes(event.key)) {
+        event.preventDefault();
+    }
+}
+
 function renderPropertiesFormRow(property) {
     const propertyShort = extractBracketedWord(property);
     return (
         <div id="properties-form-row">
             <label htmlFor={propertyShort} id="properties-form-label">{property}</label>
-            <input id={propertyShort} name={propertyShort} type="number" pattern="[0-9]+" required/>
+            <input id={propertyShort} name={propertyShort} type="number" required
+            onKeyDown={(event) => { validateInput(event); }} />
         </div>
     );
 }
@@ -26,8 +34,22 @@ function handleSubmit(e) {
 
     fetch("http://localhost:8000/properties/upload", {
         method: "POST",
-        headers: {'Content-Type': 'application/json'},
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(formJson)
+    }).then(() => {
+        const submitButton = document.getElementById("submit-button");
+        submitButton.setAttribute("style", "display:none");
+
+        let form = document.getElementById("properties-form");
+        const submittedMessage = document.createElement("p");
+        submittedMessage.setAttribute("class", "message");
+        submittedMessage.appendChild(document.createTextNode("Submit successful"));
+        form.appendChild(submittedMessage);
+
+        setTimeout(() => {
+            form.removeChild(submittedMessage);
+            submitButton.setAttribute("style", "display:block");
+        }, 1250);
     }).catch(e => {
         alert(e);
     });
@@ -37,9 +59,9 @@ const PropertiesForm = () => {
     return (
         <div id="properties-form-container">
             {renderHeader("Insert monster's properties")}
-            <form method="POST" onSubmit={handleSubmit}>
+            <form method="POST" onSubmit={handleSubmit} id="properties-form">
                 {properties.map(value => renderPropertiesFormRow(value))}
-                <button type="submit">Submit</button>
+                <button type="submit" id="submit-button">Submit</button>
             </form>
         </div>
     );
