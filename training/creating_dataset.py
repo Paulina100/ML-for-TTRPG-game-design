@@ -144,13 +144,12 @@ def load_and_preprocess_data(
             column_name = get_column_name(characteristic)
             original_column_name = VALUE_TO_LOAD.get(characteristic)
 
-            subcolumn = pd.DataFrame(data=subcolumn[original_column_name]).rename(
-                columns={original_column_name: column_name}
-            )
+            subcolumn = subcolumn[original_column_name].rename(column_name)
 
             if column_name == "focus":
-                subcolumn["focus"] = subcolumn["focus"].fillna(-1)
+                subcolumn = subcolumn.fillna(-1)
 
         subcolumns.append(subcolumn)
-
-    return pd.concat(subcolumns, axis=1)
+    df = pd.concat(subcolumns, axis=1)
+    df.loc[df["level"] > 20, "level"] = 21
+    return df
