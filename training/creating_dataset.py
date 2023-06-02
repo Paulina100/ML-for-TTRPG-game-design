@@ -2,10 +2,9 @@ import os.path
 import pathlib
 from copy import deepcopy
 
-import numpy as np
 import pandas as pd
 
-from training.analysis_functions import get_merged_bestiaries, unpack_column
+from training.analysis_functions import get_merged_bestiaries, unpack_column_with_null
 
 
 DATASETS_DIR = pathlib.Path(__file__).parent.parent / "pathfinder_2e_data"
@@ -15,6 +14,19 @@ DATASET_FILES = [
     "pathfinder-bestiary-3.db",
 ]
 DATASET_PATHS = [f"{DATASETS_DIR}/{file}" for file in DATASET_FILES]
+VALUE_TO_LOAD = {
+    "system/abilities": "mod",
+    "system/attributes/ac": "value",
+    "system/attributes/hp": "value",
+    "system/attributes/perception": "value",
+    "system/saves": "value",
+    "system/saves/fortitude": "value",
+    "system/saves/reflex": "value",
+    "system/saves/will": "value",
+    "system/resources/focus": "value",
+    "system/details/level": "value",
+    "system/details/source": "value",
+}
 
 
 def is_path_correct(path: str) -> bool:
@@ -33,20 +45,6 @@ def is_path_correct(path: str) -> bool:
     return True
 
 
-def move_values_level_up(value_name: str) -> callable:
-    """
-    Assigns values of chosen key in columns' dictionaries to that columns
-
-    :param value_name: name of value that should be moved one level up as value of current column/columns
-    :return: function which create DataFrame with values of current column(s) changed to value of chosen subcolumn
-    """
-
-    def inner_move_values_level_up(df: pd.DataFrame) -> pd.DataFrame:
-        return df.applymap(lambda x: x.get(value_name), na_action="ignore")
-
-    return inner_move_values_level_up
-
-
 def get_subcolumn(book: pd.DataFrame, subcolumn_path: str) -> pd.DataFrame:
     """
     Gets subcolumn of given DataFrame according to given path or one level up column in the path if it is known that the next colum have missing data
@@ -57,70 +55,57 @@ def get_subcolumn(book: pd.DataFrame, subcolumn_path: str) -> pd.DataFrame:
     """
     subcol = deepcopy(book)
     for col in subcolumn_path.split("/"):
-        subcol = pd.DataFrame(data=unpack_column(subcol, col))
+        subcol = pd.DataFrame(data=unpack_column_with_null(subcol, col))
 
     return subcol
 
 
-def load_subcolumn_as_value(
-    column_name: str, original_column_name: str = "value"
-) -> callable:
+def load_bestiaries_from_paths(
+    paths_to_books: list[str] = DATASET_PATHS,
+) -> pd.DataFrame:
     """
-    Returns a function that creates DataFrame with chosen value_name of given DataFrame
-    and changes column name to chosen one
+    Loads bestiaries from given paths to one DataFrame
 
-    :param column_name: name that should be given to result dataframe column
-    :param original_column_name: name of subcolumn which value will be returned
-    :return: function to create Dataframe with chosen column name and values from a chosen subcolumn of current column
+    :param paths_to_books: list of paths of books to load
+    :return: Dataframe with loaded bestiaries from given paths
     """
+    for i in range(len(paths_to_books) - 1, -1, -1):
+        if not is_path_correct(paths_to_books[i]):
+            paths_to_books.pop(i)
 
-    def subcolumn_as_value(df: pd.DataFrame) -> pd.DataFrame:
-        result_df = pd.DataFrame(data=df[original_column_name])
-        result_df.columns = [column_name]
-        return result_df
-
-    return subcolumn_as_value
+    return get_merged_bestiaries(paths_to_books)
 
 
-def load_data_with_nan_val(
-    column_name: str, nan_replace_val: int, original_column_name: str = "value"
-) -> callable:
+def get_column_name(characteristic: str):
     """
-    Returns a function that creates Series with chosen values from chosen columns and name same as column_name.
-    Nan values are replaced by nan_replace_val
+    Returns name for a given characteristic
 
-    :param column_name: Name that should be given to result dataframe column
-    :param original_column_name: Name of chosen value
-    :param nan_replace_val: Value for replacing nan values
-    :return:
+    :param characteristic: characteristic in a form of path
+    :return: name for a given characteristic
     """
-
-    def inner_load_data_with_nan_val(df: pd.DataFrame) -> pd.DataFrame:
-        return (
-            pd.DataFrame(data=df[original_column_name])
-            .replace(np.nan, nan_replace_val)
-            .rename(columns={original_column_name: column_name})
-        )
-
-    return inner_load_data_with_nan_val
+    if characteristic == "system/details/source":
+        return "book"
+    return characteristic.split("/")[
+        -1
+    ]  # it is usually the last part of "path to characteristic"
 
 
-def _create_df_with_basic_values(df: pd.DataFrame) -> pd.DataFrame:
+def gat_all_characteristics(characteristics: list[str]):
     """
-    Creates Dataframes which are obligatory for every dataset
+    Creates list with given characteristics and basic ones that always have to be included
 
-    :param df: DataFrame with all information about monsters
-    :return: DataFrame with two obligatory values from df
+    :param characteristics: list of characteristics
+    :return: list of all characteristics to load
     """
-    lvl = load_subcolumn_as_value("level")(get_subcolumn(df, "system/details/level"))
-    lvl.loc[lvl["level"] > 20, "level"] = 21
-    book = load_subcolumn_as_value("book")(get_subcolumn(df, "system/details/source"))
+    return characteristics + [
+        i
+        for i in ["system/details/level", "system/details/source"]
+        if i not in characteristics
+    ]
 
-    return pd.concat([lvl, book], axis=1)
 
-
-def create_dataframe(
-    books: list[str] = DATASET_PATHS,
+def load_and_preprocess_data(
+    paths_to_books: list[str] = DATASET_PATHS,
     characteristics: list[str] = [
         "system/abilities",
         "system/attributes/ac",
@@ -130,38 +115,42 @@ def create_dataframe(
     """
     Creates dataframe containing chosen characteristics, level (CR) and source book of monsters from chosen books
 
-    :param books: list of paths of books to load
+    :param paths_to_books: list of paths of books to load
     :param characteristics: list of characteristics to load
     :return: DataFrame with monsters (NPC) from chosen books and with chosen characteristics and their origin book
     """
-    loading_methods = {
-        "system/abilities": move_values_level_up(value_name="mod"),
-        "system/attributes/ac": load_subcolumn_as_value("ac"),
-        "system/attributes/hp": load_subcolumn_as_value("hp"),
-        "system/attributes/perception": load_subcolumn_as_value("perception"),
-        "system/saves": move_values_level_up(value_name="value"),
-        "system/saves/fortitude": load_subcolumn_as_value("fortitude"),
-        "system/saves/reflex": load_subcolumn_as_value("reflex"),
-        "system/saves/will": load_subcolumn_as_value("will"),
-        "system/resources/focus": load_data_with_nan_val("focus", -1),
-    }
-    for i in range(len(books) - 1, -1, -1):
-        if not is_path_correct(books[i]):
-            books.pop(i)
 
-    bestiary = get_merged_bestiaries(books)
+    bestiary = load_bestiaries_from_paths(paths_to_books)
     bestiary = bestiary[bestiary["type"] == "npc"]
-    df = _create_df_with_basic_values(bestiary)
 
-    for characteristic in characteristics:
-        if (loading_method := loading_methods.get(characteristic)) is not None:
-            part = loading_method(get_subcolumn(bestiary, characteristic))
-            df = pd.concat(
-                [
-                    df,
-                    part,
-                ],
-                axis=1,
+    subcolumns = []
+    for characteristic in gat_all_characteristics(characteristics):
+        original_column_name = VALUE_TO_LOAD.get(characteristic)
+        # get original column name of value
+        # also used to check if feature is supported
+
+        if not original_column_name:
+            raise ValueError(f"Subcolumn {characteristic} does not exists")
+
+        subcolumn = get_subcolumn(bestiary, characteristic)
+
+        if characteristic in ["system/abilities", "system/saves"]:
+            # different way of getting features than others
+            # group of features instead of only one
+            subcolumn = subcolumn.applymap(
+                lambda x: x.get(VALUE_TO_LOAD.get(characteristic)), na_action="ignore"
+            )
+        else:
+            column_name = get_column_name(characteristic)
+            original_column_name = VALUE_TO_LOAD.get(characteristic)
+
+            subcolumn = pd.DataFrame(data=subcolumn[original_column_name]).rename(
+                columns={original_column_name: column_name}
             )
 
-    return df
+            if column_name == "focus":
+                subcolumn["focus"] = subcolumn["focus"].fillna(-1)
+
+        subcolumns.append(subcolumn)
+
+    return pd.concat(subcolumns, axis=1)
