@@ -1,13 +1,13 @@
 import {useState} from "react";
-import {renderHeader} from "../utils";
+import {displaySubmitInfo, renderHeader} from "../utils";
 
 const FileForm = (setMonsterProperties) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("");
     const systemProperties = new Map([
-            ["attributes", ["ac", "hp"]],  // value
-            ["abilities", ["str", "dex", "con", "int", "wis", "cha"]]  //mod
-        ]);
+        ["attributes", ["ac", "hp"]],  // value
+        ["abilities", ["str", "dex", "con", "int", "wis", "cha"]]  //mod
+    ]);
     const propertiesValuesKey = new Map([
         ["attributes", "value"],
         ["abilities", "mod"]
@@ -40,7 +40,6 @@ const FileForm = (setMonsterProperties) => {
             alert(e);
             return null;
         }
-        setMonsterProperties(resultDict);
         return resultDict;
     };
 
@@ -57,6 +56,12 @@ const FileForm = (setMonsterProperties) => {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(properties)
+            }).then(() => {
+                displaySubmitInfo("file-submit-button", "file-form");
+                setMonsterProperties(properties);
+                alert("File was uploaded successfully. " +
+                    "Monster's properties were inserted to the form on the left " +
+                    "where they can be easily edited and resubmitted.")
             }).catch(e => {
                 alert(e);
             });
@@ -67,13 +72,14 @@ const FileForm = (setMonsterProperties) => {
         <div id="file-form-container">
             {renderHeader("Select JSON file containing monster's properties")}
             <p>This file has to have the same structure as files from Pathfinder books.</p>
-            <form onSubmit={submitForm}>
+            <form onSubmit={submitForm} id="file-form">
                 <label htmlFor="file-input">
                     <div id="file-input-button">Select file</div>
                 </label>
-                <input type="file" id="file-input" accept=".json" onInput={(e) => uploadFile(e.target.files[0])} required/>
+                <input type="file" id="file-input" accept=".json" onInput={(e) => uploadFile(e.target.files[0])}
+                       required/>
                 <p id="selected-file">{(selectedFileName === "") ? "No file selected." : selectedFileName}</p>
-                <button type="submit">Submit</button>
+                <button type="submit" id="file-submit-button">Submit</button>
             </form>
         </div>
     );

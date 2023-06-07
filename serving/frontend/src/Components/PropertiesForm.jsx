@@ -1,4 +1,4 @@
-import {renderHeader} from "../utils";
+import {displaySubmitInfo, renderHeader} from "../utils";
 
 const properties = ["Armor Class (AC)", "Hit Points (HP)", "Strength (Str)", "Dexterity (Dex)",
     "Concentration (Con)", "Intelligence (Int)", "Wisdom (Wis)", "Charisma (Cha)"]
@@ -15,24 +15,32 @@ function validateInput(event) {
     }
 }
 
-function renderPropertiesFormRow(property, monsterProperties) {
+function renderPropertiesFormRow(property, monsterProperties, setMonsterProperties) {
     const propertyShort = extractBracketedWord(property);
     return (
-        <div id="properties-form-row">
+        <div className="properties-form-row" key={propertyShort}>
             <label htmlFor={propertyShort} id="properties-form-label">{property}</label>
             <input id={propertyShort} name={propertyShort} type="text" required
-                onKeyDown={(event) => { validateInput(event); }}
-                defaultValue={(monsterProperties === null) ? "" :  monsterProperties[propertyShort]} />
+                   onKeyDown={(event) => {
+                       validateInput(event);
+                   }}
+                   onChange={(event) => {
+                       setMonsterProperties({[propertyShort]: event.target.value});
+                   }}
+                   value={(monsterProperties === null) ? "" : monsterProperties[propertyShort]}/>
         </div>
     );
 }
 
-function renderNameFormRow(monsterProperties) {
+function renderNameFormRow(monsterProperties, setMonsterProperties) {
     return (
-        <div id="properties-form-row">
+        <div className="properties-form-row">
             <label htmlFor="name" id="properties-form-label">Name</label>
             <input id="name" name="name" type="text" required
-                value={(monsterProperties === null) ? "" :  monsterProperties["name"]} />
+                   onChange={(event) => {
+                       setMonsterProperties({["name"]: event.target.value});
+                   }}
+                   value={(monsterProperties === null) ? "" : monsterProperties["name"]}/>
         </div>
     );
 }
@@ -50,19 +58,7 @@ const PropertiesForm = (monsterProperties, setMonsterProperties) => {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(formJson)
         }).then(() => {
-            const submitButton = document.getElementById("submit-button");
-            submitButton.setAttribute("style", "display:none");
-
-            let form = document.getElementById("properties-form");
-            const submittedMessage = document.createElement("p");
-            submittedMessage.setAttribute("class", "message");
-            submittedMessage.appendChild(document.createTextNode("Submit successful"));
-            form.appendChild(submittedMessage);
-
-            setTimeout(() => {
-                form.removeChild(submittedMessage);
-                submitButton.setAttribute("style", "display:block");
-            }, 1250);
+            displaySubmitInfo("properties-submit-button", "properties-form");
         }).catch(e => {
             alert(e);
         });
@@ -71,10 +67,10 @@ const PropertiesForm = (monsterProperties, setMonsterProperties) => {
     return (
         <div id="properties-form-container">
             {renderHeader("Insert monster's properties")}
-            <form method="POST" onSubmit={handleSubmit} id="properties-form">
-                {renderNameFormRow(monsterProperties)}
-                {properties.map(value => renderPropertiesFormRow(value, monsterProperties))}
-                <button type="submit" id="submit-button">Submit</button>
+            <form onSubmit={handleSubmit} id="properties-form">
+                {renderNameFormRow(monsterProperties, setMonsterProperties)}
+                {properties.map(value => renderPropertiesFormRow(value, monsterProperties, setMonsterProperties))}
+                <button type="submit" id="properties-submit-button">Submit</button>
             </form>
         </div>
     );

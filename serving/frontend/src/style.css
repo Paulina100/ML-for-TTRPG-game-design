@@ -75,6 +75,7 @@ p {
 #forms-grid {
     display: grid;
     grid-template-columns: 50% 50%;
+    grid-column-gap: 15px;
     padding: 20px;
     width: 100%;
 }
@@ -97,7 +98,7 @@ button[type="submit"]:hover, #file-input-button:hover {
 #properties-form-container, #file-form-container {
     padding: 0 20px 10px 20px;
     border: 1px solid black;
-    width: 95%;
+    width: calc(100% - 15px);
 }
 
 /* PROPERTIES FORM */
@@ -107,7 +108,7 @@ button[type="submit"]:hover, #file-input-button:hover {
     flex-direction: column;
 }
 
-#properties-form-row {
+.properties-form-row {
     display: grid;
     grid-template-columns: 55% 45%;
     padding: 5px 30px 5px 5px;
