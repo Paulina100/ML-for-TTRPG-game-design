@@ -32,6 +32,7 @@ CHARACTERISTICS_COLUMNS = {
     "level": "details.level.value",
     "book": "details.source.value",
 }
+"""dictionary with characteristics names (keys) and "path" to real columns in dataframe loaded from file (values)"""
 
 
 def is_path_correct(path: str) -> bool:
@@ -71,7 +72,10 @@ def load_and_preprocess_data(
     for path in paths_to_books:
         is_path_correct(path)
         with open(path) as file:
+            # loading json strings from files
             d = [json.loads(line) for line in file]
+            # getting only system column (all characteristics are there)
+            # getting only npc - monsters
             data += [line.get("system") for line in d if line.get("type") == "npc"]
             file.close()
 
@@ -79,12 +83,28 @@ def load_and_preprocess_data(
 
     columns = []
     for characteristic in set(characteristics + ["book", "level"]):
+        # different way of loading data: abilities and saves is a group of characteristics
+        if characteristic in ["abilities", "saves"]:
+            subcolumns = bestiary.filter(regex=characteristic)
+
+            # in case of saves we have to filter to extract only useful columns
+            if characteristic == "saves":
+                subcolumns = subcolumns.filter(regex="value")
+
+            # renaming columns to simpler names of characteristics
+            subcolumns = subcolumns.rename(
+                columns={col: col.split(".")[-2] for col in subcolumns.columns}
+            )
+            columns.append(subcolumns)
+            continue
+        # renaming the column to a simpler name of characteristic
         column = bestiary[CHARACTERISTICS_COLUMNS.get(characteristic)].rename(
             characteristic
         )
         columns.append(column)
 
     df = pd.concat(columns, axis=1)
+    # there is an option to load all abilities and also each of them separately - get rid of duplicates
     df = df.loc[:, ~df.columns.duplicated()]
 
     if "focus" in df.columns:

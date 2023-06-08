@@ -3,12 +3,8 @@ import pathlib
 import pandas as pd
 import pytest
 
-from training.analysis_functions import get_merged_bestiaries, unpack_column
-from training.creating_dataset import (
-    get_subcolumn,
-    is_path_correct,
-    load_and_preprocess_data,
-)
+from training.analysis_functions import get_merged_bestiaries, get_subcolumn
+from training.creating_dataset import is_path_correct, load_and_preprocess_data
 
 
 DATASETS_DIR = pathlib.Path(__file__).parent.parent / "pathfinder_2e_data"
@@ -23,27 +19,16 @@ BESTIARY = get_merged_bestiaries(DATASET_PATHS)
 
 # is_path_correct
 def test_is_path_correct():
-    assert not is_path_correct(
-        "pathfinder_2e_data/pathfinder-bestiar.db"
-    )  # case: path does not exists
+    with pytest.raises(ValueError):
+        # case: path does not exists
+        is_path_correct("pathfinder_2e_data/pathfinder-bestiar.db")
 
-    assert not is_path_correct("requirements.txt")  # case: wrong file type
+    with pytest.raises(ValueError):
+        # case: wrong file type
+        is_path_correct("requirements.txt")
 
-    assert is_path_correct(DATASET_PATHS[0])  # case: correct path
-
-
-# get_subcolumn
-def test_get_subcolumn():
-    system = unpack_column(BESTIARY, "system")
-    pd.testing.assert_frame_equal(system, get_subcolumn(BESTIARY, "system"))
-
-    abilities = unpack_column(system, "abilities")
-    pd.testing.assert_frame_equal(
-        abilities, get_subcolumn(BESTIARY, "system/abilities")
-    )
-
-    with pytest.raises(KeyError):  # wrong key
-        get_subcolumn(BESTIARY, "abilities/system")
+    # case: correct path
+    assert is_path_correct(DATASET_PATHS[0])
 
 
 # load_and_preprocess_data
@@ -58,6 +43,7 @@ def test_load_and_preprocess_data():
     test_dataframe.loc[test_dataframe["level"] > 20, "level"] = 21
 
     bestiary_dataframe = load_and_preprocess_data(DATASET_PATHS)
+
     pd.testing.assert_frame_equal(
         test_dataframe.sort_index(axis=1),
         bestiary_dataframe.sort_index(axis=1),

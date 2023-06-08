@@ -1,4 +1,5 @@
 import warnings
+from copy import deepcopy
 
 import numpy as np
 import pandas as pd
@@ -83,3 +84,18 @@ def unpack_column_with_null(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
             ),
         ]
     ).sort_index()
+
+
+def get_subcolumn(book: pd.DataFrame, subcolumn_path: str) -> pd.DataFrame:
+    """
+    Gets subcolumn of given DataFrame according to given path
+    Gets subcolumn of given DataFrame according to given path or one level up column in the path if it is known that the next colum have missing data
+    :param book: DataFrame with all data from book(s)
+    :param subcolumn_path: path to subcolumn
+    :return: chosen subcolumn as DataFrame
+    """
+    subcol = deepcopy(book)
+    for col in subcolumn_path.split("/"):
+        subcol = pd.DataFrame(data=unpack_column_with_null(subcol, col))
+
+    return subcol
