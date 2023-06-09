@@ -20,7 +20,7 @@ BESTIARY = get_merged_bestiaries(DATASET_PATHS)
 # is_path_correct
 def test_is_path_correct():
     with pytest.raises(ValueError):
-        # case: path does not exists
+        # case: path does not exist
         is_path_correct("pathfinder_2e_data/pathfinder-bestiar.db")
 
     with pytest.raises(ValueError):
@@ -34,15 +34,17 @@ def test_is_path_correct():
 # load_and_preprocess_data
 def test_load_and_preprocess_data():
     test_dataframe = pd.read_json("../output/bestiary_system_basic.json")
-    books = get_subcolumn(BESTIARY, "system/details/source")
-    lvl = get_subcolumn(BESTIARY, "system/details/level")
 
-    test_dataframe["book"] = books["value"]
-    test_dataframe["level"] = lvl["value"]
+    test_dataframe["book"] = get_subcolumn(BESTIARY, "system/details/source")["value"]
+    test_dataframe["level"] = get_subcolumn(BESTIARY, "system/details/level")["value"]
+    test_dataframe["focus"] = get_subcolumn(BESTIARY, "system/resources/focus")["value"]
+    test_dataframe["focus"] = test_dataframe["focus"].fillna(-1)
     test_dataframe = test_dataframe.reset_index(drop=True)
     test_dataframe.loc[test_dataframe["level"] > 20, "level"] = 21
 
-    bestiary_dataframe = load_and_preprocess_data(DATASET_PATHS)
+    bestiary_dataframe = load_and_preprocess_data(
+        DATASET_PATHS, characteristics=["abilities", "ac", "hp", "focus"]
+    )
 
     pd.testing.assert_frame_equal(
         test_dataframe.sort_index(axis=1),
