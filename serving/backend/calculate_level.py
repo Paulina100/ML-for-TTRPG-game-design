@@ -1,5 +1,23 @@
-import numpy as np
+import math
+
 import pandas as pd
+
+
+def _round_monster_level(level: float) -> int:
+    """
+    Rounds the monster's level based on a lower threshold.
+
+    If the fractional part of the level is greater than 0.33, the level is rounded up to the nearest whole number.
+    Otherwise, the level is rounded down to the nearest whole number.
+
+    :param level: monster's level to round
+    :return: rounded monster's level as int
+    """
+
+    if (level % 1) > 0.33:
+        return math.ceil(level)
+    else:
+        return math.floor(level)
 
 
 def calculate_level(monster_stats: dict, model) -> int:
@@ -11,11 +29,8 @@ def calculate_level(monster_stats: dict, model) -> int:
     """
 
     monster_X = pd.DataFrame.from_records([monster_stats])
-    monster_y = model.predict(monster_X)
-    # TODO
-    monster_y = np.where(
-        (monster_y % 1) > 0.33, np.ceil(monster_y), np.floor(monster_y)
-    )
-    monster_y = monster_y.astype("int")
 
-    return monster_y[0]
+    monster_y = model.predict(monster_X)
+    monster_y = _round_monster_level(monster_y[0])
+
+    return monster_y
