@@ -52,8 +52,8 @@ def is_path_correct(path: str) -> bool:
 
 
 def load_and_preprocess_data(
-    paths_to_books: list[str] | None = None,
-    characteristics: list[str] | None = None,
+    paths_to_books: list[str] = None,
+    characteristics: list[str] = None,
 ) -> pd.DataFrame:
     """
     Creates dataframe containing chosen characteristics, level and source book of monsters from chosen books
