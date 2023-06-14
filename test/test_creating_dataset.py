@@ -35,15 +35,24 @@ def test_is_path_correct():
 def test_load_and_preprocess_data():
     test_dataframe = pd.read_json("../output/bestiary_system_basic.json")
 
-    test_dataframe["book"] = get_subcolumn(BESTIARY, "system/details/source")["value"]
-    test_dataframe["level"] = get_subcolumn(BESTIARY, "system/details/level")["value"]
-    test_dataframe["focus"] = get_subcolumn(BESTIARY, "system/resources/focus")["value"]
+    column_paths = {
+        "book": "system/details/source",
+        "focus": "system/resources/focus",
+        # saves: fortitude, reflex, will
+        "fortitude": "system/saves/fortitude",
+        "reflex": "system/saves/reflex",
+        "will": "system/saves/will",
+    }
+
+    for colum_name, path in column_paths.items():
+        test_dataframe[colum_name] = get_subcolumn(BESTIARY, path)["value"]
+
     test_dataframe["focus"] = test_dataframe["focus"].fillna(-1)
-    test_dataframe = test_dataframe.reset_index(drop=True)
     test_dataframe.loc[test_dataframe["level"] > 20, "level"] = 21
+    test_dataframe = test_dataframe.reset_index(drop=True)
 
     bestiary_dataframe = load_and_preprocess_data(
-        DATASET_PATHS, characteristics=["abilities", "ac", "hp", "focus"]
+        DATASET_PATHS, characteristics=["abilities", "ac", "hp", "focus", "saves"]
     )
 
     pd.testing.assert_frame_equal(
