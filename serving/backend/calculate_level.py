@@ -3,18 +3,19 @@ import math
 import pandas as pd
 
 
-def _round_monster_level(level: float) -> int:
+def _round_monster_level(level: float, threshold=0.33) -> int:
     """
     Rounds the monster's level based on a lower threshold.
 
-    If the fractional part of the level is greater than 0.33, the level is rounded up to the nearest whole number.
+    If the fractional part of the level is greater than the threshold, the level is rounded up to the nearest whole number.
     Otherwise, the level is rounded down to the nearest whole number.
 
     :param level: monster's level to round
+    :param threshold: threshold value to determine rounding behavior (default: 0.33)
     :return: rounded monster's level as int
     """
 
-    if (level % 1) > 0.33:
+    if (level % 1) > threshold:
         return math.ceil(level)
     else:
         return math.floor(level)
