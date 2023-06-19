@@ -5,12 +5,12 @@ const FileForm = (setMonsterProperties) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("");
     const systemProperties = new Map([
-        ["attributes", ["ac", "hp"]],  // value
-        ["abilities", ["str", "dex", "con", "int", "wis", "cha"]]  //mod
+        ["abilities", ["cha", "con", "dex", "int", "str", "wis", ]],  //mod
+        ["attributes", ["ac", "hp"]]  // value
     ]);
     const propertiesValuesKey = new Map([
-        ["attributes", "value"],
-        ["abilities", "mod"]
+        ["abilities", "mod"],
+        ["attributes", "value"]
     ]);
 
     const uploadFile = (file) => {

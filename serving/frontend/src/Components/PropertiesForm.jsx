@@ -1,8 +1,7 @@
 import {displaySubmitInfo, renderHeader} from "../utils";
 
-const properties = ["Armor Class (AC)", "Hit Points (HP)", "Strength (Str)", "Dexterity (Dex)",
-    "Concentration (Con)", "Intelligence (Int)", "Wisdom (Wis)", "Charisma (Cha)"]
-
+const properties = ["Charisma (Cha)", "Concentration (Con)", "Dexterity (Dex)", "Intelligence (Int)",
+    "Strength (Str)", "Wisdom (Wis)", "Armor Class (AC)", "Hit Points (HP)"]
 
 function extractBracketedWord(property) {
     return property.substring(property.indexOf("(") + 1, property.indexOf(")")).toLowerCase();
@@ -38,7 +37,7 @@ function renderNameFormRow(monsterProperties, setMonsterProperties) {
             <label htmlFor="name" id="properties-form-label">Name</label>
             <input id="name" name="name" type="text" required
                    onChange={(event) => {
-                       setMonsterProperties({["name"]: event.target.value});
+                       setMonsterProperties({"name": event.target.value});
                    }}
                    value={(monsterProperties === null) ? "" : monsterProperties["name"]}/>
         </div>

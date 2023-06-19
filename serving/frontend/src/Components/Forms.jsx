@@ -9,6 +9,9 @@ function renderCaption() {
             <p>You can choose between two ways of entering your monster's properties:
                 you can either manually fill in values of available properties
                 or upload a JSON file with monster's characteristics. </p>
+            <p>If you decide to upload a file, you will still be able to edit properties
+                after they are obtained from JSON.</p>
+            <p>When upload is finished, section with results will appear below forms.</p>
         </div>
     );
 }

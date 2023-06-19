@@ -1,11 +1,12 @@
 import React from "react";
-import { render } from 'react-dom';
+import {render} from 'react-dom';
 import {ChakraProvider, Flex} from "@chakra-ui/react";
 
 import Header from "./Components/Header";
 import PageInfo from "./Components/PageInfo"
 import Forms from "./Components/Forms";
 import Footer from "./Components/Footer";
+import Results from "./Components/Results";
 
 import "./style.css";
 
@@ -18,6 +19,7 @@ function App() {
                 <div id="page-content">
                     <PageInfo />
                     {Forms()}
+                    {Results()}
                 </div>
             </Flex>
             <Footer />

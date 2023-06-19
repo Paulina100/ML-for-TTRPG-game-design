@@ -152,7 +152,35 @@ input[type="text"] {
 #forms-grid:has(#file-form-container:hover) > #properties-form-container,
 #forms-grid:has(#properties-form-container:hover) > #file-form-container {
     transform: scale(0.97);
-    background-color: rgba(9, 74, 32, 0.05);
+    background-color: rgba(9, 74, 32, 0.1);
+}
+
+/* RESULTS */
+#results {
+    width: 100%;
+    padding: 0 40px 0 40px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+#results > .content-header {
+    text-align: center;
+    align-self: center;
+}
+
+#level-info {
+    padding-left: 15px;
+    font-size: medium !important;
+    line-height: 50px;
+    background-color: rgba(9, 74, 32, 0.25);
+}
+
+#level-info > span {
+    font-size: 35px !important;
+    padding: 0 4px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -5px;
 }
 
 /* FOOTER */
