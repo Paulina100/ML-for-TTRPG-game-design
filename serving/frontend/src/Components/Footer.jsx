@@ -1,4 +1,4 @@
-export default function renderFooter() {
+const Footer = () => {
     return (
         <div id="footer">
             Created by Paulina Jędrychowska, Bogumiła Papiernik and Jolanta Śliwa.<br/>
@@ -6,3 +6,5 @@ export default function renderFooter() {
         </div>
     );
 }
+
+export default Footer;

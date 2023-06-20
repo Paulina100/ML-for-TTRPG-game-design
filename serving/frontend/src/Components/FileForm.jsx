@@ -21,6 +21,18 @@ const FileForm = (setMonsterProperties) => {
         setSelectedFileName(file.name);
     };
 
+    const unpackValue = (dict, dictKeys) => {
+        let current = dict;
+        for (let dictKey of dictKeys) {
+            if (! current.hasOwnProperty(dictKey)) {
+                const keyPath = "/".concat(dictKeys);
+                throw new Error("Selected JSON is invalid: value from " + keyPath + " was not found.")
+            }
+            current = current[dictKey];
+        }
+        return current;
+    }
+
     const parseFile = (fileReader) => {
         const fileDict = JSON.parse(fileReader.result);
         const systemDict = fileDict.system;
@@ -30,10 +42,7 @@ const FileForm = (setMonsterProperties) => {
             systemProperties.forEach((subproperties, property) => {
                 const valuesKey = propertiesValuesKey.get(property);
                 for (let subproperty of subproperties) {
-                    resultDict[subproperty] = systemDict[property][subproperty][valuesKey];
-                    if (typeof resultDict[subproperty] != "number") {
-                        throw new Error("Selected JSON is invalid.")
-                    }
+                    resultDict[subproperty] = unpackValue(systemDict, [property, subproperty, valuesKey]);
                 }
             })
         } catch (e) {

@@ -1,7 +1,9 @@
-export default function renderPageInfo() {
+import {renderHeader} from "../utils";
+
+const PageInfo = () => {
     return (
         <div className="page-info">
-            <h1 className="content-header">Welcome to our app!</h1>
+            {renderHeader("Welcome to our app!")}
             <p>Pathfinder Monster Creator is a project supporting pen & paper RPG game design using machine learning.
                 It offers such functionalities as calculating monster's Challenge Rating (CR) based on its properties
                 and generating suggestions how to increase/decrease its CR. </p>
@@ -10,3 +12,5 @@ export default function renderPageInfo() {
         </div>
     );
 }
+
+export default PageInfo;
