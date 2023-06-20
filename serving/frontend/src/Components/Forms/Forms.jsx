@@ -1,6 +1,7 @@
 import FileForm from "./FileForm";
 import PropertiesForm from "./PropertiesForm";
 import {useState} from "react";
+import {renderHeader} from "../../utils";
 
 const Forms = () => {
     const [monsterProperties, setMonsterProperties] = useState({});
@@ -8,7 +9,7 @@ const Forms = () => {
     const renderCaption = () => {
         return (
             <div className="page-info">
-                <div className="content-header">First step</div>
+                {renderHeader("Welcome to our app!")}
                 <p>You can choose between two ways of entering your monster's properties:
                     you can either manually fill in values of available properties
                     or upload a JSON file with monster's characteristics. </p>
