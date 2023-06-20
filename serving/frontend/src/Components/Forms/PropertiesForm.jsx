@@ -1,4 +1,4 @@
-import {displaySubmitInfo, renderHeader} from "../utils";
+import {displaySubmitInfo, renderHeader} from "../../utils";
 
 const PropertiesForm = (monsterProperties, setMonsterProperties) => {
     const properties = ["Charisma (Cha)", "Concentration (Con)", "Dexterity (Dex)", "Intelligence (Int)",

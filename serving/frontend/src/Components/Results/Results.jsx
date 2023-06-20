@@ -1,4 +1,4 @@
-import {renderHeader} from "../utils";
+import {renderHeader} from "../../utils";
 import Level from "./Level";
 
 const Results = () => {

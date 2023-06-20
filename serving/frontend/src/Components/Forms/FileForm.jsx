@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {displaySubmitInfo, renderHeader} from "../utils";
+import {displaySubmitInfo, renderHeader} from "../../utils";
 
 const FileForm = (setMonsterProperties) => {
     const [selectedFile, setSelectedFile] = useState(null);

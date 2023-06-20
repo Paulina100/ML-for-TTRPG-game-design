@@ -4,9 +4,9 @@ import {ChakraProvider, Flex} from "@chakra-ui/react";
 
 import Header from "./Components/Header";
 import PageInfo from "./Components/PageInfo"
-import Forms from "./Components/Forms";
+import Forms from "./Components/Forms/Forms";
 import Footer from "./Components/Footer";
-import Results from "./Components/Results";
+import Results from "./Components/Results/Results";
 
 import "./style.css";
 
