@@ -1,6 +1,5 @@
 import React from "react";
 import {render} from 'react-dom';
-import {ChakraProvider, Flex} from "@chakra-ui/react";
 
 import Header from "./Components/Header";
 import PageInfo from "./Components/PageInfo"
@@ -13,17 +12,17 @@ import "./style.css";
 function App() {
     console.log("starting...");
     return (
-        <ChakraProvider>
+        <div id="app">
             <Header />
-            <Flex id="page-background">
+            <div id="page-background">
                 <div id="page-content">
                     <PageInfo />
-                    {Forms()}
-                    {Results()}
+                    <Forms />
+                    <Results />
                 </div>
-            </Flex>
+            </div>
             <Footer />
-        </ChakraProvider>
+        </div>
     )
 }
 
