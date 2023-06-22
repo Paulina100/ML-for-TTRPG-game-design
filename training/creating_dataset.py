@@ -15,22 +15,24 @@ DATASET_PATHS = [f"{DATASETS_DIR}/{file}" for file in DATASET_FILES]
 
 CHARACTERISTICS_COLUMNS = {
     # "abilities": "abilities",
-    "cha": "abilities.cha.mod",
-    "con": "abilities.con.mod",
-    "mod": "abilities.dex.mod",
-    "int": "abilities.int.mod",
-    "str": "abilities.str.mod",
-    "wis": "abilities.wis.mod",
-    "ac": "attributes.ac.value",
-    "hp": "attributes.hp.value",
-    "perception": "attributes.perception.value",
+    "con": "system.abilities.con.mod",
+    "mod": "system.abilities.dex.mod",
+    "cha": "system.abilities.cha.mod",
+    "int": "system.abilities.int.mod",
+    "str": "system.abilities.str.mod",
+    "wis": "system.abilities.wis.mod",
+    # "abilities": "abilities" # end
+    "ac": "system.attributes.ac.value",
+    "hp": "system.attributes.hp.value",
+    "perception": "system.attributes.perception.value",
     # "saves": "saves"
-    "fortitude": "saves.fortitude.value",
-    "reflex": "saves.reflex.value",
-    "will": "saves.will.value",
-    "focus": "resources.focus.value",
-    "level": "details.level.value",
-    "book": "details.source.value",
+    "fortitude": "system.saves.fortitude.value",
+    "reflex": "system.saves.reflex.value",
+    "will": "system.saves.will.value",
+    # "saves": "saves" #end
+    "focus": "system.resources.focus.value",
+    "level": "system.details.level.value",
+    "book": "system.details.source.value",
 }
 """dictionary with characteristics names (keys) and "path" to real columns in dataframe loaded from file (values)"""
 
@@ -52,8 +54,8 @@ def is_path_correct(path: str) -> bool:
 
 
 def load_and_preprocess_data(
-    paths_to_books: list[str] = None,
-    characteristics: list[str] = None,
+    paths_to_books: list[str],
+    characteristics: list[str],
 ) -> pd.DataFrame:
     """
     Creates dataframe containing chosen characteristics, level and source book of monsters from chosen books
@@ -62,38 +64,32 @@ def load_and_preprocess_data(
     :param characteristics: list of characteristics to load
     :return: DataFrame with monsters (NPC) from chosen books and with chosen characteristics and their origin book
     """
-
-    if paths_to_books is None:
-        paths_to_books = DATASET_PATHS
-
-    if characteristics is None:
-        characteristics = ["abilities", "ac", "hp"]
-
     data = []
 
     for path in paths_to_books:
         is_path_correct(path)
         with open(path) as file:
             # loading json strings from files
-            d = [json.loads(line) for line in file]
-            # getting only system column (all characteristics are there)
-            # getting only npc - monsters
-            data += [line.get("system") for line in d if line.get("type") == "npc"]
+            data += [json.loads(line) for line in file]
             file.close()
 
     bestiary = pd.json_normalize(data)
+    # only npc monsters
+    bestiary = bestiary[bestiary["type"] == "npc"]
+    # only system column (all characteristics are there)
+    bestiary = bestiary.filter(regex="system", axis=1)
 
     columns = []
-    for characteristic in set(characteristics + ["book", "level"]):
+    for characteristic in characteristics + ["book", "level"]:
         # different way of loading data: abilities and saves is a group of characteristics
         if characteristic in ["abilities", "saves"]:
-            subcolumns = bestiary.filter(regex=characteristic)
+            subcolumns = bestiary.filter(regex=characteristic, axis=1)
 
             # in case of saves we have to filter to extract only useful columns
             if characteristic == "saves":
-                subcolumns = subcolumns.filter(regex="value")
+                subcolumns = subcolumns.filter(regex="value", axis=1)
 
-            # renaming columns to simpler names of characteristics
+            # renaming columns to simpler names of characteristics- group of characteristics=>df rename group of columns
             subcolumns = subcolumns.rename(
                 columns={col: col.split(".")[-2] for col in subcolumns.columns}
             )
