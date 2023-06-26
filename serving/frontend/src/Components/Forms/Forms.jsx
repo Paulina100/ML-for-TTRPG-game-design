@@ -14,7 +14,8 @@ const Forms = () => {
                     you can either manually fill in values of available properties
                     or upload a JSON file with monster's characteristics. </p>
                 <p>If you decide to upload a file, you will still be able to edit properties
-                    after they are obtained from JSON.</p>
+                    after they are obtained from JSON. The file has to be consistent with
+                    Foundry VTT format.</p>
                 <p>When upload is finished, section with results will appear below forms.</p>
             </div>
         );
