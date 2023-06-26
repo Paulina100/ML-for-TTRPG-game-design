@@ -43,9 +43,18 @@ pen & paper RPG game design".
 
 ## Setup
 ### Prerequisite
-To start this application you will need Docker with Docker Compose.
+To start this application you will need Docker with Docker Compose. For easier setup also Make will be useful.
 
 ### Starting app
+The fastest way to start the app is by using Makefile scripts. Simply type 
+```shell
+make
+```
+in terminal and after a while backend server should be available on [localhost:8000](http://localhost:8000) 
+and frontend view - on [localhost:3000](http://localhost:3000/).
+
+Alternatively, you can do this manually, step-by-step:
+
 In the `docker` directory there are two Docker images - first, it is necessary to build them:
 ```shell
 docker build . -f docker/Dockerfile_server
@@ -56,12 +65,16 @@ After the build is finished, run command:
 ```shell
 docker-compose up -d
 ```
-Server should now be available on [localhost:8000](http://localhost:8000) and the frontend view - on [localhost:3000](http://localhost:3000/).
 
 Please ensure that your browser has enabled the CSS `:has` selector, especially if you are using Firefox.
 
 ### Stopping app
-To stop the app, run:
+As before, stopping the app is possible with a Makefile script:
+```shell
+make stop
+```
+
+Alternatively, to stop the app you can run:
 ```shell
 docker-compose down
 ```
@@ -80,16 +93,18 @@ where instead of `<container>` type container's name or prefix of its ID.
 
 
 ## Testing
-To run prepared tests in `test` directory using:
-* terminal: 
-  * enter `test` directory:
-  ```shell
-  cd test
-  ```
-  * run `pytest` with test file as argument, e.g.:
-  ```shell
-  pytest test_creating_dataset.py
-  ```
+This project for testing uses the `pytest` framework.
 
-* PyCharm: 
-  * run file using run button 
+To run all tests from `tests` directory, use:
+```shell
+make tests
+```
+
+To run tests from a specific file in `tests` directory, type:
+```shell
+make test FILE={filename.py}
+```
+substituting `{filename.py}` with name of the file containing tests.
+
+Alternatively, you can run tests via either `pytest` command or PyCharm GUI. If you choose one of these options, 
+remember to make sure that the tests are invoked from `test` directory.

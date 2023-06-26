@@ -14,7 +14,10 @@ start:
 stop:
 	docker-compose down
 
-test:
+tests:
 	cd ./test && pytest .
 
-.PHONY: all backend frontend start stop test
+test:
+	cd ./test && pytest $(FILE)
+
+.PHONY: all backend frontend start stop tests test
