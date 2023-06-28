@@ -16,7 +16,7 @@ DATASET_PATHS = [f"{DATASETS_DIR}/{file}" for file in DATASET_FILES]
 CHARACTERISTICS_COLUMNS = {
     # "abilities": "abilities",
     "con": "system.abilities.con.mod",
-    "mod": "system.abilities.dex.mod",
+    "dex": "system.abilities.dex.mod",
     "cha": "system.abilities.cha.mod",
     "int": "system.abilities.int.mod",
     "str": "system.abilities.str.mod",
@@ -77,37 +77,31 @@ def load_and_preprocess_data(
     # only npc monsters
     bestiary = bestiary[bestiary["type"] == "npc"]
     # only system column (all characteristics are there)
-    bestiary = bestiary.filter(regex="system", axis=1)
+    bestiary = bestiary.filter(regex="system", axis="columns")
 
-    columns = []
-    for characteristic in characteristics + ["book", "level"]:
-        # different way of loading data: abilities and saves is a group of characteristics
-        if characteristic in ["abilities", "saves"]:
-            subcolumns = bestiary.filter(regex=characteristic, axis=1)
+    COLS_TO_EXTRACT = pd.DataFrame(
+        data=[
+            (characteristic, CHARACTERISTICS_COLUMNS.get(characteristic))
+            for characteristic in characteristics + ["book", "level"]
+        ],
+        columns=["target_name", "raw_name"],
+    )
 
-            # in case of saves we have to filter to extract only useful columns
-            if characteristic == "saves":
-                subcolumns = subcolumns.filter(regex="value", axis=1)
+    raw_names = COLS_TO_EXTRACT["raw_name"]
+    target_names = COLS_TO_EXTRACT["target_name"]
 
-            # renaming columns to simpler names of characteristics- group of characteristics=>df rename group of columns
-            subcolumns = subcolumns.rename(
-                columns={col: col.split(".")[-2] for col in subcolumns.columns}
-            )
-            columns.append(subcolumns)
-            continue
-        # renaming the column to a simpler name of characteristic
-        column = bestiary[CHARACTERISTICS_COLUMNS.get(characteristic)].rename(
-            characteristic
-        )
-        columns.append(column)
+    # to not have Series names as a part of final df
+    target_names.name = None
 
-    df = pd.concat(columns, axis=1)
-    # there is an option to load all abilities and also each of them separately - get rid of duplicates
-    df = df.loc[:, ~df.columns.duplicated()]
+    df = bestiary[raw_names]
+    df.columns = target_names
 
     if "focus" in df.columns:
-        df["focus"] = df["focus"].fillna(-1)
-        df["focus"] = df["focus"].astype(int)
+        # silent warning (SettingWithCopyWarning) about view and copy
+        # we don't need to go back to the original df - no matter if it is a view
+        with pd.option_context("mode.chained_assignment", None):
+            df["focus"] = df["focus"].fillna(-1)
+            df["focus"] = df["focus"].astype(int)
 
     df.loc[df["level"] > 20, "level"] = 21
 

@@ -17,7 +17,6 @@ DATASET_PATHS = [f"{DATASETS_DIR}/{file}" for file in DATASET_FILES]
 BESTIARY = get_merged_bestiaries(DATASET_PATHS)
 
 
-# is_path_correct
 def test_is_path_correct():
     with pytest.raises(ValueError):
         # case: path does not exist
@@ -31,17 +30,13 @@ def test_is_path_correct():
     assert is_path_correct(DATASET_PATHS[0])
 
 
-# load_and_preprocess_data
 def test_load_and_preprocess_data():
     test_dataframe = pd.read_json("../output/bestiary_system_basic.json")
 
     column_paths = {
         "book": "system/details/source",
         "focus": "system/resources/focus",
-        # saves: fortitude, reflex, will
         "fortitude": "system/saves/fortitude",
-        "reflex": "system/saves/reflex",
-        "will": "system/saves/will",
     }
 
     for colum_name, path in column_paths.items():
@@ -52,7 +47,19 @@ def test_load_and_preprocess_data():
     test_dataframe = test_dataframe.reset_index(drop=True)
 
     bestiary_dataframe = load_and_preprocess_data(
-        DATASET_PATHS, characteristics=["abilities", "ac", "hp", "focus", "saves"]
+        DATASET_PATHS,
+        characteristics=[
+            "cha",
+            "con",
+            "dex",
+            "int",
+            "str",
+            "wis",
+            "ac",
+            "hp",
+            "focus",
+            "fortitude",
+        ],
     )
 
     pd.testing.assert_frame_equal(
