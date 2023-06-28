@@ -14,22 +14,18 @@ DATASET_FILES = [
 DATASET_PATHS = [f"{DATASETS_DIR}/{file}" for file in DATASET_FILES]
 
 CHARACTERISTICS_COLUMNS = {
-    # "abilities": "abilities",
     "con": "system.abilities.con.mod",
     "dex": "system.abilities.dex.mod",
     "cha": "system.abilities.cha.mod",
     "int": "system.abilities.int.mod",
     "str": "system.abilities.str.mod",
     "wis": "system.abilities.wis.mod",
-    # "abilities": "abilities" # end
     "ac": "system.attributes.ac.value",
     "hp": "system.attributes.hp.value",
     "perception": "system.attributes.perception.value",
-    # "saves": "saves"
     "fortitude": "system.saves.fortitude.value",
     "reflex": "system.saves.reflex.value",
     "will": "system.saves.will.value",
-    # "saves": "saves" #end
     "focus": "system.resources.focus.value",
     "level": "system.details.level.value",
     "book": "system.details.source.value",
