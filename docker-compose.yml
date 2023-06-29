@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_server
+    command: uvicorn server:app --host 0.0.0.0
+    ports:
+      - "8000:8000"
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_frontend
+    command: npm start
+    ports:
+      - "3000:3000"

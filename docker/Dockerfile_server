@@ -1,0 +1,9 @@
+FROM python:3.10.0-slim
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt && pip install uvicorn fastapi
+
+COPY serving serving
+COPY saved_models saved_models
+
+WORKDIR serving
