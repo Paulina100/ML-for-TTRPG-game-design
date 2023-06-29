@@ -42,7 +42,7 @@ def test_load_and_preprocess_data():
     for colum_name, path in column_paths.items():
         test_dataframe[colum_name] = get_subcolumn(BESTIARY, path)["value"]
 
-    test_dataframe["focus"] = test_dataframe["focus"].fillna(-1)
+    test_dataframe["focus"] = test_dataframe["focus"].fillna(0)
     test_dataframe.loc[test_dataframe["level"] > 20, "level"] = 21
     test_dataframe = test_dataframe.reset_index(drop=True)
 

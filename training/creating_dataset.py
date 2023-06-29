@@ -96,7 +96,7 @@ def load_and_preprocess_data(
         # silent warning (SettingWithCopyWarning) about view and copy
         # we don't need to go back to the original df - no matter if it is a view
         with pd.option_context("mode.chained_assignment", None):
-            df["focus"] = df["focus"].fillna(-1)
+            df["focus"] = df["focus"].fillna(0)
             df["focus"] = df["focus"].astype(int)
 
     df.loc[df["level"] > 20, "level"] = 21
