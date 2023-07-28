@@ -29,6 +29,9 @@ CHARACTERISTICS_COLUMNS = {
     "focus": "system.resources.focus.value",
     "level": "system.details.level.value",
     "book": "system.details.source.value",
+    "land_speed": "system.attributes.speed.value",
+    "immunities": "system.attributes.immunities",
+    "fly": "system.attributes.speed.otherSpeeds",
 }
 """dictionary with characteristics names (keys) and "path" to real columns in dataframe loaded from file (values)"""
 
@@ -42,11 +45,18 @@ def is_path_correct(path: str) -> bool:
     """
     if not os.path.isfile(path):
         raise ValueError(f"Path {path} does not exist")
-        # return False
+
     if not (path.endswith(".db") or path.endswith(".json")):
         raise ValueError(f"Expected db or json file, got {path}")
-        # return False
+
     return True
+
+
+def get_fly(speeds):
+    if not speeds:
+        return 0
+    res = [x.get("value") for x in speeds if x.get("type") == "fly"]
+    return 0 if len(res) == 0 else res[0]
 
 
 def load_and_preprocess_data(
@@ -75,6 +85,16 @@ def load_and_preprocess_data(
     # only system column (all characteristics are there)
     bestiary = bestiary.filter(regex="system", axis="columns")
 
+    if "immunities" in characteristics:
+        immunities_path = CHARACTERISTICS_COLUMNS.get("immunities")
+        bestiary[immunities_path] = bestiary[immunities_path].apply(
+            lambda x: 0 if np.all(pd.isnull(x)) else len(x)
+        )
+
+    if "fly" in characteristics:
+        fly_path = CHARACTERISTICS_COLUMNS.get("fly")
+        bestiary[fly_path] = bestiary[fly_path].apply(lambda x: get_fly(x))
+
     COLS_TO_EXTRACT = pd.DataFrame(
         data=[
             (characteristic, CHARACTERISTICS_COLUMNS.get(characteristic))
@@ -98,6 +118,10 @@ def load_and_preprocess_data(
         with pd.option_context("mode.chained_assignment", None):
             df["focus"] = df["focus"].fillna(0)
             df["focus"] = df["focus"].astype(int)
+
+    if "land_speed":
+        with pd.option_context("mode.chained_assignment", None):
+            df["land_speed"] = df["land_speed"].fillna(0)
 
     df.loc[df["level"] > 20, "level"] = 21
 
