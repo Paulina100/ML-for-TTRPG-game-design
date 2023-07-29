@@ -15,8 +15,6 @@ def test_calculate_level():
         "wis": 2,
         "ac": 29,
         "hp": 215,
-        "focus": 1,
-        "fortitude": 22,
     }
     monster_lantern_archon = {
         "cha": 1,
@@ -27,8 +25,6 @@ def test_calculate_level():
         "wis": 1,
         "ac": 16,
         "hp": 20,
-        "focus": 1,
-        "fortitude": 6,
     }
     monster_treerazer = {
         "cha": 8,
@@ -39,8 +35,6 @@ def test_calculate_level():
         "wis": 8,
         "ac": 54,
         "hp": 550,
-        "focus": 1,
-        "fortitude": 42,
     }
 
     level = calculate_level(monster_stats=monster_adult_white_dragon, model=model)

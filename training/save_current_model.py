@@ -26,8 +26,6 @@ if __name__ == "__main__":
             "wis",
             "ac",
             "hp",
-            "focus",
-            "fortitude",
         ],
     )
     X.pop("book")
