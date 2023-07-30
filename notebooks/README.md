@@ -73,7 +73,7 @@ Analysis of columns `system/details`, `system/resources`, `system/saves`, `syste
 | `alignment`    | could be useful (but not for regression) |
 | `blurb`        | not useful                               |
 | `creatureType` | probably useful (but not for regression) |
-| `level`        | useful (monster's Challenge Rating)      |
+| `level`        | useful (monster's level)      |
 | `privateNotes` | not useful                               |
 | `publicNotes`  | not useful                               |
 | `source`       | useful (name of monster's bestiary)      |
@@ -107,6 +107,6 @@ Analysis of columns `system/details`, `system/resources`, `system/saves`, `syste
 | `lastMigration` | probably not useful |
 
 ## models/system_linear_regression.ipynb
-Linear regression for predicting monster's Challenge Rating (stored originally in `system/details/level`) based on 
+Linear regression for predicting monster's level (stored originally in `system/details/level`) based on 
 `system/abilities`, `system/attributes/hp` and `system/attributes/ac`.
 
