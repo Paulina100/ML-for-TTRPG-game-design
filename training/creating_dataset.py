@@ -1,17 +1,31 @@
 import json
 import os.path
-import pathlib
 
+import numpy as np
 import pandas as pd
 
 
-DATASETS_DIR = pathlib.Path(__file__).parent.parent / "pathfinder_2e_data"
-DATASET_FILES = [
-    "pathfinder-bestiary.db",
-    "pathfinder-bestiary-2.db",
-    "pathfinder-bestiary-3.db",
+OTHER_SPEEDS = [
+    "fly",
+    "swim",
+    "climb",
 ]
-DATASET_PATHS = [f"{DATASETS_DIR}/{file}" for file in DATASET_FILES]
+OTHER_SPEED_PATH = "system.attributes.speed.otherSpeeds"
+
+RESISTANCES = [
+    "fire",
+    "cold",
+    "electricity",
+    "acid",
+    "piercing",
+    "slashing",
+    "physical",
+    "bludgeoning",
+    "mental",
+    "poison",
+    "all-damage",
+]
+RESISTANCE_PATH = "system.attributes.resistances"
 
 CHARACTERISTICS_COLUMNS = {
     "con": "system.abilities.con.mod",
@@ -31,7 +45,20 @@ CHARACTERISTICS_COLUMNS = {
     "book": "system.details.source.value",
     "land_speed": "system.attributes.speed.value",
     "immunities": "system.attributes.immunities",
-    "fly": "system.attributes.speed.otherSpeeds",
+    "fly": "fly",
+    "swim": "swim",
+    "climb": "climb",
+    "fire": "fire",
+    "cold": "cold",
+    "electricity": "electricity",
+    "acid": "acid",
+    "piercing": "piercing",
+    "slashing": "slashing",
+    "physical": "physical",
+    "bludgeoning": "bludgeoning",
+    "mental": "mental",
+    "poison": "poison",
+    "all-damage": "all-damage",
 }
 """dictionary with characteristics names (keys) and "path" to real columns in dataframe loaded from file (values)"""
 
@@ -52,10 +79,11 @@ def is_path_correct(path: str) -> bool:
     return True
 
 
-def get_fly(speeds):
-    if not speeds:
+def get_characteristic_from_list(cell_value, characteristic_type):
+    if not cell_value or np.all(pd.isnull(cell_value)):
         return 0
-    res = [x.get("value") for x in speeds if x.get("type") == "fly"]
+    # print(cell_value)
+    res = [x.get("value") for x in cell_value if x.get("type") == characteristic_type]
     return 0 if len(res) == 0 else res[0]
 
 
@@ -85,15 +113,24 @@ def load_and_preprocess_data(
     # only system column (all characteristics are there)
     bestiary = bestiary.filter(regex="system", axis="columns")
 
+    for resistance in [r for r in characteristics if r in RESISTANCES]:
+        bestiary[resistance] = bestiary[RESISTANCE_PATH].apply(
+            lambda x: get_characteristic_from_list(
+                cell_value=x, characteristic_type=resistance
+            )
+        )
+
     if "immunities" in characteristics:
         immunities_path = CHARACTERISTICS_COLUMNS.get("immunities")
         bestiary[immunities_path] = bestiary[immunities_path].apply(
             lambda x: 0 if np.all(pd.isnull(x)) else len(x)
         )
 
-    if "fly" in characteristics:
-        fly_path = CHARACTERISTICS_COLUMNS.get("fly")
-        bestiary[fly_path] = bestiary[fly_path].apply(lambda x: get_fly(x))
+    for speed in [s for s in characteristics if s in OTHER_SPEEDS]:
+        # fly_path = CHARACTERISTICS_COLUMNS.get("fly")
+        bestiary[speed] = bestiary[OTHER_SPEED_PATH].apply(
+            lambda x: get_characteristic_from_list(x, speed)
+        )
 
     COLS_TO_EXTRACT = pd.DataFrame(
         data=[
