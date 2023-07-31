@@ -13,19 +13,32 @@ OTHER_SPEEDS = [
 OTHER_SPEED_PATH = "system.attributes.speed.otherSpeeds"
 
 RESISTANCES = [
-    "fire",
-    "cold",
-    "electricity",
-    "acid",
-    "piercing",
-    "slashing",
-    "physical",
-    "bludgeoning",
-    "mental",
-    "poison",
-    "all-damage",
+    "fire_resistance",
+    "cold_resistance",
+    "electricity_resistance",
+    "acid_resistance",
+    "piercing_resistance",
+    "slashing_resistance",
+    "physical_resistance",
+    "bludgeoning_resistance",
+    "mental_resistance",
+    "poison_resistance",
+    "all-damage_resistance",
 ]
 RESISTANCE_PATH = "system.attributes.resistances"
+
+WEAKNESSES = [
+    "cold-iron_weakness",
+    "good_weakness",
+    "fire_weakness",
+    "cold_weakness",
+    "area-damage_weakness",
+    "splash-damage_weakness",
+    "evil_weakness",
+    "slashing_weakness",
+]
+WEAKNESSES_PATH = "system.attributes.weaknesses"
+
 
 CHARACTERISTICS_COLUMNS = {
     "con": "system.abilities.con.mod",
@@ -48,17 +61,25 @@ CHARACTERISTICS_COLUMNS = {
     "fly": "fly",
     "swim": "swim",
     "climb": "climb",
-    "fire": "fire",
-    "cold": "cold",
-    "electricity": "electricity",
-    "acid": "acid",
-    "piercing": "piercing",
-    "slashing": "slashing",
-    "physical": "physical",
-    "bludgeoning": "bludgeoning",
-    "mental": "mental",
-    "poison": "poison",
-    "all-damage": "all-damage",
+    "fire_resistance": "fire_resistance",
+    "cold_resistance": "cold_resistance",
+    "electricity_resistance": "electricity_resistance",
+    "acid_resistance": "acid_resistance",
+    "piercing_resistance": "piercing_resistance",
+    "slashing_resistance": "slashing_resistance",
+    "physical_resistance": "physical_resistance",
+    "bludgeoning_resistance": "bludgeoning_resistance",
+    "mental_resistance": "mental_resistance",
+    "poison_resistance": "poison_resistance",
+    "all-damage_resistance": "all-damage_resistance",
+    "cold-iron_weakness": "cold-iron_weakness",
+    "good_weakness": "good_weakness",
+    "fire_weakness": "fire_weakness",
+    "cold_weakness": "cold_weakness",
+    "area-damage_weakness": "area-damage_weakness",
+    "splash-damage_weakness": "splash-damage_weakness",
+    "evil_weakness": "evil_weakness",
+    "slashing_weakness": "slashing_weakness",
 }
 """dictionary with characteristics names (keys) and "path" to real columns in dataframe loaded from file (values)"""
 
@@ -117,6 +138,13 @@ def load_and_preprocess_data(
         bestiary[resistance] = bestiary[RESISTANCE_PATH].apply(
             lambda x: get_characteristic_from_list(
                 cell_value=x, characteristic_type=resistance
+            )
+        )
+
+    for weakness in [w for w in characteristics if w in WEAKNESSES]:
+        bestiary[weakness] = bestiary[WEAKNESSES_PATH].apply(
+            lambda x: get_characteristic_from_list(
+                cell_value=x, characteristic_type=weakness.replace("_weakness", "")
             )
         )
 
