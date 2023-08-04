@@ -1,5 +1,3 @@
-import copy
-
 import joblib
 from backend.calculate_level import calculate_level
 from fastapi import FastAPI
@@ -39,8 +37,8 @@ async def upload_properties(props: dict[str, str]):
 @app.get("/level")
 async def get_level():
     if properties:
-        properties_without_name = copy.copy(properties)
-        properties_without_name.pop("name")
-        level = calculate_level(monster_stats=properties_without_name, model=model)
+        ordered_properties = ["cha", "con", "dex", "int", "str", "wis", "ac", "hp"]
+        stats = {p: properties[p] for p in ordered_properties}
+        level = calculate_level(monster_stats=stats, model=model)
         return {"level": str(level) if level <= 20 else ">20"}
     return {}

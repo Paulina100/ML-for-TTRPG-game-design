@@ -1,8 +1,8 @@
 import {displaySubmitInfo, renderHeader} from "../../utils";
 
 const PropertiesForm = (monsterProperties, setMonsterProperties) => {
-    const properties = ["Charisma (Cha)", "Constitution  (Con)", "Dexterity (Dex)", "Intelligence (Int)",
-        "Strength (Str)", "Wisdom (Wis)", "Armor Class (AC)", "Hit Points (HP)"]
+    const properties = ["Strength (Str)", "Dexterity (Dex)", "Constitution  (Con)", "Intelligence (Int)",
+        "Wisdom (Wis)", "Charisma (Cha)", "Armor Class (AC)", "Hit Points (HP)"]
 
     const extractBracketedWord = (property) => {
         return property.substring(property.indexOf("(") + 1, property.indexOf(")")).toLowerCase();
