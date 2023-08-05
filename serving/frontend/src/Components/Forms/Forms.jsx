@@ -9,7 +9,7 @@ const Forms = () => {
     const renderCaption = () => {
         return (
             <div className="page-info">
-                {renderHeader("Welcome to our app!")}
+                {renderHeader("First step")}
                 <p>You can choose between two ways of entering your monster's properties:
                     you can either manually fill in values of available properties
                     or upload a JSON file with monster's characteristics. </p>

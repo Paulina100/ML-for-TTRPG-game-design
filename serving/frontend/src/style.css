@@ -88,6 +88,20 @@ p, label, input {
     padding: 0 40px 0 40px;
 }
 
+/* HELP TOOLTIP */
+.help {
+    font-size: 10px;
+    font-weight: 800;
+    color: gray;
+    line-height: 18px;
+    text-align: center;
+    border: 2px solid gray;
+    border-radius: 50%;
+    height: 20px;
+    width: 20px;
+    margin-top: 8px;
+}
+
 /* FORMS */
 #forms-grid {
     display: grid;
@@ -128,8 +142,9 @@ button[type="submit"]:hover, #file-input-button:hover {
 
 .properties-form-row {
     display: grid;
-    grid-template-columns: 55% 45%;
-    padding: 5px 30px 5px 5px;
+    grid-template-columns: 45% 40% 15%;
+    grid-column-gap: 10px;
+    padding: 5px 20px 5px 5px;
     width: 100%;
 }
 
@@ -143,6 +158,11 @@ input[type="text"] {
     border: 1px solid black;
     border-radius: 5px;
     padding: 0 10px 0 10px;
+}
+
+.invalid-input {
+    border: 1px solid red;
+    background-color: rgba(255, 0, 0, 0.4);
 }
 
 /* FILE FORM */

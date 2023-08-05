@@ -1,11 +1,12 @@
 import {useState} from "react";
 import {displaySubmitInfo, renderHeader} from "../../utils";
+import {minimumPropertyValues} from "./rules";
 
 const FileForm = (setMonsterProperties) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("");
     const systemProperties = new Map([
-        ["abilities", ["cha", "con", "dex", "int", "str", "wis", ]],  // mod
+        ["abilities", ["cha", "con", "dex", "int", "str", "wis"]],  // mod
         ["attributes", ["ac", "hp"]]  // value
     ]);
     const propertiesValuesKey = new Map([
@@ -25,7 +26,7 @@ const FileForm = (setMonsterProperties) => {
         let current = dict;
         for (let dictKey of dictKeys) {
             if (! current.hasOwnProperty(dictKey)) {
-                const keyPath = "/".concat(dictKeys);
+                const keyPath = dictKeys.join("/");
                 throw new Error("Selected JSON is invalid: value from " + keyPath + " was not found.")
             }
             current = current[dictKey];
@@ -42,7 +43,13 @@ const FileForm = (setMonsterProperties) => {
             systemProperties.forEach((subproperties, property) => {
                 const valuesKey = propertiesValuesKey.get(property);
                 for (let subproperty of subproperties) {
-                    resultDict[subproperty] = unpackValue(systemDict, [property, subproperty, valuesKey]);
+                    const unpackedValue = unpackValue(systemDict, [property, subproperty, valuesKey]);
+                    resultDict[subproperty] = unpackedValue;
+                    if (unpackedValue < minimumPropertyValues.get(subproperty)) {
+                        throw new Error("Selected JSON is invalid: value of " + property + "/" + subproperty +
+                            " has to be grater than or equal to " + minimumPropertyValues.get(subproperty) +
+                            " (currently is " + unpackedValue + ").");
+                    }
                 }
             })
         } catch (e) {

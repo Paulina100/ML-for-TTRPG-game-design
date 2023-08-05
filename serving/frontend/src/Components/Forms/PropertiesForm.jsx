@@ -1,4 +1,6 @@
 import {displaySubmitInfo, renderHeader} from "../../utils";
+import {minimumPropertyValues} from "./rules";
+import HelpTooltip from "../HelpTooltip";
 
 const PropertiesForm = (monsterProperties, setMonsterProperties) => {
     const properties = ["Strength (Str)", "Dexterity (Dex)", "Constitution  (Con)", "Intelligence (Int)",
@@ -8,10 +10,23 @@ const PropertiesForm = (monsterProperties, setMonsterProperties) => {
         return property.substring(property.indexOf("(") + 1, property.indexOf(")")).toLowerCase();
     }
 
-    const validateInput = (event) => {
+    const validatePressedKey = (event, propertyName) => {
         const allowedKeys = ["Backspace", "Enter", "Tab", "ArrowLeft", "ArrowRight", "ArrowTop", "ArrowDown"];
-        if (!/[0-9]/.test(event.key) && !allowedKeys.includes(event.key)) {
+        if (!/[0-9]/.test(event.key) && !allowedKeys.includes(event.key) && event.key !== "-") {
             event.preventDefault();
+        }
+        if (event.key === "-" && monsterProperties[propertyName] !== undefined && monsterProperties[propertyName] !== "") {
+            event.preventDefault();
+        }
+    }
+
+    const validateInput = (property) => {
+        const value = parseInt(monsterProperties[property]);
+        const inputCell = document.getElementById(property);
+        if (isNaN(value) || value < minimumPropertyValues.get(property)) {
+            inputCell.className = "invalid-input";
+        } else {
+            inputCell.className = "";
         }
     }
 
@@ -22,12 +37,16 @@ const PropertiesForm = (monsterProperties, setMonsterProperties) => {
                 <label htmlFor={propertyShort} id="properties-form-label">{property}</label>
                 <input id={propertyShort} name={propertyShort} type="text" required
                        onKeyDown={(event) => {
-                           validateInput(event);
+                           validatePressedKey(event, propertyShort);
                        }}
                        onChange={(event) => {
                            setMonsterProperties({[propertyShort]: event.target.value});
                        }}
+                       onBlur={() => validateInput(propertyShort)}
                        value={(monsterProperties === null) ? "" : monsterProperties[propertyShort]}/>
+                <HelpTooltip
+                    helpText={"Enter a number greater than or equal to " + minimumPropertyValues.get(propertyShort)}
+                />
             </div>
         );
     }
@@ -50,6 +69,11 @@ const PropertiesForm = (monsterProperties, setMonsterProperties) => {
         const formData = new FormData(event.target);
         const formJson = Object.fromEntries(formData.entries());
         setMonsterProperties(formJson);
+
+        if (document.getElementsByClassName("invalid-input").length > 0) {
+            window.alert("Entered input is invalid. Form will not be submitted.");
+            return;
+        }
 
         fetch("http://localhost:8000/properties/upload", {
             method: "POST",
