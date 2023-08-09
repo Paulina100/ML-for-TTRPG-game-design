@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {render} from 'react-dom';
 
 import Header from "./Components/Header";
@@ -11,14 +11,17 @@ import "./style.css";
 
 function App() {
     console.log("starting...");
+
+    const [results, setResults] = useState({});
+
     return (
         <div id="app">
             <Header />
             <div id="page-background">
                 <div id="page-content">
                     <PageInfo />
-                    <Forms />
-                    <Results />
+                    <Forms setResultsFunction={setResults} />
+                    <Results results={results} />
                 </div>
             </div>
             <Footer />

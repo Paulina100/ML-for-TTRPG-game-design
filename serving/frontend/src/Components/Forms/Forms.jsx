@@ -3,7 +3,7 @@ import PropertiesForm from "./PropertiesForm";
 import {useState} from "react";
 import {renderHeader} from "../../utils";
 
-const Forms = () => {
+const Forms = ({setResultsFunction}) => {
     const [monsterProperties, setMonsterProperties] = useState({});
 
     const renderCaption = () => {
@@ -25,8 +25,8 @@ const Forms = () => {
         <div>
             {renderCaption()}
             <div id="forms-grid">
-                {PropertiesForm(monsterProperties, setMonsterProperties)}
-                {FileForm(setMonsterProperties)}
+                {PropertiesForm(monsterProperties, setMonsterProperties, setResultsFunction)}
+                {FileForm(setMonsterProperties, setResultsFunction)}
             </div>
         </div>
     );

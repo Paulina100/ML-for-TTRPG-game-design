@@ -2,7 +2,7 @@ import {displaySubmitInfo, renderHeader} from "../../utils";
 import {minimumPropertyValues} from "./rules";
 import HelpTooltip from "../HelpTooltip";
 
-const PropertiesForm = (monsterProperties, setMonsterProperties) => {
+const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunction) => {
     const properties = ["Strength (Str)", "Dexterity (Dex)", "Constitution  (Con)", "Intelligence (Int)",
         "Wisdom (Wis)", "Charisma (Cha)", "Armor Class (AC)", "Hit Points (HP)"]
 
@@ -79,7 +79,8 @@ const PropertiesForm = (monsterProperties, setMonsterProperties) => {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(formJson)
-        }).then(() => {
+        }).then((response) => {
+            response.json().then(json => setResultsFunction(json));
             displaySubmitInfo("properties-submit-button", "properties-form");
         }).catch(error => {
             alert(error);

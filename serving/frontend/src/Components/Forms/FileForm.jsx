@@ -2,7 +2,7 @@ import {useState} from "react";
 import {displaySubmitInfo, renderHeader} from "../../utils";
 import {minimumPropertyValues} from "./rules";
 
-const FileForm = (setMonsterProperties) => {
+const FileForm = (setMonsterProperties, setResultsFunction) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("");
     const systemProperties = new Map([
@@ -72,7 +72,8 @@ const FileForm = (setMonsterProperties) => {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(properties)
-            }).then(() => {
+            }).then((response) => {
+                response.json().then(json => setResultsFunction(json));
                 displaySubmitInfo("file-submit-button", "file-form");
                 setMonsterProperties(properties);
                 alert("File was uploaded successfully. " +
