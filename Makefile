@@ -1,18 +1,21 @@
-all: backend frontend
+.PHONY: backend frontend start stop tests test
+
+SHELL := /bin/bash
 
 backend:
-	docker build . -f docker/Dockerfile_server
-	docker-compose up -d server
+	set "COMPOSE_DOCKER_CLI_BUILD=1" & set "DOCKER_BUILDKIT=1" & docker-compose up --build --detach server
 
 frontend:
-	docker build . -f docker/Dockerfile_frontend
-	docker-compose up -d frontend
+	set "COMPOSE_DOCKER_CLI_BUILD=1" & set "DOCKER_BUILDKIT=1" & docker compose up --build --detach frontend
 
 start:
-	docker-compose up -d
+	set "COMPOSE_DOCKER_CLI_BUILD=1" & set "DOCKER_BUILDKIT=1" & docker compose up --build --detach
 
 stop:
-	docker-compose down
+	docker compose down
+
+logs:
+	docker compose logs --tail="all" --follow server frontend
 
 tests:
 	cd ./test && pytest .
@@ -20,4 +23,6 @@ tests:
 test:
 	cd ./test && pytest $(FILE)
 
-.PHONY: all backend frontend start stop tests test
+install:
+	poetry export --without-hashes --format=requirements.txt --with="style,test,webserver" --output=requirements.txt
+	poetry lock && poetry install --sync
