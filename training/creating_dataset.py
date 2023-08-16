@@ -5,14 +5,14 @@ import numpy as np
 import pandas as pd
 
 
-OTHER_SPEEDS = [
+OTHER_SPEEDS = {
     "fly",
     "swim",
     "climb",
-]
+}
 OTHER_SPEED_PATH = "system.attributes.speed.otherSpeeds"
 
-RESISTANCES = [
+RESISTANCES = {
     "fire_resistance",
     "cold_resistance",
     "electricity_resistance",
@@ -24,10 +24,10 @@ RESISTANCES = [
     "mental_resistance",
     "poison_resistance",
     "all-damage_resistance",
-]
+}
 RESISTANCE_PATH = "system.attributes.resistances"
 
-WEAKNESSES = [
+WEAKNESSES = {
     "cold-iron_weakness",
     "good_weakness",
     "fire_weakness",
@@ -36,8 +36,14 @@ WEAKNESSES = [
     "splash-damage_weakness",
     "evil_weakness",
     "slashing_weakness",
-]
+}
 WEAKNESSES_PATH = "system.attributes.weaknesses"
+
+SPECIAL_CHARACTERISTICS = {
+    "melee",
+    "ranged",
+    "spells",
+}
 
 
 CHARACTERISTICS_COLUMNS = {
@@ -58,28 +64,6 @@ CHARACTERISTICS_COLUMNS = {
     "book": "system.details.source.value",
     "land_speed": "system.attributes.speed.value",
     "immunities": "system.attributes.immunities",
-    "fly": "fly",
-    "swim": "swim",
-    "climb": "climb",
-    "fire_resistance": "fire_resistance",
-    "cold_resistance": "cold_resistance",
-    "electricity_resistance": "electricity_resistance",
-    "acid_resistance": "acid_resistance",
-    "piercing_resistance": "piercing_resistance",
-    "slashing_resistance": "slashing_resistance",
-    "physical_resistance": "physical_resistance",
-    "bludgeoning_resistance": "bludgeoning_resistance",
-    "mental_resistance": "mental_resistance",
-    "poison_resistance": "poison_resistance",
-    "all-damage_resistance": "all-damage_resistance",
-    "cold-iron_weakness": "cold-iron_weakness",
-    "good_weakness": "good_weakness",
-    "fire_weakness": "fire_weakness",
-    "cold_weakness": "cold_weakness",
-    "area-damage_weakness": "area-damage_weakness",
-    "splash-damage_weakness": "splash-damage_weakness",
-    "evil_weakness": "evil_weakness",
-    "slashing_weakness": "slashing_weakness",
 }
 """dictionary with characteristics names (keys) and "path" to real columns in dataframe loaded from file (values)"""
 
@@ -100,12 +84,86 @@ def is_path_correct(path: str) -> bool:
     return True
 
 
+def split_characteristics_into_groups(characteristics):
+    speeds = OTHER_SPEEDS.intersection(characteristics)
+    weaknesses = WEAKNESSES.intersection(characteristics)
+    resistances = RESISTANCES.intersection(characteristics)
+    special_characteristics = SPECIAL_CHARACTERISTICS.intersection(characteristics)
+    characteristics_rename = [
+        ch for ch in characteristics if ch in CHARACTERISTICS_COLUMNS.keys()
+    ]
+
+    return (
+        speeds,
+        weaknesses,
+        resistances,
+        special_characteristics,
+        characteristics_rename,
+    )
+
+
 def get_characteristic_from_list(cell_value, characteristic_type):
     if not cell_value or np.all(pd.isnull(cell_value)):
         return 0
-    # print(cell_value)
+
     res = [x.get("value") for x in cell_value if x.get("type") == characteristic_type]
     return 0 if len(res) == 0 else res[0]
+
+
+def get_nr_of_spells_with_lvl(items_list, lvl):
+    spells = [
+        i
+        for i in items_list
+        if i.get("type") == "spell"
+        and i.get("system").get("category").get("value") == "spell"
+    ]
+
+    spells = [
+        i for i in spells if "cantrip" not in i.get("system").get("traits").get("value")
+    ]
+
+    return len([s for s in spells if s.get("system").get("level").get("value") == lvl])
+
+
+def count_damage(damage_dict):
+    total_expected_val = 0
+
+    for key, value in damage_dict.items():
+        damage = value.get("damage")
+
+        if not "d" in damage:
+            return int(damage)
+        roll_nr, dice_type = damage.split("d")
+        add = 0
+        if "+" in dice_type:
+            dice_type, add = dice_type.split("+")
+            add = int(add)
+        if "-" in dice_type:
+            dice_type, add = dice_type.split("-")
+            add = -int(add)
+        roll_nr, dice_type = int(roll_nr), int(dice_type)
+        total_expected_val += (
+            roll_nr * sum([i for i in range(1, dice_type + 1)]) / dice_type
+        ) + add
+
+    return total_expected_val
+
+
+def get_max_melee_bonus_damage(items_list, weaponType):
+    melee = [
+        i.get("system")
+        for i in items_list
+        if i.get("type") == "melee"
+        and i.get("system").get("weaponType").get("value") == weaponType
+    ]
+    if len(melee) == 0:
+        return 0, 0
+    max_bonus_indx, max_bonus = max(
+        [(i, melee[i].get("bonus").get("value")) for i in range(len(melee))],
+        key=lambda x: x[1],
+    )
+
+    return max_bonus, count_damage(melee[max_bonus_indx].get("damageRolls"))
 
 
 def load_and_preprocess_data(
@@ -132,33 +190,23 @@ def load_and_preprocess_data(
     # only npc monsters
     bestiary = bestiary[bestiary["type"] == "npc"]
     # only system column (all characteristics are there)
-    bestiary = bestiary.filter(regex="system", axis="columns")
+    # bestiary = bestiary.filter(regex="system", axis="columns")
 
-    for resistance in [r for r in characteristics if r in RESISTANCES]:
-        bestiary[resistance] = bestiary[RESISTANCE_PATH].apply(
-            lambda x: get_characteristic_from_list(
-                cell_value=x, characteristic_type=resistance
-            )
-        )
-
-    for weakness in [w for w in characteristics if w in WEAKNESSES]:
-        bestiary[weakness] = bestiary[WEAKNESSES_PATH].apply(
-            lambda x: get_characteristic_from_list(
-                cell_value=x, characteristic_type=weakness.replace("_weakness", "")
-            )
-        )
+    (
+        speeds,
+        weaknesses,
+        resistances,
+        special_characteristics,
+        characteristics,
+    ) = split_characteristics_into_groups(characteristics)
+    print(speeds, weaknesses, resistances, special_characteristics, characteristics)
 
     if "immunities" in characteristics:
-        immunities_path = CHARACTERISTICS_COLUMNS.get("immunities")
-        bestiary[immunities_path] = bestiary[immunities_path].apply(
-            lambda x: 0 if np.all(pd.isnull(x)) else len(x)
-        )
-
-    for speed in [s for s in characteristics if s in OTHER_SPEEDS]:
-        # fly_path = CHARACTERISTICS_COLUMNS.get("fly")
-        bestiary[speed] = bestiary[OTHER_SPEED_PATH].apply(
-            lambda x: get_characteristic_from_list(x, speed)
-        )
+        with pd.option_context("mode.chained_assignment", None):
+            immunities_path = CHARACTERISTICS_COLUMNS.get("immunities")
+            bestiary[immunities_path] = bestiary[immunities_path].apply(
+                lambda x: 0 if np.all(pd.isnull(x)) else len(x)
+            )
 
     COLS_TO_EXTRACT = pd.DataFrame(
         data=[
@@ -177,14 +225,61 @@ def load_and_preprocess_data(
     df = bestiary[raw_names]
     df.columns = target_names
 
+    for resistance in resistances:
+        with pd.option_context("mode.chained_assignment", None):
+            # silent warning (SettingWithCopyWarning) about view and copy
+            # we don't need to go back to the original df - no matter if it is a view
+            df[resistance] = bestiary[RESISTANCE_PATH].apply(
+                lambda x: get_characteristic_from_list(
+                    cell_value=x, characteristic_type=resistance
+                )
+            )
+
+    for weakness in weaknesses:
+        with pd.option_context("mode.chained_assignment", None):
+            df[weakness] = bestiary[WEAKNESSES_PATH].apply(
+                lambda x: get_characteristic_from_list(
+                    cell_value=x, characteristic_type=weakness.replace("_weakness", "")
+                )
+            )
+
+    for speed in speeds:
+        # fly_path = CHARACTERISTICS_COLUMNS.get("fly")
+        with pd.option_context("mode.chained_assignment", None):
+            df[speed] = bestiary[OTHER_SPEED_PATH].apply(
+                lambda x: get_characteristic_from_list(x, speed)
+            )
+
+    if "spells" in special_characteristics:
+        MAX_SPELL_LVL = 9
+        with pd.option_context("mode.chained_assignment", None):
+            for i in range(1, MAX_SPELL_LVL + 1):
+                df[f"spells_nr_lvl_{i}"] = bestiary["items"].apply(
+                    lambda X: get_nr_of_spells_with_lvl(X, i)
+                )
+
+    if "melee" in special_characteristics:
+        with pd.option_context("mode.chained_assignment", None):
+            df["melee_max_bonus"], df["melee_damage_exp_val"] = zip(
+                *bestiary["items"].apply(
+                    lambda x: get_max_melee_bonus_damage(x, "melee")
+                )
+            )
+
+    if "melee" in special_characteristics:
+        with pd.option_context("mode.chained_assignment", None):
+            df["ranged_max_bonus"], df["ranged_damage_exp_val"] = zip(
+                *bestiary["items"].apply(
+                    lambda x: get_max_melee_bonus_damage(x, "ranged")
+                )
+            )
+
     if "focus" in df.columns:
-        # silent warning (SettingWithCopyWarning) about view and copy
-        # we don't need to go back to the original df - no matter if it is a view
         with pd.option_context("mode.chained_assignment", None):
             df["focus"] = df["focus"].fillna(0)
             df["focus"] = df["focus"].astype(int)
 
-    if "land_speed":
+    if "land_speed" in df.columns:
         with pd.option_context("mode.chained_assignment", None):
             df["land_speed"] = df["land_speed"].fillna(0)
 
