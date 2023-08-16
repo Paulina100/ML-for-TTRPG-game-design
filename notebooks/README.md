@@ -9,6 +9,7 @@ of it will not be used in finished project.
   * [pathfinder_analysis_of_other_columns.ipynb](#data_analysispathfinder_analysis_of_other_columnsipynb)
   * [pathfinder_system_abilities_attributes.ipynb](#data_analysispathfinder_system_abilities_attributesipynb)
   * [pathfinder_system_other_columns.ipynb](#data_analysispathfinder_system_other_columnsipynb)
+  * [pathfinder_items_other_columns.ipynb](#data_analysispathfinder_items_other_columnsipynb)
 * `models` - contains machine learning models.
   * [system_linear_regression.ipynb](#modelssystem_linear_regressionipynb)
 
@@ -105,6 +106,22 @@ Analysis of columns `system/details`, `system/resources`, `system/saves`, `syste
 |-----------------|---------------------|
 | `version`       | probably not useful |
 | `lastMigration` | probably not useful |
+
+## data_analysis/pathfinder_items_other_columns.ipynb
+Analysis of columns `items/_id`, `items/img`, `items/name`, `items/sort`, `items/type`, `items/flags`
+
+
+| column  | usefulness |
+|---------|------------|
+| `_id`   | not useful |
+| `img`   | not useful |
+| `name`  | not useful |
+| `sort`  | not useful |
+| `type`  | useful     |
+| `flags` | not useful |
+
+
+
 
 ## models/system_linear_regression.ipynb
 Linear regression for predicting monster's level (stored originally in `system/details/level`) based on 
