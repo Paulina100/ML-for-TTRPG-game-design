@@ -10,7 +10,9 @@ OTHER_SPEEDS = {
     "swim",
     "climb",
 }
+"""set of other speeds that can be added to dataset"""
 OTHER_SPEED_PATH = "system.attributes.speed.otherSpeeds"
+"""path to other speeds that are in OTHER_SPEEDS in original json_normalize bestiaries"""
 
 RESISTANCES = {
     "fire_resistance",
@@ -25,7 +27,9 @@ RESISTANCES = {
     "poison_resistance",
     "all-damage_resistance",
 }
+"""set of resistances that can be added to dataset"""
 RESISTANCE_PATH = "system.attributes.resistances"
+"""path to resistances that are in RESISTANCES in original json_normalize bestiaries"""
 
 WEAKNESSES = {
     "cold-iron_weakness",
@@ -37,16 +41,18 @@ WEAKNESSES = {
     "evil_weakness",
     "slashing_weakness",
 }
+"""set of weaknesses that can be added to dataset"""
 WEAKNESSES_PATH = "system.attributes.weaknesses"
+"""path to weaknesses that are in WEAKNESSES in original json_normalize bestiaries"""
 
 SPECIAL_CHARACTERISTICS = {
     "melee",
     "ranged",
     "spells",
 }
+"""set of characteristics with specific way of extracting information"""
 
-
-CHARACTERISTICS_COLUMNS = {
+CHARACTERISTICS_RENAME = {
     "con": "system.abilities.con.mod",
     "dex": "system.abilities.dex.mod",
     "cha": "system.abilities.cha.mod",
@@ -84,13 +90,21 @@ def is_path_correct(path: str) -> bool:
     return True
 
 
-def split_characteristics_into_groups(characteristics):
+def split_characteristics_into_groups(
+    characteristics: list,
+) -> tuple[set[str], set[str], set[str], set[str], list[str]]:
+    """
+    Split given characteristics list into five categories according to sets and dictionaries with characteristics.
+    Categories depend on way of extracting data.
+    :param characteristics: list of characteristics
+    :return: sets and list of characteristics after split
+    """
     speeds = OTHER_SPEEDS.intersection(characteristics)
     weaknesses = WEAKNESSES.intersection(characteristics)
     resistances = RESISTANCES.intersection(characteristics)
     special_characteristics = SPECIAL_CHARACTERISTICS.intersection(characteristics)
     characteristics_rename = [
-        ch for ch in characteristics if ch in CHARACTERISTICS_COLUMNS.keys()
+        ch for ch in characteristics if ch in CHARACTERISTICS_RENAME.keys()
     ]
 
     return (
@@ -102,68 +116,114 @@ def split_characteristics_into_groups(characteristics):
     )
 
 
-def get_characteristic_from_list(cell_value, characteristic_type):
+def get_characteristic_from_list(cell_value, characteristic_name: str) -> int:
+    """
+    Function used for pd.Series.apply()\n
+    Retrieve the value associated with a specific characteristic from a list of dictionaries.
+    :param cell_value: Value of cell from df. A list of dictionaries, where each dictionary represents a characteristic
+            with 'type' and 'value' keys.
+    :param characteristic_name: The characteristic name to search for.
+    :return: The value associated with the specified characteristic if found, or 0 if not found.
+    """
     if not cell_value or np.all(pd.isnull(cell_value)):
         return 0
 
-    res = [x.get("value") for x in cell_value if x.get("type") == characteristic_type]
-    return 0 if len(res) == 0 else res[0]
+    result = [
+        x.get("value") for x in cell_value if x.get("type") == characteristic_name
+    ]
+    return 0 if len(result) == 0 else result[0]
 
 
-def get_nr_of_spells_with_lvl(items_list, lvl):
+def get_nr_of_spells_with_lvl(items_list: list[dict], spell_level: int) -> int:
+    """
+    Function used for pd.Series.apply()\n
+    Count the number of spells in the given list that match the specified level.
+    :param items_list: A list of dictionaries representing items, each with relevant attributes.
+    :param spell_level: The level to filter spells by.
+    :return: The count of spells in the list that match the specified level.
+    """
+    # get only spell items
     spells = [
         i
         for i in items_list
         if i.get("type") == "spell"
         and i.get("system").get("category").get("value") == "spell"
+        # skip cantrip spells
+        and "cantrip" not in i.get("system").get("traits").get("value")
+        and i.get("system").get("level").get("value") == spell_level
     ]
 
-    spells = [
-        i for i in spells if "cantrip" not in i.get("system").get("traits").get("value")
-    ]
-
-    return len([s for s in spells if s.get("system").get("level").get("value") == lvl])
+    return len(spells)
 
 
-def count_damage(damage_dict):
+def count_damage_expected_value(damage_dict: dict[dict]) -> float:
+    """
+    Calculate the total expected value of damage based on a dictionary of damage specifications.
+    :param damage_dict: A dictionary where keys represent different sources of damage,
+                        and values are dictionaries with the "damage" key containing damage specifications.
+                        Damage can be a constant value or a dice roll in the format 'NdM', 'NdM+X', or 'NdM-X',
+                        where N is the number of dice, M is the number of sides on the dice, and X is an optional
+                        positive or negative constant.
+    :return: The calculated total expected value of damage.
+    """
     total_expected_val = 0
 
+    # chance that one melee item have multiple damage types
     for key, value in damage_dict.items():
         damage = value.get("damage")
 
-        if not "d" in damage:
-            return int(damage)
+        if "d" not in damage:
+            # constant damage value
+            total_expected_val += int(damage)
+            continue
+        # split dice roll
         roll_nr, dice_type = damage.split("d")
         add = 0
         if "+" in dice_type:
+            # get possible positive additional value for damage
             dice_type, add = dice_type.split("+")
             add = int(add)
         if "-" in dice_type:
+            # get possible negative additional value for damage
             dice_type, add = dice_type.split("-")
             add = -int(add)
+
         roll_nr, dice_type = int(roll_nr), int(dice_type)
-        total_expected_val += (
-            roll_nr * sum([i for i in range(1, dice_type + 1)]) / dice_type
-        ) + add
+        # count expected value with additional damages
+        total_expected_val += roll_nr * (dice_type + 1) / 2 + add
 
     return total_expected_val
 
 
-def get_max_melee_bonus_damage(items_list, weaponType):
+def get_max_melee_bonus_damage(
+    items_list: list[dict], weaponType: str
+) -> tuple[int, float]:
+    """
+    Function used for pd.Series.apply()\n
+    Get the maximum damageRoll bonus and associated damage from a list of melee of a specific weaponType.
+    :param items_list: A list of dictionaries representing melee weapons, each with relevant attributes.
+    :param weaponType: The type of weapon to filter by.
+    :return: A tuple containing the maximum bonus and the calculated damage associated with that bonus.
+             If no matching melee weapons are found, returns (0, 0).
+    """
     melee = [
         i.get("system")
         for i in items_list
         if i.get("type") == "melee"
         and i.get("system").get("weaponType").get("value") == weaponType
     ]
-    if len(melee) == 0:
+
+    if not melee:
         return 0, 0
+
     max_bonus_indx, max_bonus = max(
-        [(i, melee[i].get("bonus").get("value")) for i in range(len(melee))],
+        [(inx, val.get("bonus").get("value")) for inx, val in enumerate(melee)],
         key=lambda x: x[1],
     )
 
-    return max_bonus, count_damage(melee[max_bonus_indx].get("damageRolls"))
+    return max_bonus, count_damage_expected_value(
+        melee[max_bonus_indx].get("damageRolls")
+    )
 
 
 def load_and_preprocess_data(
@@ -191,27 +251,25 @@ def load_and_preprocess_data(
     bestiary = bestiary[bestiary["type"] == "npc"]
     # only system column (all characteristics are there)
     # bestiary = bestiary.filter(regex="system", axis="columns")
-
     (
         speeds,
         weaknesses,
         resistances,
         special_characteristics,
-        characteristics,
+        characteristics_rename,
     ) = split_characteristics_into_groups(characteristics)
-    print(speeds, weaknesses, resistances, special_characteristics, characteristics)
 
-    if "immunities" in characteristics:
+    if "immunities" in characteristics_rename:
         with pd.option_context("mode.chained_assignment", None):
-            immunities_path = CHARACTERISTICS_COLUMNS.get("immunities")
+            immunities_path = CHARACTERISTICS_RENAME.get("immunities")
             bestiary[immunities_path] = bestiary[immunities_path].apply(
                 lambda x: 0 if np.all(pd.isnull(x)) else len(x)
             )
 
     COLS_TO_EXTRACT = pd.DataFrame(
         data=[
-            (characteristic, CHARACTERISTICS_COLUMNS.get(characteristic))
-            for characteristic in characteristics + ["book", "level"]
+            (characteristic, CHARACTERISTICS_RENAME.get(characteristic))
+            for characteristic in characteristics_rename + ["book", "level"]
         ],
         columns=["target_name", "raw_name"],
     )
@@ -231,7 +289,8 @@ def load_and_preprocess_data(
             # we don't need to go back to the original df - no matter if it is a view
             df[resistance] = bestiary[RESISTANCE_PATH].apply(
                 lambda x: get_characteristic_from_list(
-                    cell_value=x, characteristic_type=resistance
+                    cell_value=x,
+                    characteristic_name=resistance.replace("_resistance", ""),
                 )
             )
 
@@ -239,12 +298,11 @@ def load_and_preprocess_data(
         with pd.option_context("mode.chained_assignment", None):
             df[weakness] = bestiary[WEAKNESSES_PATH].apply(
                 lambda x: get_characteristic_from_list(
-                    cell_value=x, characteristic_type=weakness.replace("_weakness", "")
+                    cell_value=x, characteristic_name=weakness.replace("_weakness", "")
                 )
             )
 
     for speed in speeds:
-        # fly_path = CHARACTERISTICS_COLUMNS.get("fly")
         with pd.option_context("mode.chained_assignment", None):
             df[speed] = bestiary[OTHER_SPEED_PATH].apply(
                 lambda x: get_characteristic_from_list(x, speed)
