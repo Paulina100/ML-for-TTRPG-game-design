@@ -1,5 +1,6 @@
 import json
 import os.path
+from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
@@ -69,9 +70,18 @@ CHARACTERISTICS_RENAME = {
     "level": "system.details.level.value",
     "book": "system.details.source.value",
     "land_speed": "system.attributes.speed.value",
-    "immunities": "system.attributes.immunities",
+    "num_immunities": "system.attributes.immunities",
 }
 """dictionary with characteristics names (keys) and "path" to real columns in dataframe loaded from file (values)"""
+
+
+@dataclass
+class CharacteristicsGroups:
+    speeds: set[str]
+    weaknesses: set[str]
+    resistances: set[str]
+    special_characteristics: set[str]
+    characteristics_rename: set[str]
 
 
 def is_path_correct(path: str) -> bool:
@@ -91,28 +101,26 @@ def is_path_correct(path: str) -> bool:
 
 
 def split_characteristics_into_groups(
-    characteristics: list,
-) -> tuple[set[str], set[str], set[str], set[str], list[str]]:
+    characteristics: set[str],
+) -> CharacteristicsGroups:
     """
     Split given characteristics list into five categories according to sets and dictionaries with characteristics.
     Categories depend on way of extracting data.
     :param characteristics: list of characteristics
     :return: sets and list of characteristics after split
     """
-    speeds = OTHER_SPEEDS.intersection(characteristics)
-    weaknesses = WEAKNESSES.intersection(characteristics)
-    resistances = RESISTANCES.intersection(characteristics)
-    special_characteristics = SPECIAL_CHARACTERISTICS.intersection(characteristics)
-    characteristics_rename = [
-        ch for ch in characteristics if ch in CHARACTERISTICS_RENAME.keys()
-    ]
+    speeds = OTHER_SPEEDS & characteristics
+    weaknesses = WEAKNESSES & characteristics
+    resistances = RESISTANCES & characteristics
+    special_characteristics = SPECIAL_CHARACTERISTICS & characteristics
+    characteristics_rename = characteristics & CHARACTERISTICS_RENAME.keys()
 
-    return (
-        speeds,
-        weaknesses,
-        resistances,
-        special_characteristics,
-        characteristics_rename,
+    return CharacteristicsGroups(
+        speeds=speeds,
+        weaknesses=weaknesses,
+        resistances=resistances,
+        special_characteristics=special_characteristics,
+        characteristics_rename=characteristics_rename,
     )
 
 
@@ -125,13 +133,15 @@ def get_characteristic_from_list(cell_value, characteristic_name: str) -> int:
     :param characteristic_name: The characteristic name to search for.
     :return: The value associated with the specified characteristic if found, or 0 if not found.
     """
-    if not cell_value or np.all(pd.isnull(cell_value)):
+    if not cell_value or cell_value is np.nan:
         return 0
 
-    result = [
-        x.get("value") for x in cell_value if x.get("type") == characteristic_name
-    ]
-    return 0 if len(result) == 0 else result[0]
+    for dictionary in cell_value:
+        if dictionary.get("type") == characteristic_name:
+            return dictionary.get("value")
+
+    # required characteristic was not found
+    return 0
 
 
 def get_nr_of_spells_with_lvl(items_list: list[dict], spell_level: int) -> int:
@@ -216,14 +226,14 @@ def get_max_melee_bonus_damage(
     if not melee:
         return 0, 0
 
-    max_bonus_indx, max_bonus = max(
-        [(inx, val.get("bonus").get("value")) for inx, val in enumerate(melee)],
-        key=lambda x: x[1],
-    )
-
-    return max_bonus, count_damage_expected_value(
-        melee[max_bonus_indx].get("damageRolls")
-    )
+    idx_val = [(idx, val.get("bonus").get("value")) for idx, val in enumerate(melee)]
+    # find melee with the highest bonus: bonus and idx
+    max_bonus_idx, max_bonus = max(idx_val, key=lambda x: x[1])
+    # get damage information about max_bonus melee
+    best_bonus_melee_damage = melee[max_bonus_idx].get("damageRolls")
+    # get expected value of chosen melee
+    damage_expected_value = count_damage_expected_value(best_bonus_melee_damage)
+    return max_bonus, damage_expected_value
 
 
 def load_and_preprocess_data(
@@ -237,6 +247,10 @@ def load_and_preprocess_data(
     :param characteristics: list of characteristics to load
     :return: DataFrame with monsters (NPC) from chosen books and with chosen characteristics and their origin book
     """
+    pd.options.mode.chained_assignment = None
+    # silent warning (SettingWithCopyWarning) about view and copy
+    # we don't need to go back to the original df - no matter if it is a view
+
     data = []
 
     for path in paths_to_books:
@@ -249,27 +263,20 @@ def load_and_preprocess_data(
     bestiary = pd.json_normalize(data)
     # only npc monsters
     bestiary = bestiary[bestiary["type"] == "npc"]
-    # only system column (all characteristics are there)
-    # bestiary = bestiary.filter(regex="system", axis="columns")
-    (
-        speeds,
-        weaknesses,
-        resistances,
-        special_characteristics,
-        characteristics_rename,
-    ) = split_characteristics_into_groups(characteristics)
 
-    if "immunities" in characteristics_rename:
-        with pd.option_context("mode.chained_assignment", None):
-            immunities_path = CHARACTERISTICS_RENAME.get("immunities")
-            bestiary[immunities_path] = bestiary[immunities_path].apply(
-                lambda x: 0 if np.all(pd.isnull(x)) else len(x)
-            )
+    characteristics_groups = split_characteristics_into_groups(set(characteristics))
+
+    if "num_immunities" in characteristics_groups.characteristics_rename:
+        immunities_path = CHARACTERISTICS_RENAME.get("num_immunities")
+        count_immunities = lambda x: 0 if x is np.nan else len(x)
+        bestiary[immunities_path] = bestiary[immunities_path].apply(count_immunities)
 
     COLS_TO_EXTRACT = pd.DataFrame(
         data=[
             (characteristic, CHARACTERISTICS_RENAME.get(characteristic))
-            for characteristic in characteristics_rename + ["book", "level"]
+            for characteristic in characteristics_groups.characteristics_rename.union(
+                {"book", "level"}
+            )
         ],
         columns=["target_name", "raw_name"],
     )
@@ -283,64 +290,45 @@ def load_and_preprocess_data(
     df = bestiary[raw_names]
     df.columns = target_names
 
-    for resistance in resistances:
-        with pd.option_context("mode.chained_assignment", None):
-            # silent warning (SettingWithCopyWarning) about view and copy
-            # we don't need to go back to the original df - no matter if it is a view
-            df[resistance] = bestiary[RESISTANCE_PATH].apply(
-                lambda x: get_characteristic_from_list(
-                    cell_value=x,
-                    characteristic_name=resistance.replace("_resistance", ""),
-                )
-            )
+    for resistance in characteristics_groups.resistances:
+        characteristic_name = resistance.replace("_resistance", "")
+        get_value = lambda x: get_characteristic_from_list(x, characteristic_name)
+        df[resistance] = bestiary[RESISTANCE_PATH].apply(get_value)
 
-    for weakness in weaknesses:
-        with pd.option_context("mode.chained_assignment", None):
-            df[weakness] = bestiary[WEAKNESSES_PATH].apply(
-                lambda x: get_characteristic_from_list(
-                    cell_value=x, characteristic_name=weakness.replace("_weakness", "")
-                )
-            )
+    for weakness in characteristics_groups.weaknesses:
+        characteristic_name = weakness.replace("_weakness", "")
+        get_value = lambda x: get_characteristic_from_list(x, characteristic_name)
+        df[weakness] = bestiary[WEAKNESSES_PATH].apply(get_value)
 
-    for speed in speeds:
-        with pd.option_context("mode.chained_assignment", None):
-            df[speed] = bestiary[OTHER_SPEED_PATH].apply(
-                lambda x: get_characteristic_from_list(x, speed)
-            )
+    for speed in characteristics_groups.speeds:
+        get_value = lambda x: get_characteristic_from_list(x, speed)
+        df[speed] = bestiary[OTHER_SPEED_PATH].apply(get_value)
 
-    if "spells" in special_characteristics:
+    if "spells" in characteristics_groups.special_characteristics:
         MAX_SPELL_LVL = 9
-        with pd.option_context("mode.chained_assignment", None):
-            for i in range(1, MAX_SPELL_LVL + 1):
-                df[f"spells_nr_lvl_{i}"] = bestiary["items"].apply(
-                    lambda X: get_nr_of_spells_with_lvl(X, i)
-                )
-
-    if "melee" in special_characteristics:
-        with pd.option_context("mode.chained_assignment", None):
-            df["melee_max_bonus"], df["melee_damage_exp_val"] = zip(
-                *bestiary["items"].apply(
-                    lambda x: get_max_melee_bonus_damage(x, "melee")
-                )
+        for i in range(1, MAX_SPELL_LVL + 1):
+            df[f"spells_nr_lvl_{i}"] = bestiary["items"].apply(
+                lambda x: get_nr_of_spells_with_lvl(x, i)
             )
 
-    if "melee" in special_characteristics:
-        with pd.option_context("mode.chained_assignment", None):
-            df["ranged_max_bonus"], df["ranged_damage_exp_val"] = zip(
-                *bestiary["items"].apply(
-                    lambda x: get_max_melee_bonus_damage(x, "ranged")
-                )
-            )
+    if "melee" in characteristics_groups.special_characteristics:
+        df["melee_max_bonus"], df["avg_melee_dmg"] = zip(
+            *bestiary["items"].apply(lambda x: get_max_melee_bonus_damage(x, "melee"))
+        )
+
+    if "ranged" in characteristics_groups.special_characteristics:
+        df["ranged_max_bonus"], df["avg_ranged_dmg"] = zip(
+            *bestiary["items"].apply(lambda x: get_max_melee_bonus_damage(x, "ranged"))
+        )
 
     if "focus" in df.columns:
-        with pd.option_context("mode.chained_assignment", None):
-            df["focus"] = df["focus"].fillna(0)
-            df["focus"] = df["focus"].astype(int)
+        df["focus"] = df["focus"].fillna(0)
+        df["focus"] = df["focus"].astype(int)
 
     if "land_speed" in df.columns:
-        with pd.option_context("mode.chained_assignment", None):
-            df["land_speed"] = df["land_speed"].fillna(0)
+        df["land_speed"] = df["land_speed"].fillna(0)
 
     df.loc[df["level"] > 20, "level"] = 21
 
+    pd.reset_option("mode.chained_assignment")
     return df

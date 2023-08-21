@@ -44,25 +44,31 @@ def test_split_characteristics_into_groups():
     test_weaknesses = {"good_weakness"}
     test_resistances = {"fire_resistance"}
     test_special_characteristics = {"ranged"}
-    test_characteristics_rename = ["immunities", "int"]
+    test_characteristics_rename = {"num_immunities", "int"}
 
-    input_characteristics = [
+    input_characteristics = {
         "wrong_one",
         "fly",
         "good_weakness",
         "fire_resistance",
         "ranged",
-        "immunities",
+        "num_immunities",
         "int",
-    ]
-
+    }
+    characteristics_groups = split_characteristics_into_groups(input_characteristics)
     (
         speeds,
         weaknesses,
         resistances,
         special_characteristics,
         characteristics_rename,
-    ) = split_characteristics_into_groups(input_characteristics)
+    ) = (
+        characteristics_groups.speeds,
+        characteristics_groups.weaknesses,
+        characteristics_groups.resistances,
+        characteristics_groups.special_characteristics,
+        characteristics_groups.characteristics_rename,
+    )
 
     assert (
         speeds,
@@ -214,7 +220,7 @@ def test_load_and_preprocess_data():
     for colum_name, path in column_paths.items():
         test_dataframe[colum_name] = get_subcolumn(BESTIARY, path)["value"]
 
-    test_dataframe["immunities"] = get_subcolumn(
+    test_dataframe["num_immunities"] = get_subcolumn(
         BESTIARY, "system/attributes"
     ).immunities.apply(lambda x: 0 if x is np.nan else len(x))
 
@@ -245,7 +251,7 @@ def test_load_and_preprocess_data():
             "hp",
             "focus",
             "fortitude",
-            "immunities",
+            "num_immunities",
             "good_weakness",
             "fire_resistance",
             "fly",
