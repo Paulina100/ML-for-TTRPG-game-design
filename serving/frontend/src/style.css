@@ -3,13 +3,13 @@
 :root {
     --theme-color: rgb(9, 74, 32);
     --theme-font: "Bruno Ace SC", sans-serif;
+    --transition-duration: 0.3s;
 }
 
 * {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
-    transition-duration: 0.3s;
     font-family: Arial, sans-serif;
 }
 
@@ -88,20 +88,6 @@ p, label, input {
     padding: 0 40px 0 40px;
 }
 
-/* HELP TOOLTIP */
-.help {
-    font-size: 10px;
-    font-weight: 800;
-    color: gray;
-    line-height: 18px;
-    text-align: center;
-    border: 2px solid gray;
-    border-radius: 50%;
-    height: 20px;
-    width: 20px;
-    margin-top: 8px;
-}
-
 /* FORMS */
 #forms-grid {
     display: grid;
@@ -125,6 +111,7 @@ button[type="submit"], #file-input-button {
 
 button[type="submit"]:hover, #file-input-button:hover {
     background-color: black;
+    transition-duration: var(--transition-duration);
 }
 
 #properties-form-container, #file-form-container {
@@ -142,7 +129,7 @@ button[type="submit"]:hover, #file-input-button:hover {
 
 .properties-form-row {
     display: grid;
-    grid-template-columns: 45% 40% 15%;
+    grid-template-columns: 45% 45% 10%;
     grid-column-gap: 10px;
     padding: 5px 20px 5px 5px;
     width: 100%;
@@ -185,12 +172,14 @@ input[type="text"] {
 #properties-form-container:hover, #file-form-container:hover {
     box-shadow: 0 0 5px 4px lightgray;
     transform: scale(1.03);
+    transition-duration: var(--transition-duration);
 }
 
 #forms-grid:has(#file-form-container:hover) > #properties-form-container,
 #forms-grid:has(#properties-form-container:hover) > #file-form-container {
     transform: scale(0.97);
     background-color: rgba(9, 74, 32, 0.1);
+    transition-duration: var(--transition-duration);
 }
 
 /* RESULTS */

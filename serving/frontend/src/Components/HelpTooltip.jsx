@@ -1,17 +1,25 @@
-import {Tooltip} from "react-tooltip";
+import {IconButton, Tooltip} from "@mui/material";
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 const HelpTooltip = ({helpText}) => {
     return (
-        <div>
-            <a
-              data-tooltip-id="help-tooltip"
-              data-tooltip-content={helpText}
-              data-tooltip-place="right"
-            >
-                <p className="help">?</p>
-            </a>
-            <Tooltip id="help-tooltip" />
-        </div>
+        <Tooltip
+            title={helpText}
+            placement="right"
+            arrow PopperProps={{
+                modifiers: [
+                    {
+                        name: "offset",
+                        options: {
+                            offset: [0, -15],
+                        },
+                    },
+                ],
+        }}>
+            <IconButton>
+                <HelpOutlineIcon />
+            </IconButton>
+        </Tooltip>
     );
 }
 
