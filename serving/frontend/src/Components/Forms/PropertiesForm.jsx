@@ -40,9 +40,12 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunct
                            validatePressedKey(event, propertyShort);
                        }}
                        onChange={(event) => {
-                           setMonsterProperties({[propertyShort]: event.target.value});
+                           setMonsterProperties(monsterProperties => ({
+                               ...monsterProperties,
+                               ...{[propertyShort]: event.target.value}
+                           }));
                        }}
-                       onBlur={() => validateInput(propertyShort)}
+                       onBlur={() => {validateInput(propertyShort)}}
                        value={(monsterProperties === null) ? "" : monsterProperties[propertyShort]}/>
                 <HelpTooltip
                     helpText={"Enter a number greater than or equal to " + minimumPropertyValues.get(propertyShort)}
@@ -70,9 +73,15 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunct
         const formJson = Object.fromEntries(formData.entries());
         setMonsterProperties(formJson);
 
-        if (document.getElementsByClassName("invalid-input").length > 0) {
-            window.alert("Entered input is invalid. Form will not be submitted.");
-            return;
+        for (let property in monsterProperties) {
+            if (property === "name") {
+                continue;
+            }
+            let value = parseInt(monsterProperties[property]);
+            if (isNaN(value) || value < minimumPropertyValues.get(property)) {
+                window.alert("Entered input is invalid. Form will not be submitted.");
+                return;
+            }
         }
 
         fetch("http://localhost:8000/properties/upload", {
