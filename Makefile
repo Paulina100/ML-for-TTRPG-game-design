@@ -3,7 +3,7 @@
 SHELL := /bin/bash
 
 backend:
-	set "COMPOSE_DOCKER_CLI_BUILD=1" & set "DOCKER_BUILDKIT=1" & docker-compose up --build --detach server
+	set "COMPOSE_DOCKER_CLI_BUILD=1" & set "DOCKER_BUILDKIT=1" & docker compose up --build --detach server
 
 frontend:
 	set "COMPOSE_DOCKER_CLI_BUILD=1" & set "DOCKER_BUILDKIT=1" & docker compose up --build --detach frontend

@@ -48,22 +48,14 @@ To start this application you will need Docker with Docker Compose. For easier s
 ### Starting app
 The fastest way to start the app is by using Makefile scripts. Simply type 
 ```shell
-make
+make start
 ```
 in terminal and after a while backend server should be available on [localhost:8000](http://localhost:8000) 
 and frontend view - on [localhost:3000](http://localhost:3000/).
 
-Alternatively, you can do this manually, step-by-step:
-
-In the `docker` directory there are two Docker images - first, it is necessary to build them:
+Alternatively, you can do this by running:
 ```shell
-docker build . -f docker/Dockerfile_server
-docker build . -f docker/Dockerfile_frontend
-```
-
-After the build is finished, run command:
-```shell
-docker-compose up -d
+docker compose up --build --detach
 ```
 
 Please ensure that your browser has enabled the CSS `:has` selector, especially if you are using Firefox.
@@ -76,7 +68,7 @@ make stop
 
 Alternatively, to stop the app you can run:
 ```shell
-docker-compose down
+docker compose down
 ```
 
 ### Debugging
@@ -86,6 +78,10 @@ docker ps
 ```
 
 You can also check logs of each of the containers by running:
+```shell
+make logs
+```
+to view logs of both containers, or to see logs of one of them:
 ```shell
 docker logs <container> -f
 ```
