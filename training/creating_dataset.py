@@ -137,8 +137,8 @@ def get_characteristic_from_list(cell_value, characteristic_name: str) -> int:
         return 0
 
     for dictionary in cell_value:
-        if dictionary.get("type") == characteristic_name:
-            return dictionary.get("value")
+        if dictionary["type"] == characteristic_name:
+            return dictionary["value"]
 
     # required characteristic was not found
     return 0
@@ -156,11 +156,10 @@ def get_nr_of_spells_with_lvl(items_list: list[dict], spell_level: int) -> int:
     spells = [
         i
         for i in items_list
-        if i.get("type") == "spell"
-        and i.get("system").get("category").get("value") == "spell"
+        if i["type"] == "spell" and i["system"]["category"]["value"] == "spell"
         # skip cantrip spells
-        and "cantrip" not in i.get("system").get("traits").get("value")
-        and i.get("system").get("level").get("value") == spell_level
+        and "cantrip" not in i["system"]["traits"]["value"]
+        and i["system"]["level"]["value"] == spell_level
     ]
 
     return len(spells)
@@ -180,7 +179,7 @@ def count_damage_expected_value(damage_dict: dict[dict]) -> float:
 
     # chance that one melee item have multiple damage types
     for key, value in damage_dict.items():
-        damage = value.get("damage")
+        damage = value["damage"]
 
         if "d" not in damage:
             # constant damage value
@@ -206,31 +205,30 @@ def count_damage_expected_value(damage_dict: dict[dict]) -> float:
 
 
 def get_max_melee_bonus_damage(
-    items_list: list[dict], weaponType: str
+    items_list: list[dict], weapon_type: str
 ) -> tuple[int, float]:
     """
     Function used for pd.Series.apply()\n
     Get the maximum damageRoll bonus and associated damage from a list of melee of a specific weaponType.
     :param items_list: A list of dictionaries representing melee weapons, each with relevant attributes.
-    :param weaponType: The type of weapon to filter by.
+    :param weapon_type: The type of weapon to filter by.
     :return: A tuple containing the maximum bonus and the calculated damage associated with that bonus.
              If no matching melee weapons are found, returns (0, 0).
     """
     melee = [
-        i.get("system")
+        i["system"]
         for i in items_list
-        if i.get("type") == "melee"
-        and i.get("system").get("weaponType").get("value") == weaponType
+        if i["type"] == "melee" and i["system"]["weaponType"]["value"] == weapon_type
     ]
 
     if not melee:
         return 0, 0
 
-    idx_val = [(idx, val.get("bonus").get("value")) for idx, val in enumerate(melee)]
+    idx_val = [(val["bonus"]["value"], idx) for idx, val in enumerate(melee)]
     # find melee with the highest bonus: bonus and idx
-    max_bonus_idx, max_bonus = max(idx_val, key=lambda x: x[1])
+    max_bonus, max_bonus_idx = max(idx_val)
     # get damage information about max_bonus melee
-    best_bonus_melee_damage = melee[max_bonus_idx].get("damageRolls")
+    best_bonus_melee_damage = melee[max_bonus_idx]["damageRolls"]
     # get expected value of chosen melee
     damage_expected_value = count_damage_expected_value(best_bonus_melee_damage)
     return max_bonus, damage_expected_value

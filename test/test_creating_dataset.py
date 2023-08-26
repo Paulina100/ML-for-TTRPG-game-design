@@ -55,34 +55,13 @@ def test_split_characteristics_into_groups():
         "num_immunities",
         "int",
     }
-    characteristics_groups = split_characteristics_into_groups(input_characteristics)
-    (
-        speeds,
-        weaknesses,
-        resistances,
-        special_characteristics,
-        characteristics_rename,
-    ) = (
-        characteristics_groups.speeds,
-        characteristics_groups.weaknesses,
-        characteristics_groups.resistances,
-        characteristics_groups.special_characteristics,
-        characteristics_groups.characteristics_rename,
-    )
+    char_groups = split_characteristics_into_groups(input_characteristics)
 
-    assert (
-        speeds,
-        weaknesses,
-        resistances,
-        special_characteristics,
-        characteristics_rename,
-    ) == (
-        test_speeds,
-        test_weaknesses,
-        test_resistances,
-        test_special_characteristics,
-        test_characteristics_rename,
-    )
+    assert test_speeds == char_groups.speeds
+    assert test_weaknesses == char_groups.weaknesses
+    assert test_resistances == char_groups.resistances
+    assert test_special_characteristics == char_groups.special_characteristics
+    assert test_characteristics_rename == char_groups.characteristics_rename
 
 
 def test_get_characteristic_from_list():
