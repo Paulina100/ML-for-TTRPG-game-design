@@ -1,6 +1,6 @@
 import joblib
 from api_models import Properties
-from backend.calculate_level import calculate_level
+from calculate_level import calculate_level
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
@@ -14,7 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = joblib.load(filename="../saved_models/current_model.pkl")
+model = joblib.load(filename="../../saved_models/current_model.pkl")
 
 
 @app.post("/properties/upload")

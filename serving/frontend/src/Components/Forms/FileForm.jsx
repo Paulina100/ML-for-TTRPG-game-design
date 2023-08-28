@@ -68,7 +68,7 @@ const FileForm = (setMonsterProperties, setResultsFunction) => {
             if (properties === null) {
                 return;
             }
-            fetch("http://localhost:8000/properties/upload", {
+            fetch("http://" + process.env.REACT_APP_HOST + ":" + process.env.REACT_APP_PORT + process.env.REACT_APP_UPLOAD_ENDPOINT, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(properties)
