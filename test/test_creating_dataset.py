@@ -7,6 +7,7 @@ import pytest
 from training.analysis_functions import get_merged_bestiaries, get_subcolumn
 from training.creating_dataset import (
     count_damage_expected_value,
+    extract_and_assign_chars,
     get_characteristic_from_list,
     get_max_melee_bonus_damage,
     get_nr_of_spells_with_lvl,
@@ -77,6 +78,29 @@ def test_get_characteristic_from_list():
     pd.testing.assert_series_equal(
         results, test_data.apply(lambda x: get_characteristic_from_list(x, "fire"))
     )
+
+
+def test_extract_and_assign_chars():
+    test_char_group = {"fire"}
+    test_path = "test.data"
+    test_bestiary = pd.DataFrame(
+        {
+            "test.data": [
+                [{"type": "fire", "value": 5}, {"type": "cold", "value": 2}],
+                [{"type": "cold", "value": 2}],
+                np.nan,
+            ]
+        }
+    )
+    test_df = pd.DataFrame()
+    test_replace_str = "_resistance"
+    extract_and_assign_chars(
+        test_char_group, test_path, test_bestiary, test_df, test_replace_str
+    )
+
+    results = pd.Series(data=[5, 0, 0], name="fire")
+
+    pd.testing.assert_series_equal(results, test_df["fire"])
 
 
 def test_get_nr_of_spells_with_lvl():

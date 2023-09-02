@@ -106,6 +106,7 @@ def split_characteristics_into_groups(
     """
     Split given characteristics list into five categories according to sets and dictionaries with characteristics.
     Categories depend on way of extracting data.
+
     :param characteristics: list of characteristics
     :return: sets and list of characteristics after split
     """
@@ -128,6 +129,7 @@ def get_characteristic_from_list(cell_value, characteristic_name: str) -> int:
     """
     Function used for pd.Series.apply()\n
     Retrieve the value associated with a specific characteristic from a list of dictionaries.
+
     :param cell_value: Value of cell from df. A list of dictionaries, where each dictionary represents a characteristic
             with 'type' and 'value' keys.
     :param characteristic_name: The characteristic name to search for.
@@ -144,10 +146,33 @@ def get_characteristic_from_list(cell_value, characteristic_name: str) -> int:
     return 0
 
 
+def extract_and_assign_chars(
+    char_group: set,
+    path_to_char: str,
+    bestiary: pd.DataFrame,
+    df: pd.DataFrame,
+    replace_val: str,
+):
+    """
+    Extract and assign values for a group of characteristics from `bestiary` DataFrame to another `df` DataFrame.
+
+    :param char_group: A set of characteristic names to extract and assign.
+    :param path_to_char: The path to the column containing the characteristic values in the `bestiary` DataFrame.
+    :param bestiary: The DataFrame containing data from which to extract characteristic values.
+    :param df: The DataFrame containing data from which to extract characteristic values.
+    :param replace_val:  A string to replace in characteristic names to determine the target column names in `df`.
+    """
+    for char in char_group:
+        characteristic_name = char.replace(replace_val, "")
+        get_value = lambda x: get_characteristic_from_list(x, characteristic_name)
+        df[char] = bestiary[path_to_char].apply(get_value)
+
+
 def get_nr_of_spells_with_lvl(items_list: list[dict], spell_level: int) -> int:
     """
     Function used for pd.Series.apply()\n
     Count the number of spells in the given list that match the specified level.
+
     :param items_list: A list of dictionaries representing items, each with relevant attributes.
     :param spell_level: The level to filter spells by.
     :return: The count of spells in the list that match the specified level.
@@ -168,6 +193,7 @@ def get_nr_of_spells_with_lvl(items_list: list[dict], spell_level: int) -> int:
 def count_damage_expected_value(damage_dict: dict[dict]) -> float:
     """
     Calculate the total expected value of damage based on a dictionary of damage specifications.
+
     :param damage_dict: A dictionary where keys represent different sources of damage,
                         and values are dictionaries with the "damage" key containing damage specifications.
                         Damage can be a constant value or a dice roll in the format 'NdM', 'NdM+X', or 'NdM-X',
@@ -210,6 +236,7 @@ def get_max_melee_bonus_damage(
     """
     Function used for pd.Series.apply()\n
     Get the maximum damageRoll bonus and associated damage from a list of melee of a specific weaponType.
+
     :param items_list: A list of dictionaries representing melee weapons, each with relevant attributes.
     :param weapon_type: The type of weapon to filter by.
     :return: A tuple containing the maximum bonus and the calculated damage associated with that bonus.
@@ -234,21 +261,13 @@ def get_max_melee_bonus_damage(
     return max_bonus, damage_expected_value
 
 
-def load_and_preprocess_data(
-    paths_to_books: list[str],
-    characteristics: list[str],
-) -> pd.DataFrame:
+def load_data(paths_to_books: list[str]) -> pd.DataFrame:
     """
-    Creates dataframe containing chosen characteristics, level and source book of monsters from chosen books
+    Load and normalize monsters' data from a list of book paths.
 
-    :param paths_to_books: list of paths of books to load
-    :param characteristics: list of characteristics to load
-    :return: DataFrame with monsters (NPC) from chosen books and with chosen characteristics and their origin book
+    :param paths_to_books: A list of file paths to books containing monsters (NPCs) data in JSON format.
+    :return: A pandas DataFrame containing information about monsters extracted from the specified books.
     """
-    pd.options.mode.chained_assignment = None
-    # silent warning (SettingWithCopyWarning) about view and copy
-    # we don't need to go back to the original df - no matter if it is a view
-
     data = []
 
     for path in paths_to_books:
@@ -261,6 +280,26 @@ def load_and_preprocess_data(
     bestiary = pd.json_normalize(data)
     # only npc monsters
     bestiary = bestiary[bestiary["type"] == "npc"]
+
+    return bestiary
+
+
+def load_and_preprocess_data(
+    paths_to_books: list[str],
+    characteristics: list[str],
+) -> pd.DataFrame:
+    """
+    Creates dataframe containing chosen characteristics, level and source book of monsters from chosen books
+
+    :param paths_to_books: A list of file paths to books containing monster data in JSON format.
+    :param characteristics: A list of characteristics to load.
+    :return: DataFrame with monsters (NPC) from chosen books and with chosen characteristics and their origin book
+    """
+    pd.options.mode.chained_assignment = None
+    # silent warning (SettingWithCopyWarning) about view and copy
+    # we don't need to go back to the original df - no matter if it is a view
+
+    bestiary = load_data(paths_to_books)
 
     characteristics_groups = split_characteristics_into_groups(set(characteristics))
 
@@ -288,19 +327,17 @@ def load_and_preprocess_data(
     df = bestiary[raw_names]
     df.columns = target_names
 
-    for resistance in characteristics_groups.resistances:
-        characteristic_name = resistance.replace("_resistance", "")
-        get_value = lambda x: get_characteristic_from_list(x, characteristic_name)
-        df[resistance] = bestiary[RESISTANCE_PATH].apply(get_value)
+    extract_and_assign_chars(
+        characteristics_groups.resistances, RESISTANCE_PATH, bestiary, df, "_resistance"
+    )
 
-    for weakness in characteristics_groups.weaknesses:
-        characteristic_name = weakness.replace("_weakness", "")
-        get_value = lambda x: get_characteristic_from_list(x, characteristic_name)
-        df[weakness] = bestiary[WEAKNESSES_PATH].apply(get_value)
+    extract_and_assign_chars(
+        characteristics_groups.weaknesses, WEAKNESSES_PATH, bestiary, df, "_weakness"
+    )
 
-    for speed in characteristics_groups.speeds:
-        get_value = lambda x: get_characteristic_from_list(x, speed)
-        df[speed] = bestiary[OTHER_SPEED_PATH].apply(get_value)
+    extract_and_assign_chars(
+        characteristics_groups.speeds, OTHER_SPEED_PATH, bestiary, df, ""
+    )
 
     if "spells" in characteristics_groups.special_characteristics:
         MAX_SPELL_LVL = 9
