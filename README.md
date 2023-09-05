@@ -11,21 +11,11 @@ pen & paper RPG game design".
 * Jolanta Śliwa ([github](https://github.com/tunczyk101))
 
 ## Table of contents
-* [Technologies](#technologies)
-* [Setup](#setup)
 * [Features](#features)
 * [Project Structure](#project-structure)
+* [Technologies](#technologies)
+* [Setup](#setup)
 * [Testing](#testing)
-
-## Technologies
-* Python 3.10
-* Jupyter Notebook
-
-
-## Setup
-To install required packages, run
-
-    pip install -r requirements.txt
 
 
 ## Features
@@ -34,25 +24,83 @@ To install required packages, run
 * searching for similar monsters in Pathfinder's resources
 * suggesting hints of properties that can be added to user's monster based on similar monsters
 
+
 ## Project Structure
 * `config`: files with environmental variables
 * `docker`: Docker-related files
 * `notebooks`: Jupyter Notebooks
-* `serving`: app's API
+* `serving`: app's API and UI
 * `test`: tests
 * `training`: scripts for creating datasets and training model
 
-## Testing
-To run prepared tests in `test` directory using:
-* terminal: 
-  * enter `test` directory:
-  ```shell
-  cd test
-  ```
-  * run `pytest` with test file as argument, e.g.:
-  ```shell
-  pytest test_creating_dataset.py
-  ```
 
-* PyCharm: 
-  * run file using run button 
+## Technologies
+* Python 3.10
+* Jupyter Notebook
+* React.js
+* Docker
+
+
+## Setup
+### Prerequisite
+To start this application you will need Docker with Docker Compose. For easier setup also Make will be useful.
+
+### Starting app
+The fastest way to start the app is by using Makefile scripts. Simply type 
+```shell
+make start
+```
+in terminal and after a while backend server should be available on [localhost:8000](http://localhost:8000) 
+and frontend view - on [localhost:3000](http://localhost:3000/).
+
+Alternatively, you can do this by running:
+```shell
+docker compose up --build --detach
+```
+
+Please ensure that your browser has enabled the CSS `:has` selector, especially if you are using Firefox.
+
+### Stopping app
+As before, stopping the app is possible with a Makefile script:
+```shell
+make stop
+```
+
+Alternatively, to stop the app you can run:
+```shell
+docker compose down
+```
+
+### Debugging
+To ensure the containers are running correctly, you can run:
+```shell
+docker ps
+```
+
+You can also check logs of each of the containers by running:
+```shell
+make logs
+```
+to view logs of both containers, or to see logs of one of them:
+```shell
+docker logs <container> -f
+```
+where instead of `<container>` type container's name or prefix of its ID.
+
+
+## Testing
+This project for testing uses the `pytest` framework.
+
+To run all tests from `tests` directory, use:
+```shell
+make tests
+```
+
+To run tests from a specific file in `tests` directory, type:
+```shell
+make test FILE={filename.py}
+```
+substituting `{filename.py}` with name of the file containing tests.
+
+Alternatively, you can run tests via either `pytest` command or PyCharm GUI. If you choose one of these options, 
+remember to make sure that the tests are invoked from `test` directory.

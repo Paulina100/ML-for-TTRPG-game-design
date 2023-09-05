@@ -1,0 +1,223 @@
+@import url("https://fonts.googleapis.com/css?family=Bruno+Ace+SC");
+
+:root {
+    --theme-color: rgb(9, 74, 32);
+    --theme-font: "Bruno Ace SC", sans-serif;
+    --transition-duration: 0.3s;
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+#app {
+    width: 100%;
+    height: max-content;
+}
+
+#page-background {
+    display: flex;
+    background-color: lightgray;
+    background-position: center;
+    background-size: cover;
+    width: 100%;
+    justify-content: center;
+    height: fit-content;
+}
+
+#page-content {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 67%;
+    margin: 80px 0 15px 0;
+    border-radius: 25px;
+    justify-content: center;
+    padding: 15px;
+    height: fit-content;
+}
+
+.content-header, .message {
+    font-family: var(--theme-font);
+    color: var(--theme-color);
+    padding: 10px;
+}
+
+.content-header {
+    font-size: xx-large;
+}
+
+.message {
+    text-align: center;
+    margin: 5% 10% 5% 10%;
+}
+
+p {
+    margin-bottom: 10px;
+}
+
+p, label, input {
+    font-size: 16px;
+    line-height: 22px;
+}
+
+/* HEADER */
+#header {
+    padding: 10px;
+    background-color: var(--theme-color);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 70px;
+    z-index: 1;
+    text-align: center;
+}
+
+#header > h1 {
+    font-family: var(--theme-font);
+    font-size: 35px;
+    color: white;
+}
+
+/* PAGE INFO */
+.page-info {
+    text-align: center;
+    padding: 0 40px 0 40px;
+}
+
+/* FORMS */
+#forms-grid {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-column-gap: 15px;
+    padding: 20px;
+    width: 100%;
+}
+
+button[type="submit"], #file-input-button {
+    padding: 10px;
+    margin: 5% 10% 5% 10%;
+    background-color: var(--theme-color);
+    font-family: var(--theme-font);
+    color: white;
+    border-radius: 25px;
+    width: 80%;
+    text-align: center;
+    font-size: medium;
+}
+
+button[type="submit"]:hover, #file-input-button:hover {
+    background-color: black;
+    transition-duration: var(--transition-duration);
+}
+
+#properties-form-container, #file-form-container {
+    padding: 0 20px 10px 20px;
+    border: 1px solid black;
+    width: calc(100% - 15px);
+}
+
+/* PROPERTIES FORM */
+#properties-form-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.properties-form-row {
+    display: grid;
+    grid-template-columns: 45% 45% 10%;
+    grid-column-gap: 10px;
+    padding: 5px 20px 5px 5px;
+    width: 100%;
+}
+
+#properties-form-label {
+    text-align: right;
+    padding-right: 10px;
+    line-height: 35px;
+}
+
+input[type="text"] {
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 0 10px 0 10px;
+}
+
+.invalid-input {
+    border: 1px solid red;
+    background-color: rgba(255, 0, 0, 0.4);
+}
+
+/* FILE FORM */
+#file-input-button {
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+#file-input {
+    display: none;
+}
+
+#selected-file {
+    margin-top: 10%;
+    border: 1px solid gray;
+    padding: 5px 10px 5px 10px;
+}
+
+/* HOVERS */
+#properties-form-container:hover, #file-form-container:hover {
+    box-shadow: 0 0 5px 4px lightgray;
+    transform: scale(1.03);
+    transition-duration: var(--transition-duration);
+}
+
+#forms-grid:has(#file-form-container:hover) > #properties-form-container,
+#forms-grid:has(#properties-form-container:hover) > #file-form-container {
+    transform: scale(0.97);
+    background-color: rgba(9, 74, 32, 0.1);
+    transition-duration: var(--transition-duration);
+}
+
+/* RESULTS */
+#results {
+    width: 100%;
+    padding: 0 40px 0 40px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+#results > .content-header {
+    text-align: center;
+    align-self: center;
+}
+
+#level-info {
+    padding-left: 15px;
+    font-size: medium !important;
+    line-height: 50px;
+    background-color: rgba(9, 74, 32, 0.25);
+}
+
+#level-info > span {
+    font-size: 35px !important;
+    padding: 0 4px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -5px;
+}
+
+/* FOOTER */
+#footer {
+    width: 100%;
+    padding: 10px 20px 10px 20px;
+    background-color: gray;
+}
+
+a:link, a:visited {
+    text-decoration-line: underline;
+    color: black;
+}
