@@ -17,8 +17,8 @@ app.add_middleware(
 model = joblib.load(filename="../../saved_models/current_model.pkl")
 
 
-@app.post("/properties/upload")
-async def upload_properties(properties: Properties):
+@app.post("/make_prediction")
+async def make_prediction(properties: Properties):
     ordered_properties = ["cha", "con", "dex", "int", "str", "wis", "ac", "hp"]
     properties_dict = properties.dict()
     stats = {p: properties_dict[p] for p in ordered_properties}
