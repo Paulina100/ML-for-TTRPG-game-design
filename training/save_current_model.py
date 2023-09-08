@@ -30,6 +30,6 @@ if __name__ == "__main__":
     )
     X.pop("book")
     y = X.pop("level")
-    rf = get_fitted_model(classifier_name="random_forest", X_train=X, y_train=y)
+    rf = get_fitted_model(classifier_name="lightgbm", X_train=X, y_train=y)
 
     joblib.dump(value=rf, filename="../saved_models/current_model.pkl")

@@ -1,3 +1,4 @@
+import lightgbm as lightgbm
 import pandas as pd
 import pytest
 from sklearn.ensemble import RandomForestRegressor
@@ -34,6 +35,13 @@ def test_create_random_forest(train_set):
     model = get_fitted_model("random_forest", X_train, y_train)
 
     assert type(model.best_estimator_) == RandomForestRegressor
+
+
+def test_create_lightgbm(train_set):
+    X_train, y_train = train_set
+    model = get_fitted_model("lightgbm", X_train, y_train)
+
+    assert isinstance(model, lightgbm.Booster)
 
 
 def test_wrong_classifier_name():
