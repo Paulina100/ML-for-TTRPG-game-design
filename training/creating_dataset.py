@@ -159,7 +159,7 @@ def extract_and_assign_chars(
     :param char_group: A set of characteristic names to extract and assign.
     :param path_to_char: The path to the column containing the characteristic values in the `bestiary` DataFrame.
     :param bestiary: The DataFrame containing data from which to extract characteristic values.
-    :param df: The DataFrame containing data from which to extract characteristic values.
+    :param df: The DataFrame to which the extracted values will be assigned.
     :param replace_val:  A string to replace in characteristic names to determine the target column names in `df`.
     """
     for char in char_group:
