@@ -59,3 +59,26 @@ def plot_confusion_matrix(threshold, predict, y):
     disp.plot()
     plt.title("Confusion matrix")
     plt.show()
+
+
+def assess_regression_model(model, X_train, X_test, y_train, y_test, r2=False):
+    # predict for train and test
+    y_pred_test = model.predict(X_test)
+    y_pred_train = model.predict(X_train)
+
+    # calculate train and test RMSE
+    rmse_train = mean_squared_error(y_train, y_pred_train, squared=False)
+    rmse_test = mean_squared_error(y_test, y_pred_test, squared=False)
+    mse_test = mean_squared_error(y_test, y_pred_test)
+
+    if r2:
+        # calculate R2
+        r2 = model.score(X_train, y_train)
+        print(f"R2: {r2:.2f}")
+
+    # print train and test RMSE
+    print(f"RMSE train: {rmse_train:.2f}")
+    print(f"RMSE test: {rmse_test:.2f}")
+    print(f"MSE test: {mse_test:.2f}\n")
+
+    return rmse_test, mse_test
