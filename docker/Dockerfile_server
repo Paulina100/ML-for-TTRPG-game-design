@@ -2,6 +2,7 @@ FROM python:3.10.0-slim
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+RUN apt-get update && apt-get install -y libgomp1
 
 COPY serving/backend serving/backend
 COPY saved_models saved_models

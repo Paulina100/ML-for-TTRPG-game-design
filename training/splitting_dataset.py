@@ -38,6 +38,8 @@ def get_dataframe_with_oldest_books(
     """
     books_per_year = get_date_books_mapping()
     filtered_df = pd.DataFrame(columns=df.columns)
+    dtypes_dict = df.dtypes.to_dict()
+    filtered_df = filtered_df.astype(dtypes_dict)
     remaining_rows_num = int((1 - test_size) * df.shape[0])
     for index, row in books_per_year.iterrows():
         for book_name in row["books"]:
@@ -67,6 +69,7 @@ def get_chronological_split_results(
     X_test = df.drop(X_train.index)
     y_train = X_train.pop("level")
     y_test = X_test.pop("level")
+
     return X_train, X_test, y_train, y_test
 
 

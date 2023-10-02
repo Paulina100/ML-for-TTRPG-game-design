@@ -12,6 +12,8 @@ of it will not be used in finished project.
   * [pathfinder_items_other_columns.ipynb](#data_analysispathfinder_items_other_columnsipynb)
 * `models` - contains machine learning models.
   * [system_linear_regression.ipynb](#modelssystem_linear_regressionipynb)
+  * [system_random_forest.ipynb](#modelssystem_random_forestipynb)
+  * [LightGBM.ipynb](#modelslightgbmipynb)
 
 
 ## data_analysis/abomination_vaults_bestiary_analysis.ipynb
@@ -127,3 +129,11 @@ Analysis of columns `items/_id`, `items/img`, `items/name`, `items/sort`, `items
 Linear regression for predicting monster's level (stored originally in `system/details/level`) based on 
 `system/abilities`, `system/attributes/hp` and `system/attributes/ac`.
 
+## models/system_random_forest.ipynb
+Random forest for predicting monster's level (stored originally in `system/details/level`) based on 
+`system/abilities`, `system/attributes/hp` and `system/attributes/ac`.
+
+## models/LightGBM.ipynb
+LightGBM for predicting monster's level (stored originally in `system/details/level`) based on 
+`system/abilities`, `system/attributes/hp`, `system/attributes/ac`, `system/attributes/perception`,
+`system/saves` and `system/resources/focus`.
