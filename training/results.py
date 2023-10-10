@@ -82,3 +82,81 @@ def assess_regression_model(model, X_train, X_test, y_train, y_test, r2=False):
     print(f"MSE test: {mse_test:.2f}\n")
 
     return rmse_test, mse_test
+
+
+def plot_summary(results, measure_type, figsize=(20, 8)):
+    bar_width = 0.25
+    fig, ax = plt.subplots(1, figsize=figsize)
+    ax.grid()
+    fig.autofmt_xdate()
+    plt.grid(axis="y", linestyle="--")
+
+    labels = results.apply(
+        lambda row: row["Tuning type"] + " " + str(row["Number of characteristics"]),
+        axis="columns",
+    )
+    labels = dict.fromkeys(labels).keys()
+    chronological = []
+    random = []
+
+    for i, l in enumerate(labels):
+        t, nr = l.split(" ")
+        temp = results[
+            (results["Tuning type"] == t)
+            & (results["Number of characteristics"] == int(nr))
+        ]
+        chronological.append(
+            float(temp[temp["Split type"] == "chronological"][measure_type])
+        )
+        random.append(float(temp[temp["Split type"] == "random"][measure_type]))
+
+    br1 = np.arange(len(chronological))
+    br2 = [x + bar_width for x in br1]
+
+    plt.bar(
+        br1,
+        chronological,
+        color="r",
+        width=bar_width,
+        edgecolor="grey",
+        label="chronological",
+    )
+    plt.bar(br2, random, color="g", width=bar_width, edgecolor="grey", label="random")
+
+    plt.xlabel("Split type & nr of characteristics", fontweight="bold", fontsize=25)
+    plt.ylabel(measure_type, fontweight="bold", fontsize=25)
+    plt.xticks([r + bar_width for r in range(len(chronological))], labels, fontsize=20)
+
+    plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment="right")
+    plt.legend(fontsize=20)
+    plt.show()
+
+
+def plot_one_type_split(results, split_type, measure_type, figsize=(20, 8)):
+    bar_width = 0.25
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.grid()
+    fig.autofmt_xdate()
+    plt.grid(axis="y", linestyle="--")
+    data = results[results["Split type"] == split_type]
+
+    labels = data.apply(
+        lambda row: row["Tuning type"] + " " + str(row["Number of characteristics"]),
+        axis="columns",
+    )
+    values = []
+
+    for i, l in enumerate(labels):
+        t, nr = l.split(" ")
+        temp = data[
+            (data["Tuning type"] == t) & (data["Number of characteristics"] == int(nr))
+        ]
+        values.append(float(temp[measure_type]))
+
+    plt.bar(labels, values, width=bar_width)
+
+    plt.xlabel("Split type & nr of characteristics", fontweight="bold", fontsize=25)
+    plt.ylabel(measure_type, fontweight="bold", fontsize=25)
+    plt.xticks([r + bar_width for r in range(len(values))], labels, fontsize=20)
+
+    plt.show()
