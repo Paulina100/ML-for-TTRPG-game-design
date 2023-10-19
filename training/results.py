@@ -1,6 +1,11 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix, mean_squared_error
+from sklearn.metrics import (
+    ConfusionMatrixDisplay,
+    confusion_matrix,
+    mean_absolute_error,
+    mean_squared_error,
+)
 
 
 def print_check_predictions(y, y_pred):
@@ -70,6 +75,7 @@ def assess_regression_model(model, X_train, X_test, y_train, y_test, r2=False):
     rmse_train = mean_squared_error(y_train, y_pred_train, squared=False)
     rmse_test = mean_squared_error(y_test, y_pred_test, squared=False)
     mse_test = mean_squared_error(y_test, y_pred_test)
+    mae_test = mean_absolute_error(y_test, y_pred_test)
 
     if r2:
         # calculate R2
@@ -79,9 +85,10 @@ def assess_regression_model(model, X_train, X_test, y_train, y_test, r2=False):
     # print train and test RMSE
     print(f"RMSE train: {rmse_train:.2f}")
     print(f"RMSE test: {rmse_test:.2f}")
-    print(f"MSE test: {mse_test:.2f}\n")
+    print(f"MSE test: {mse_test:.2f}")
+    print(f"MAE test: {mae_test:.2f}\n")
 
-    return rmse_test, mse_test
+    return rmse_test, mse_test, mae_test
 
 
 def plot_summary(results, measure_type, figsize=(20, 8)):
