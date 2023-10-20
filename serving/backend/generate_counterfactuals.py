@@ -11,7 +11,17 @@ threshold = 0.33
 
 def generate_counterfactuals(
     monster_stats: dict, model, new_level: int, df: pd.DataFrame, total_cf: int = 5
-):
+) -> dict[str, float]:
+    """
+    Generate counterfactual explanations for a monster's characteristics to achieve a new level.
+
+    :param monster_stats: A dictionary containing the monster's current characteristics and values.
+    :param model: The machine learning model used for prediction.
+    :param new_level: The target level the monster should achieve.
+    :param df: A pandas DataFrame containing other monsters' data for generating explanations.
+    :param total_cf: The number of counterfactual explanations to generate.
+    :return: A dictionary containing the generated counterfactual explanations *values* and information whether characteristic was *modified*.
+    """
     query = pd.DataFrame.from_records([monster_stats])
     query = query[characteristics]
     df = df[characteristics + ["level"]]
