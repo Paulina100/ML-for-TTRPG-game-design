@@ -2,6 +2,7 @@ import joblib
 from api_models import Properties
 from calculate_level import calculate_level
 from fastapi import FastAPI
+from mangum import Mangum
 from starlette.middleware.cors import CORSMiddleware
 
 
@@ -13,6 +14,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+handler = Mangum(app)
 
 model = joblib.load(filename="../../saved_models/current_model.pkl")
 

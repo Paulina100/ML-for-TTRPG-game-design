@@ -1,0 +1,61 @@
+service: monster-creator
+
+provider:
+  name: aws
+  deploymentMethod: direct
+
+  ecr:
+    images:
+      server:
+        path: .
+        file: ./docker/Dockerfile_server
+      frontend:
+        path: .
+        file: ./docker/Dockerfile_frontend
+
+  stage: ${opt:stage}
+  region: "us-east-1"
+  memorySize: 512
+  timeout: 30
+  logRetentionInDays: 14
+
+  environment: ${file(config/${self:provider.stage}.yml):}
+
+  deploymentBucket:
+    name: ${file(config/${self:provider.stage}.yml):AWS_DEPLOYMENT_BUCKET_NAME}
+
+  iam:
+    # Lambda execution role
+    role: ${file(config/${self:provider.stage}.yml):AWS_EXECUTION_ROLE_ARN}
+
+package:
+  patterns:
+    # excludes in addition to https://www.serverless.com/framework/docs/providers/aws/guide/packaging#patterns
+    - '!.idea/**'
+    - '!config/**'
+    - '!node_modules/**'
+    - '!scripts/**'
+    - '!.nvmrc'
+    - '!Makefile'
+    - '!package.json'
+    - '!package-lock.json'
+    - '!pyproject.toml'
+    - '!README.md'
+
+functions:
+  show:
+    image:
+      name: frontend 
+  calculate:
+    image:
+      name: server
+
+plugins:
+  - serverless-api-cloudfront
+
+custom:
+  apiCloudFront:
+    domain: monster-creator.com
+    logging: 
+      bucket: monster-creator-dev.s3.amazonaws.com
+      prefix: cloudfront-logging
