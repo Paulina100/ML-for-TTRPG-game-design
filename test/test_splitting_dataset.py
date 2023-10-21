@@ -1,4 +1,4 @@
-import pathlib
+from test.constants import DATASET_PATHS
 
 import pytest
 
@@ -10,15 +10,6 @@ from training.splitting_dataset import (
     get_random_split_results,
     split_dataframe,
 )
-
-
-DATASETS_DIR = pathlib.Path(__file__).parent.parent / "pathfinder_2e_data"
-DATASET_FILES = [
-    "pathfinder-bestiary.db",
-    "pathfinder-bestiary-2.db",
-    "pathfinder-bestiary-3.db",
-]
-DATASET_PATHS = [f"{DATASETS_DIR}/{file}" for file in DATASET_FILES]
 
 
 # get_grouped_book_names

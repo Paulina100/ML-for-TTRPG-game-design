@@ -1,4 +1,4 @@
-import pathlib
+from test.constants import DATASET_PATHS
 
 import numpy as np
 import pandas as pd
@@ -17,13 +17,6 @@ from training.creating_dataset import (
 )
 
 
-DATASETS_DIR = pathlib.Path(__file__).parent.parent / "pathfinder_2e_data"
-DATASET_FILES = [
-    "pathfinder-bestiary.db",
-    "pathfinder-bestiary-2.db",
-    "pathfinder-bestiary-3.db",
-]
-DATASET_PATHS = [f"{DATASETS_DIR}/{file}" for file in DATASET_FILES]
 BESTIARY = get_merged_bestiaries(DATASET_PATHS)
 
 

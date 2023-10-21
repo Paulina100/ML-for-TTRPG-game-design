@@ -4,6 +4,8 @@ from calculate_level import calculate_level
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from serving.backend.constants import ORDERED_CHARACTERISTICS
+
 
 app = FastAPI()
 app.add_middleware(
@@ -19,9 +21,8 @@ model = joblib.load(filename="../../saved_models/current_model.pkl")
 
 @app.post("/make_prediction")
 async def make_prediction(properties: Properties):
-    ordered_properties = ["cha", "con", "dex", "int", "str", "wis", "ac", "hp"]
     properties_dict = properties.dict()
-    stats = {p: properties_dict[p] for p in ordered_properties}
+    stats = {p: properties_dict[p] for p in ORDERED_CHARACTERISTICS}
     level = calculate_level(monster_stats=stats, model=model)
     result = {"level": str(level) if level <= 20 else ">20"}
     return result

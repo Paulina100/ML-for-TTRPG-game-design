@@ -4,9 +4,7 @@ import dice_ml
 import pandas as pd
 from dice_ml import Dice
 
-
-characteristics = ["cha", "con", "dex", "int", "str", "wis", "ac", "hp"]
-threshold = 0.33
+from serving.backend.constants import ORDERED_CHARACTERISTICS, THRESHOLD
 
 
 def generate_counterfactuals(
@@ -23,8 +21,8 @@ def generate_counterfactuals(
     :return: A dictionary containing the generated counterfactual explanations *values* and information whether characteristic was *modified*.
     """
     query = pd.DataFrame.from_records([monster_stats])
-    query = query[characteristics]
-    df = df[characteristics + ["level"]]
+    query = query[ORDERED_CHARACTERISTICS]
+    df = df[ORDERED_CHARACTERISTICS + ["level"]]
     continuous_features = df.drop(columns=["level"]).columns.tolist()
 
     d = dice_ml.Data(
@@ -33,7 +31,7 @@ def generate_counterfactuals(
     m = dice_ml.Model(model=model, backend="sklearn", model_type="regressor")
     exp = Dice(d, m, method="genetic")
 
-    desired_range = [new_level - 1 + threshold, new_level + threshold]
+    desired_range = [new_level - 1 + THRESHOLD, new_level + THRESHOLD]
 
     genetic = exp.generate_counterfactuals(
         query, total_CFs=total_cf, desired_range=desired_range
@@ -45,14 +43,15 @@ def generate_counterfactuals(
         "values": [],
         "modified": [],
     }
+    # query can consist of more than one instance
+    # so each data about original stats and counterfactuals is given as a list of lists - we always have one instance
+    # "test_data": [[[1.0, 5.0, 2.0, 1.0, 7.0, 2.0, 29.0, 215.0, 10.231964445152919]]]
     original = cf_json["test_data"][0][0]  # list(monster_stats.values())
 
     for cf in cf_json["cfs_list"][0]:
         cf = cf[:-1]
         result["values"].append(cf)
-        cf_modified = [
-            True if val != original[i] else False for i, val in enumerate(cf)
-        ]
+        cf_modified = [val != original[i] for i, val in enumerate(cf)]
         result["modified"].append(cf_modified)
 
     return result
