@@ -5,7 +5,7 @@ import pandas as pd
 from serving.backend.constants import THRESHOLD
 
 
-def _round_monster_level(level: float, threshold=THRESHOLD) -> int:
+def _round_monster_level(level: float, threshold: float = THRESHOLD) -> int:
     """
     Rounds the monster's level based on a lower threshold.
 
