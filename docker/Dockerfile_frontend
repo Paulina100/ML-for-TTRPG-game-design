@@ -1,0 +1,9 @@
+FROM node:16.15.0
+
+COPY serving/frontend serving/frontend
+
+WORKDIR serving/frontend
+
+RUN npm install
+
+CMD ["npm", "start"]
