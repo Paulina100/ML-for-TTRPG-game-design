@@ -50,12 +50,51 @@ functions:
     image:
       name: server
 
-plugins:
-  - serverless-api-cloudfront
-
-custom:
-  apiCloudFront:
-    domain: monster-creator.com
-    logging: 
-      bucket: monster-creator-dev.s3.amazonaws.com
-      prefix: cloudfront-logging
+resources:
+  Resources:
+    S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: BucketOwnerPreferred
+        BucketName: "monster-creator-dev1"
+    CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      DependsOn:
+        - S3Bucket
+      Properties:
+        DistributionConfig:
+          Origins:
+            - DomainName: "monster-creator-dev1.s3.us-east-1.amazonaws.com"
+              Id: monster-creator-dev1
+              S3OriginConfig:
+                OriginAccessIdentity: ""
+          Enabled: "true"
+          DefaultRootObject: index.html
+          CustomErrorResponses:
+            - ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+            - ErrorCode: 403
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+          HttpVersion: http2
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - DELETE
+              - GET
+              - HEAD
+              - OPTIONS
+              - PATCH
+              - POST
+              - PUT
+            Compress: true
+            TargetOriginId: monster-creator-dev1
+            ForwardedValues:
+              QueryString: "false"
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https
