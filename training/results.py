@@ -9,16 +9,26 @@ from sklearn.metrics import (
 
 
 def print_check_predictions(y, y_pred):
+    """
+    Calculate and print MSE and RMSE for predicted values.
+
+    :param y: True values.
+    :param y_pred: Predicted values from a model.
+    """
     print(f"MSE: {mean_squared_error(y, y_pred):.2f}")
     print(f"RMSE: {mean_squared_error(y, y_pred, squared=False):.2f}\n")
 
 
 def round_predictions(threshold: str | float, predict):
     """
+    Round predicted values based on a specified threshold.
 
-    :param threshold:
-    :param predict:
-    :return:
+    If threshold is a string "round", it rounds normally.
+    If 'threshold' is a float, values above the threshold are rounded up, and values below are rounded down.
+
+    :param threshold: A round type threshold as a string ("round") or a float between 0 and 1.
+    :param predict: Predicted values to be rounded.
+    :return: Rounded values with a maximum value of 21.
     """
     if type(threshold) == str:
         if threshold != "round":
@@ -36,11 +46,12 @@ def round_predictions(threshold: str | float, predict):
 
 def check_round_predictions(round_types: list[str | float], y, predict):
     """
+    Evaluate and print the predictions of a model at different round thresholds,
+    including a normal prediction (no rounding), and for each threshold specified in the 'round_types' list.
 
-    :param round_types:
-    :param y:
-    :param y_pred:
-    :return:
+    :param round_types: A list of round thresholds specified as a list of strings or floats.
+    :param y: True values.
+    :param predict: Predicted values from the model.
     """
     print("Normal:")
     print_check_predictions(y, predict)
@@ -53,6 +64,14 @@ def check_round_predictions(round_types: list[str | float], y, predict):
 
 
 def plot_confusion_matrix(threshold, predict, y):
+    """
+    Plot a confusion matrix for rounded predictions based on a specified threshold.
+    It visualizes the confusion matrix using a heatmap.
+
+    :param threshold: A round type threshold as a string ("round") or a float between 0 and 1.
+    :param predict: Predicted values to be rounded.
+    :param y: True values.
+    """
     round_predict = round_predictions(threshold, predict)
     cm = confusion_matrix(y, round_predict)
 
@@ -67,11 +86,27 @@ def plot_confusion_matrix(threshold, predict, y):
 
 
 def assess_regression_model(model, X_train, X_test, y_train, y_test, r2=False):
+    """
+    Assess the performance of a regression model and print evaluation metrics.
+
+    Calculates and prints evaluation metrics.
+    The metrics include: RMSE for training data, RMSE for testing data, MSE for testing data, and MAE for testing data.
+    Optionally, calculates and prints the R2 coefficient for the training data.
+
+    :param model: A trained regression model.
+    :param X_train: Training data.
+    :param X_test: Testing data.
+    :param y_train: True values for the training data.
+    :param y_test: True values for the testing data.
+    :param r2: If True, calculate and print the R2 coefficient for the training data.
+    :return: Tuple of RMSE, MSE and MAE for the test data.
+    """
+
     # predict for train and test
     y_pred_test = model.predict(X_test)
     y_pred_train = model.predict(X_train)
 
-    # calculate train and test RMSE
+    # calculate train and test RMSE, MSE and MAE
     rmse_train = mean_squared_error(y_train, y_pred_train, squared=False)
     rmse_test = mean_squared_error(y_test, y_pred_test, squared=False)
     mse_test = mean_squared_error(y_test, y_pred_test)
@@ -92,6 +127,19 @@ def assess_regression_model(model, X_train, X_test, y_train, y_test, r2=False):
 
 
 def plot_summary(results, measure_type, figsize=(20, 8)):
+    """
+    Plot a summary bar chart of evaluation metrics for different model tuning types and characteristics.
+
+    It displays a bar chart to visualize the performance of models for a specified 'measure_type'
+    under different conditions.
+
+
+    :param results: A DataFrame with evaluation results, including 'Tuning type', 'Split type',
+    'Number of characteristics', and the 'measure_type' of interest.
+    :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
+    :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
+    """
+
     bar_width = 0.25
     fig, ax = plt.subplots(1, figsize=figsize)
     ax.grid()
@@ -140,6 +188,19 @@ def plot_summary(results, measure_type, figsize=(20, 8)):
 
 
 def plot_one_type_split(results, split_type, measure_type, figsize=(20, 8)):
+    """
+    Plot a summary bar chart of evaluation metrics for a specific split type and measure type.
+
+    It displays a bar chart to visualize the performance of models for a specified 'split_type' and
+    'measure_type' under different conditions.
+
+    :param results: A DataFrame with evaluation results, including 'Tuning type', 'Split type',
+    'Number of characteristics', and the 'measure_type' of interest.
+    :param split_type: The type of data split (e.g., "chronological," "random") for which you want to visualize the evaluation metrics.
+    :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
+    :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
+    """
+
     bar_width = 0.25
     fig, ax = plt.subplots(figsize=figsize)
     ax.grid()
