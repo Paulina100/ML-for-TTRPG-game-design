@@ -17,12 +17,12 @@ df = load_and_preprocess_data(
 testdata = [
     (
         {
-            "cha": 1,
-            "con": 5,
-            "dex": 2,
-            "int": 1,
             "str": 7,
+            "dex": 2,
+            "con": 5,
+            "int": 1,
             "wis": 2,
+            "cha": 1,
             "ac": 29,
             "hp": 215,
         },
@@ -30,12 +30,12 @@ testdata = [
     ),
     (
         {
-            "cha": 1,
-            "con": 1,
-            "dex": 3,
-            "int": -1,
             "str": -5,
+            "dex": 3,
+            "con": 1,
+            "int": -1,
             "wis": 1,
+            "cha": 1,
             "ac": 16,
             "hp": 20,
         },
@@ -43,12 +43,12 @@ testdata = [
     ),
     (
         {
-            "cha": 8,
-            "con": 11,
-            "dex": 9,
-            "int": 7,
             "str": 12,
+            "dex": 9,
+            "con": 11,
+            "int": 7,
             "wis": 8,
+            "cha": 8,
             "ac": 54,
             "hp": 550,
         },

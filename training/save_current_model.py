@@ -1,8 +1,8 @@
 import pathlib
 
 import joblib
-from constants import ORDERED_CHARACTERISTICS
 
+from serving.backend.constants import ORDERED_CHARACTERISTICS
 from training.create_model import get_fitted_model
 from training.creating_dataset import load_and_preprocess_data
 
