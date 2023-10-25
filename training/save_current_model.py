@@ -18,18 +18,20 @@ if __name__ == "__main__":
     X = load_and_preprocess_data(
         DATASET_PATHS,
         characteristics=[
-            "cha",
-            "con",
-            "dex",
-            "int",
             "str",
+            "dex",
+            "con",
+            "int",
             "wis",
+            "cha",
             "ac",
             "hp",
         ],
     )
     X.pop("book")
     y = X.pop("level")
+    X = X[["str", "dex", "con", "int", "wis", "cha", "ac", "hp"]]
+
     lightgbm = get_fitted_model(classifier_name="lightgbm", X_train=X, y_train=y)
 
     joblib.dump(value=lightgbm, filename="../saved_models/current_model.pkl")

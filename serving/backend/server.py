@@ -1,10 +1,9 @@
 import joblib
 from api_models import Properties
 from calculate_level import calculate_level
+from constants import ORDERED_CHARACTERISTICS
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-
-from serving.backend.constants import ORDERED_CHARACTERISTICS
 
 
 app = FastAPI()
