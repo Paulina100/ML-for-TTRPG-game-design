@@ -1,2 +1,2 @@
-ORDERED_CHARACTERISTICS = ["cha", "con", "dex", "int", "str", "wis", "ac", "hp"]
+ORDERED_CHARACTERISTICS = ["str", "dex", "con", "int", "wis", "cha", "ac", "hp"]
 THRESHOLD = 0.33

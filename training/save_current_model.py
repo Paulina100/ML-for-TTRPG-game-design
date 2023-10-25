@@ -1,6 +1,7 @@
 import pathlib
 
 import joblib
+from constants import ORDERED_CHARACTERISTICS
 
 from training.create_model import get_fitted_model
 from training.creating_dataset import load_and_preprocess_data
@@ -17,20 +18,11 @@ if __name__ == "__main__":
 
     X = load_and_preprocess_data(
         DATASET_PATHS,
-        characteristics=[
-            "str",
-            "dex",
-            "con",
-            "int",
-            "wis",
-            "cha",
-            "ac",
-            "hp",
-        ],
+        characteristics=ORDERED_CHARACTERISTICS,
     )
     X.pop("book")
     y = X.pop("level")
-    X = X[["str", "dex", "con", "int", "wis", "cha", "ac", "hp"]]
+    X = X[ORDERED_CHARACTERISTICS]
 
     lightgbm = get_fitted_model(classifier_name="lightgbm", X_train=X, y_train=y)
 
