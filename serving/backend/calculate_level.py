@@ -1,8 +1,12 @@
 import math
+import os
+import sys
 
 import pandas as pd
 
-from serving.backend.constants import THRESHOLD
+
+sys.path.insert(0, os.sep.join(os.path.normpath(__file__).split(os.sep)[:-1]))
+from constants import THRESHOLD
 
 
 def _round_monster_level(level: float, threshold: float = THRESHOLD) -> int:

@@ -1,10 +1,14 @@
 import json
+import os
+import sys
 
 import dice_ml
 import pandas as pd
 from dice_ml import Dice
 
-from serving.backend.constants import ORDERED_CHARACTERISTICS, THRESHOLD
+
+sys.path.insert(0, os.sep.join(os.path.normpath(__file__).split(os.sep)[:-1]))
+from constants import ORDERED_CHARACTERISTICS, THRESHOLD
 
 
 def generate_counterfactuals(
