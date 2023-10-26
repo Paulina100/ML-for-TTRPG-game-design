@@ -7,5 +7,7 @@ RUN apt-get update && apt-get install -y libgomp1
 
 COPY serving/backend .
 COPY saved_models saved_models
+COPY pathfinder_2e_data pathfinder_2e_data
+COPY training training
 
 CMD ["uvicorn", "server:app", "--host", "0.0.0.0"]

@@ -12,6 +12,7 @@ import "./style.css";
 function App() {
     console.log("starting...");
 
+    const [monsterProperties, setMonsterProperties] = useState({});
     const [results, setResults] = useState({});
 
     return (
@@ -20,8 +21,8 @@ function App() {
             <div id="page-background">
                 <div id="page-content">
                     <PageInfo />
-                    <Forms setResultsFunction={setResults} />
-                    <Results results={results} />
+                    <Forms setResultsFunction={setResults} monsterProperties={monsterProperties} setMonsterProperties={setMonsterProperties} />
+                    <Results results={results} monsterProperties={monsterProperties} setMonsterProperties={setMonsterProperties}/>
                 </div>
             </div>
             <Footer />

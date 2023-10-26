@@ -11,3 +11,16 @@ class Properties(BaseModel):
     charisma: int = Field(alias="cha")
     armor_class: int = Field(alias="ac")
     hit_points: int = Field(alias="hp")
+
+
+class CounterfactualsInput(BaseModel):
+    name: str
+    str: int
+    dex: int
+    con: int
+    wis: int
+    cha: int
+    ac: int
+    hp: int
+    int: int
+    level: "int"

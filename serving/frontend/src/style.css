@@ -210,6 +210,48 @@ input[type="text"] {
     margin-top: -5px;
 }
 
+#counterfactuals-form {
+    margin-bottom: 15px;
+}
+
+#counterfactuals-submit-button {
+    width: max-content;
+    margin: 0 20px;
+}
+
+#selectedLevel {
+    width: 50px;
+    margin-left: 5px;
+    text-align: center;
+    padding: 5px;
+}
+
+#counterfactuals-wait-info {
+    color: gray;
+}
+
+#counterfactuals-table, .counterfactuals-table-row, .counterfactuals-table-cell {
+    border: 1px solid gray;
+    border-collapse: collapse;
+}
+
+.counterfactuals-table-cell {
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    width: 12.5%;
+    text-align: center;
+}
+
+.counterfactual-changed-value {
+    color: var(--theme-color);
+    font-weight: bold;
+}
+
+.counterfactual-unchanged-value {
+    color: gray;
+}
+
 /* FOOTER */
 #footer {
     width: 100%;
