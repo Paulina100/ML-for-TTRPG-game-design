@@ -1,9 +1,10 @@
 import {useState} from "react";
+import HelpTooltip from "../HelpTooltip";
 
 const CounterfactualExamples = (monsterProperties, setMonsterProperties, level) => {
     const [counterfactualExamples, setCounterfactualExamples] = useState([]);
     const [selectedLevel, setSelectedLevel] = useState("");
-    const [submitting, setSubmitting] = useState(false);
+    const [displayedInfo, setDisplayedInfo] = useState({});
 
     const properties = ["Strength (Str)", "Dexterity (Dex)", "Constitution  (Con)", "Intelligence (Int)",
         "Wisdom (Wis)", "Charisma (Cha)", "Armor Class (AC)", "Hit Points (HP)"];
@@ -48,7 +49,7 @@ const CounterfactualExamples = (monsterProperties, setMonsterProperties, level) 
         Object.keys(monsterProperties.monsterProperties)
           .forEach(key => requestBody[key] = monsterProperties.monsterProperties[key]);
 
-        setSubmitting(true);
+        setDisplayedInfo({"text": "Calculating, please wait..."});
 
         fetch("http://" + process.env.REACT_APP_HOST + ":" + process.env.REACT_APP_PORT + process.env.REACT_APP_COUNTERFACTUALS_ENDPOINT, {
             method: "POST",
@@ -56,11 +57,17 @@ const CounterfactualExamples = (monsterProperties, setMonsterProperties, level) 
             body: JSON.stringify(requestBody)
         }).then((response) => {
             response.json().then(json => {
-                setCounterfactualExamples(json["values"]);
+                if (! json.hasOwnProperty("values")) {
+                    setDisplayedInfo({"text": "Time limit has been exceeded. New properties have not been generated. ",
+                        "help": "This may happen if requested level is much bigger or much smaller than the original value."})
+                } else {
+                    setCounterfactualExamples(json["values"]);
+                    setDisplayedInfo({});
+                }
             });
         }).catch(error => {
             alert(error);
-        }).finally(() => {setSubmitting(false);});
+        });
     }
 
     const renderCounterfactualExampleRow = (counterfactualExample, exampleIndex) => {
@@ -100,7 +107,12 @@ const CounterfactualExamples = (monsterProperties, setMonsterProperties, level) 
                         onBlur={() => {validateInput();}}/>
                 <button type="submit" id="counterfactuals-submit-button">Generate new properties</button>
             </form>
-            {(submitting) ? <p id={"counterfactuals-wait-info"}>Calculating, please wait...</p> : <></>}
+            {(displayedInfo !== {})
+                ? <div id={"counterfactuals-wait-info"}><span>{displayedInfo["text"]}</span>
+                    {(displayedInfo.hasOwnProperty("help"))
+                        ? <HelpTooltip helpText={displayedInfo["help"]}></HelpTooltip>
+                        : <></>}</div>
+                : <></>}
             {(counterfactualExamples.length === 0)
                 ? <></>
                 : <table id={"counterfactuals-table"}>
