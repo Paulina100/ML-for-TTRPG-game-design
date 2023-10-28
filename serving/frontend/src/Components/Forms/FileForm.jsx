@@ -6,7 +6,7 @@ const FileForm = (setMonsterProperties, setResultsFunction) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("");
     const systemProperties = new Map([
-        ["abilities", ["cha", "con", "dex", "int", "str", "wis"]],  // mod
+        ["abilities", ["str", "dex", "con", "int", "wis", "cha"]],  // mod
         ["attributes", ["ac", "hp"]]  // value
     ]);
     const propertiesValuesKey = new Map([
