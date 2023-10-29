@@ -7,32 +7,32 @@ def test_calculate_level():
     model = joblib.load(filename="../saved_models/current_model.pkl")
 
     monster_adult_white_dragon = {
-        "cha": 1,
-        "con": 5,
-        "dex": 2,
-        "int": 1,
         "str": 7,
+        "dex": 2,
+        "con": 5,
+        "int": 1,
         "wis": 2,
+        "cha": 1,
         "ac": 29,
         "hp": 215,
     }
     monster_lantern_archon = {
-        "cha": 1,
-        "con": 1,
-        "dex": 3,
-        "int": -1,
         "str": -5,
+        "dex": 3,
+        "con": 1,
+        "int": -1,
         "wis": 1,
+        "cha": 1,
         "ac": 16,
         "hp": 20,
     }
     monster_treerazer = {
-        "cha": 8,
-        "con": 11,
-        "dex": 9,
-        "int": 7,
         "str": 12,
+        "dex": 9,
+        "con": 11,
+        "int": 7,
         "wis": 8,
+        "cha": 8,
         "ac": 54,
         "hp": 550,
     }
