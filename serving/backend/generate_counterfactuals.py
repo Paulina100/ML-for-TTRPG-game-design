@@ -5,6 +5,7 @@ import sys
 import dice_ml
 import pandas as pd
 from dice_ml import Dice
+from raiutils.exceptions import UserConfigValidationException
 
 
 sys.path.insert(0, os.sep.join(os.path.normpath(__file__).split(os.sep)[:-1]))
@@ -12,7 +13,12 @@ from constants import ORDERED_CHARACTERISTICS, THRESHOLD
 
 
 def generate_counterfactuals(
-    monster_stats: dict, model, new_level: int, df: pd.DataFrame, total_cf: int = 5
+    monster_stats: dict,
+    model,
+    new_level: int,
+    df: pd.DataFrame,
+    total_cf: int = 5,
+    ordered_characteristics: list[str] = ORDERED_CHARACTERISTICS,
 ) -> dict[str, float]:
     """
     Generate counterfactual explanations for a monster's characteristics to achieve a new level.
@@ -25,8 +31,8 @@ def generate_counterfactuals(
     :return: A dictionary containing the generated counterfactual explanations *values* and information whether characteristic was *modified*.
     """
     query = pd.DataFrame.from_records([monster_stats])
-    query = query[ORDERED_CHARACTERISTICS]
-    df = df[ORDERED_CHARACTERISTICS + ["level"]]
+    query = query[ordered_characteristics]
+    df = df[ordered_characteristics + ["level"]]
     continuous_features = df.drop(columns=["level"]).columns.tolist()
 
     d = dice_ml.Data(
