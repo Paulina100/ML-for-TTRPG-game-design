@@ -39,15 +39,15 @@ def generate_counterfactuals(
         dataframe=df, continuous_features=continuous_features, outcome_name="level"
     )
     m = dice_ml.Model(model=model, backend="sklearn", model_type="regressor")
-    exp = Dice(d, m, method="genetic")
+    exp = Dice(d, m, method="kdtree")
 
     desired_range = [new_level - 1 + THRESHOLD, new_level + THRESHOLD]
 
-    genetic = exp.generate_counterfactuals(
+    cfs = exp.generate_counterfactuals(
         query, total_CFs=total_cf, desired_range=desired_range
     )
 
-    cf_json = json.loads(genetic.to_json())
+    cf_json = json.loads(cfs.to_json())
 
     result = {
         "values": [],
@@ -59,9 +59,10 @@ def generate_counterfactuals(
     original = cf_json["test_data"][0][0]  # list(monster_stats.values())
 
     for cf in cf_json["cfs_list"][0]:
-        cf = cf[:-1]
-        result["values"].append(cf)
-        cf_modified = [val != original[i] for i, val in enumerate(cf)]
-        result["modified"].append(cf_modified)
+        if cf[-1] != new_level - 1 + THRESHOLD:
+            cf = cf[:-1]
+            result["values"].append(cf)
+            cf_modified = [val != original[i] for i, val in enumerate(cf)]
+            result["modified"].append(cf_modified)
 
     return result
