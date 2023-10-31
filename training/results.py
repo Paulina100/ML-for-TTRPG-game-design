@@ -228,3 +228,82 @@ def plot_one_type_split(results, split_type, measure_type, figsize=(20, 8)):
     plt.xticks([r + bar_width for r in range(len(values))], labels, fontsize=20)
 
     plt.show()
+
+
+def plot_summary_all_models(results, split_type, measure_type, figsize=(20, 8)):
+    """
+    Plot a summary bar chart of evaluation metrics for different models, model tuning types and characteristics.
+
+    It displays a bar chart to visualize the performance of different machine learning models,
+    for a specified 'split_type' and 'measure_type' under different conditions.
+
+
+    :param results: A DataFrame with evaluation results, including 'Tuning type', 'Split type',
+    'Number of characteristics', and the 'measure_type' of interest.
+    :param split_type: The type of data split (e.g., "chronological," "random") for which you want to visualize the evaluation metrics.
+    :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
+    :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
+    """
+
+    bar_width = 0.25
+    fig, ax = plt.subplots(1, figsize=figsize)
+    ax.grid()
+    fig.autofmt_xdate()
+    plt.grid(axis="y", linestyle="--")
+    data = results[results["Split type"] == split_type]
+
+    labels = data.apply(
+        lambda row: row["Tuning type"] + " " + str(row["Number of characteristics"]),
+        axis="columns",
+    )
+    labels = dict.fromkeys(labels).keys()
+    linear_regression = []
+    random_forest = []
+    lightgbm = []
+
+    for i, l in enumerate(labels):
+        t, nr = l.split(" ")
+        temp = data[
+            (data["Tuning type"] == t) & (data["Number of characteristics"] == int(nr))
+        ]
+        linear_regression.append(
+            float(temp[temp["Model type"] == "Linear regression"][measure_type])
+        )
+        random_forest.append(
+            float(temp[temp["Model type"] == "Random forest"][measure_type])
+        )
+        lightgbm.append(float(temp[temp["Model type"] == "LightGBM"][measure_type]))
+
+    br1 = np.arange(len(linear_regression))
+    br2 = [x + bar_width for x in br1]
+    br3 = [x + bar_width for x in br2]
+
+    plt.bar(
+        br1,
+        linear_regression,
+        color="r",
+        width=bar_width,
+        edgecolor="grey",
+        label="Linear regression",
+    )
+    plt.bar(
+        br2,
+        random_forest,
+        color="g",
+        width=bar_width,
+        edgecolor="grey",
+        label="Random forest",
+    )
+    plt.bar(
+        br3, lightgbm, color="b", width=bar_width, edgecolor="grey", label="LightGBM"
+    )
+
+    plt.xlabel("Tuning type & nr of characteristics", fontweight="bold", fontsize=25)
+    plt.ylabel(measure_type, fontweight="bold", fontsize=25)
+    plt.xticks(
+        [r + bar_width for r in range(len(linear_regression))], labels, fontsize=20
+    )
+
+    plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment="right")
+    plt.legend(fontsize=20)
+    plt.show()
