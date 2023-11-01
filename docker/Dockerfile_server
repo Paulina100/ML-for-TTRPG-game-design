@@ -2,7 +2,6 @@ FROM public.ecr.aws/lambda/python:3.10
 
 COPY requirements.txt  ${LAMBDA_TASK_ROOT}
 RUN pip install -r requirements.txt --target "${LAMBDA_TASK_ROOT}" -U --no-cache-dir
-RUN apt-get update && apt-get install -y libgomp1
 
 COPY serving/backend serving/backend
 COPY saved_models saved_models

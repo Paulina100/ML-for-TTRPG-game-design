@@ -60,7 +60,7 @@ resources:
         OwnershipControls:
           Rules:
             - ObjectOwnership: BucketOwnerPreferred
-        BucketName: "monster-creator-dev1"
+        BucketName: "monster-creator-dev"
     CloudFrontDistribution:
       Type: AWS::CloudFront::Distribution
       DependsOn:
@@ -68,19 +68,12 @@ resources:
       Properties:
         DistributionConfig:
           Origins:
-            - DomainName: "monster-creator-dev1.s3.us-east-1.amazonaws.com"
-              Id: monster-creator-dev1
+            - DomainName: "monster-creator-dev.s3.us-east-1.amazonaws.com"
+              Id: monster-creator-dev
               S3OriginConfig:
                 OriginAccessIdentity: ""
           Enabled: "true"
           DefaultRootObject: index.html
-          CustomErrorResponses:
-            - ErrorCode: 404
-              ResponseCode: 200
-              ResponsePagePath: /index.html
-            - ErrorCode: 403
-              ResponseCode: 200
-              ResponsePagePath: /index.html
           HttpVersion: http2
           DefaultCacheBehavior:
             AllowedMethods:
@@ -92,7 +85,7 @@ resources:
               - POST
               - PUT
             Compress: true
-            TargetOriginId: monster-creator-dev1
+            TargetOriginId: monster-creator-dev
             ForwardedValues:
               QueryString: "false"
               Cookies:
