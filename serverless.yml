@@ -8,10 +8,7 @@ provider:
     images:
       server:
         path: .
-        file: ./docker/Dockerfile_server
-      frontend:
-        path: .
-        file: ./docker/Dockerfile_frontend
+        file: ./docker/Dockerfile_aws
 
   stage: ${opt:stage}
   region: "us-east-1"
@@ -43,9 +40,6 @@ package:
     - '!README.md'
 
 functions:
-  show:
-    image:
-      name: frontend 
   calculate:
     image:
       name: server
