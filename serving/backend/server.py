@@ -17,7 +17,7 @@ app.add_middleware(
 )
 handler = Mangum(app)
 
-model = joblib.load(filename="../../saved_models/current_model.pkl")
+model = joblib.load(filename="./saved_models/current_model.pkl")
 
 
 @app.post("/make_prediction")
