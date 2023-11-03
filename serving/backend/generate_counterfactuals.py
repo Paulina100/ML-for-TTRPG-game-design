@@ -1,19 +1,11 @@
 import json
 import os
 import sys
-import warnings
-
-
-warnings.filterwarnings("ignore")
-# Ignore warning: UserConfigValidationException will be deprecated from dice_ml.utils.
-# Please import UserConfigValidationException from raiutils.exceptions.
 
 import dice_ml
 import pandas as pd
 from dice_ml import Dice
 
-
-warnings.resetwarnings()
 
 sys.path.insert(0, os.sep.join(os.path.normpath(__file__).split(os.sep)[:-1]))
 from constants import ORDERED_CHARACTERISTICS, THRESHOLD
@@ -58,17 +50,18 @@ def generate_counterfactuals(
     cf_json = json.loads(cfs.to_json())
 
     result = {
-        "values": [],
+        "values": sorted(
+            cf_json["cfs_list"][0], key=lambda x: abs(new_level - x[-1]), reverse=True
+        )
     }
     # Query can consist of more than one instance
     # so each data about original stats and counterfactuals is given as a list of lists - we always have one instance
     # "cfs_list": [[[1.0, 5.0, 2.0, 1.0, 7.0, 2.0, 29.0, 215.0, 10.231964445152919]]]
 
-    for cf in cf_json["cfs_list"][0]:
-        if cf[-1] != new_level - 1 + THRESHOLD:
-            # If the predicted level is equal to `new_level - 1 + THRESHOLD`,
-            # `calculate_level` would qualify this counterfactual for new_level - 1, not new_level.
-            cf = cf[:-1]
-            result["values"].append(cf)
+    result["values"] = [
+        cf[:-1] for cf in result["values"] if cf[-1] != new_level - 1 + THRESHOLD
+    ]
+    # If the predicted level is equal to `new_level - 1 + THRESHOLD`,
+    # `calculate_level` would qualify this counterfactual for new_level - 1, not new_level.
 
     return result

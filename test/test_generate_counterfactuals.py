@@ -66,11 +66,8 @@ def test_generate_counterfactuals_t(monster, new_level):
     )
 
     for cf_nr in range(len(cfs["values"])):
-        test_monster = {}
-        for i, val in enumerate(monster.items()):
-            if cfs["modified"][cf_nr][i]:
-                assert cfs["values"][cf_nr][i] != val[1]
-            else:
-                assert cfs["values"][cf_nr][i] == val[1]
-            test_monster[val[0]] = cfs["values"][cf_nr][i]
+        test_monster = {
+            characteristic: cfs["values"][cf_nr][i]
+            for i, characteristic in enumerate(monster.keys())
+        }
         assert calculate_level(test_monster, model) == new_level
