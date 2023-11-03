@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
@@ -8,7 +9,7 @@ from sklearn.metrics import (
 )
 
 
-def print_check_predictions(y, y_pred):
+def print_check_predictions(y: pd.Series, y_pred: np.ndarray):
     """
     Calculate and print MSE and RMSE for predicted values.
 
@@ -19,7 +20,7 @@ def print_check_predictions(y, y_pred):
     print(f"RMSE: {mean_squared_error(y, y_pred, squared=False):.2f}\n")
 
 
-def round_predictions(threshold: str | float, predict):
+def round_predictions(threshold: str | float, predict: np.ndarray):
     """
     Round predicted values based on a specified threshold.
 
@@ -44,7 +45,9 @@ def round_predictions(threshold: str | float, predict):
     return np.where(threshold_predict > 20, 21, threshold_predict)
 
 
-def check_round_predictions(round_types: list[str | float], y, predict):
+def check_round_predictions(
+    round_types: list[str | float], y: pd.Series, predict: np.ndarray
+):
     """
     Evaluate and print the predictions of a model at different round thresholds,
     including a normal prediction (no rounding), and for each threshold specified in the 'round_types' list.
@@ -63,7 +66,36 @@ def check_round_predictions(round_types: list[str | float], y, predict):
         print_check_predictions(y, threshold_predict)
 
 
-def plot_confusion_matrix(threshold, predict, y):
+def plot_mae_by_level(y_test: pd.Series, y_pred_test: np.ndarray, title: str = None):
+
+    y_test = y_test.reset_index(drop=True)
+    level_max = y_test.max()
+
+    mae_by_level = pd.DataFrame(columns=["level", "mae"])
+    for lvl in range(-1, level_max + 1):
+        y_test_curr = y_test[y_test == lvl]
+        y_pred_test_curr = pd.DataFrame(y_pred_test)[y_test == lvl]
+
+        mae = mean_absolute_error(y_test_curr, y_pred_test_curr)
+        mae_by_level.loc[lvl + 1] = [lvl, mae]
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(mae_by_level["level"], mae_by_level["mae"])
+    plt.xlabel("Level")
+    plt.ylabel("Mean Absolute Error (MAE)")
+
+    if title is None:
+        plt.title("MAE by level")
+    else:
+        plt.title(title)
+
+    plt.xticks(mae_by_level["level"])
+    plt.show()
+
+
+def plot_confusion_matrix(
+    threshold: str | float, predict: np.ndarray, y: pd.Series, title: str = None
+):
     """
     Plot a confusion matrix for rounded predictions based on a specified threshold.
     It visualizes the confusion matrix using a heatmap.
@@ -81,11 +113,22 @@ def plot_confusion_matrix(threshold, predict, y):
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
 
     disp.plot()
-    plt.title("Confusion matrix")
+
+    if title is None:
+        plt.title("Confusion matrix")
+    else:
+        plt.title(title)
     plt.show()
 
 
-def assess_regression_model(model, X_train, X_test, y_train, y_test, r2=False):
+def assess_regression_model(
+    model,
+    X_train: pd.DataFrame,
+    X_test: pd.DataFrame,
+    y_train: pd.Series,
+    y_test: pd.Series,
+    r2: bool = False,
+):
     """
     Assess the performance of a regression model and print evaluation metrics.
 
@@ -126,7 +169,12 @@ def assess_regression_model(model, X_train, X_test, y_train, y_test, r2=False):
     return rmse_test, mse_test, mae_test
 
 
-def plot_summary(results, measure_type, figsize=(20, 8)):
+def plot_summary(
+    results: pd.DataFrame,
+    measure_type: str,
+    title: str = None,
+    figsize: tuple[int, int] = (20, 8),
+):
     """
     Plot a summary bar chart of evaluation metrics for different model tuning types and characteristics.
 
@@ -137,6 +185,7 @@ def plot_summary(results, measure_type, figsize=(20, 8)):
     :param results: A DataFrame with evaluation results, including 'Tuning type', 'Split type',
     'Number of characteristics', and the 'measure_type' of interest.
     :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
+    :param title: Plot tile.
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
     """
 
@@ -184,10 +233,26 @@ def plot_summary(results, measure_type, figsize=(20, 8)):
 
     plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment="right")
     plt.legend(fontsize=20)
+
+    if title is None:
+        plt.title(
+            f"Summary of {measure_type} for Different Model Tuning Types and Characteristics",
+            fontsize=30,
+            fontweight="bold",
+        )
+    else:
+        plt.title(title, fontsize=30, fontweight="bold")
+
     plt.show()
 
 
-def plot_one_type_split(results, split_type, measure_type, figsize=(20, 8)):
+def plot_one_type_split(
+    results: pd.DataFrame,
+    split_type: str,
+    measure_type: str,
+    title: str = None,
+    figsize: tuple[int, int] = (20, 8),
+):
     """
     Plot a summary bar chart of evaluation metrics for a specific split type and measure type.
 
@@ -227,10 +292,25 @@ def plot_one_type_split(results, split_type, measure_type, figsize=(20, 8)):
     plt.ylabel(measure_type, fontweight="bold", fontsize=25)
     plt.xticks([r + bar_width for r in range(len(values))], labels, fontsize=20)
 
+    if title is None:
+        plt.title(
+            f"Summary of {measure_type} for {split_type} Split Type and Different Model Tuning Types and Characteristics",
+            fontsize=30,
+            fontweight="bold",
+        )
+    else:
+        plt.title(title, fontsize=30, fontweight="bold")
+
     plt.show()
 
 
-def plot_summary_all_models(results, split_type, measure_type, figsize=(20, 8)):
+def plot_summary_all_models(
+    results: pd.DataFrame,
+    split_type: str,
+    measure_type: str,
+    title: str = None,
+    figsize: tuple[int, int] = (20, 8),
+):
     """
     Plot a summary bar chart of evaluation metrics for different models, model tuning types and characteristics.
 
@@ -306,4 +386,14 @@ def plot_summary_all_models(results, split_type, measure_type, figsize=(20, 8)):
 
     plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment="right")
     plt.legend(fontsize=20)
+
+    if title is None:
+        plt.title(
+            f"Summary of {measure_type} for {split_type} Split Type and Different Models, Tuning Types, and Characteristics",
+            fontsize=30,
+            fontweight="bold",
+        )
+    else:
+        plt.title(title, fontsize=30, fontweight="bold")
+
     plt.show()
