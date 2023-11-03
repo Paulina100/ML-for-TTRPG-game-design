@@ -24,6 +24,11 @@ pre-commit = "2.20.*"
 [tool.poetry.group.test.dependencies]
 pytest = "7.1.*"
 
+[tool.pytest.ini_options]
+pythonpath = [
+  "serving/backend"
+]
+
 [tool.poetry.group.webserver.dependencies]
 fastapi = "0.101.*"
 uvicorn = "0.22.*"

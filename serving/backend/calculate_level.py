@@ -1,11 +1,6 @@
 import math
-import os
-import sys
 
 import pandas as pd
-
-
-sys.path.insert(0, os.sep.join(os.path.normpath(__file__).split(os.sep)[:-1]))
 from constants import THRESHOLD
 
 

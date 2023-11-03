@@ -1,14 +1,9 @@
 import json
-import os
-import sys
 
 import dice_ml
 import pandas as pd
-from dice_ml import Dice
-
-
-sys.path.insert(0, os.sep.join(os.path.normpath(__file__).split(os.sep)[:-1]))
 from constants import ORDERED_CHARACTERISTICS, THRESHOLD
+from dice_ml import Dice
 
 
 def generate_counterfactuals(
@@ -48,6 +43,17 @@ def generate_counterfactuals(
     )
 
     cf_json = json.loads(cfs.to_json())
+    # cfs - CounterfactualExplanations object
+    # cfs.to_json() returns json string (type: str)
+    # example:
+    #     '{"test_data": [[[3.0, 2.0, 2.0, -4.0, 1.0, -1.0, 17.0, 17.0, 1.0001450258428668]]],
+    #     "cfs_list": [[[3.0, 2.0, 3.0, -4.0, 1.0, 1.0, 15.0, 18.0, -6.624720117542893e-05]]],
+    #     "local_importance": null, "summary_importance": null,
+    #     "data_interface": {"outcome_name": "level", "data_df": "dummy_data"},
+    #     "feature_names": ["str", "dex", "con", "int", "wis", "cha", "ac", "hp"],
+    #     "feature_names_including_target": ["str", "dex", "con", "int", "wis", "cha", "ac", "hp", "level"],
+    #     "model_type": "regressor", "desired_class": "opposite", "desired_range": [-0.67, 0.33],
+    #     "metadata": {"version": "2.0"}}'
 
     result = {
         "values": sorted(

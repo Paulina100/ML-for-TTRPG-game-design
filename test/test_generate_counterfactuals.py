@@ -1,12 +1,18 @@
+import os
+import sys
 from test.constants import DATASET_PATHS
 
 import joblib
 import pytest
 
+from training.creating_dataset import load_and_preprocess_data
+
+
+# sys.path.insert(0, os.sep.join(os.path.normpath(__file__).split(os.sep)[:-2]).join("serving/backend"))
+sys.path.append("../..")
 from serving.backend.calculate_level import calculate_level
 from serving.backend.constants import ORDERED_CHARACTERISTICS
 from serving.backend.generate_counterfactuals import generate_counterfactuals
-from training.creating_dataset import load_and_preprocess_data
 
 
 df = load_and_preprocess_data(
@@ -65,9 +71,14 @@ def test_generate_counterfactuals_t(monster, new_level):
         monster_stats=monster, model=model, new_level=new_level, df=df
     )
 
+    prev_distance_to_new_level = 0  # check sort
     for cf_nr in range(len(cfs["values"])):
         test_monster = {
             characteristic: cfs["values"][cf_nr][i]
             for i, characteristic in enumerate(monster.keys())
         }
-        assert calculate_level(test_monster, model) == new_level
+        predicted_level = calculate_level(test_monster, model)
+        assert predicted_level == new_level
+        distance_to_new_level = abs(predicted_level - new_level)
+        assert distance_to_new_level >= prev_distance_to_new_level
+        prev_distance_to_new_level = distance_to_new_level
