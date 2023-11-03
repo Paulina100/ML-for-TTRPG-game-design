@@ -32,7 +32,9 @@ pythonpath = [
 
 [tool.poetry.group.webserver.dependencies]
 fastapi = "0.101.*"
-uvicorn = "0.22.*"
 mangum = "0.17.*"
+pandas = "1.4.*"
+scikit-learn = "1.2.*"
+uvicorn = "0.22.*"
 
 # poetry export --without-hashes --format=requirements.txt --with="style,test,webserver" --output=requirements.txt
