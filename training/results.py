@@ -56,7 +56,7 @@ def check_round_predictions(
     :param y: True values.
     :param predict: Predicted values from the model.
     """
-    print("Normal:")
+    print("Default:")
     print_check_predictions(y, predict)
 
     for threshold in round_types:
@@ -183,7 +183,7 @@ def plot_summary(
 
 
     :param results: A DataFrame with evaluation results, including 'Tuning type', 'Split type',
-    'Number of characteristics', and the 'measure_type' of interest.
+    'Set of features', and the 'measure_type' of interest.
     :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
     :param title: Plot tile.
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
@@ -196,7 +196,7 @@ def plot_summary(
     plt.grid(axis="y", linestyle="--")
 
     labels = results.apply(
-        lambda row: row["Tuning type"] + " " + str(row["Number of characteristics"]),
+        lambda row: row["Tuning type"] + " " + str(row["Set of features"]),
         axis="columns",
     )
     labels = dict.fromkeys(labels).keys()
@@ -204,10 +204,9 @@ def plot_summary(
     random = []
 
     for i, l in enumerate(labels):
-        t, nr = l.split(" ")
+        t, no = l.split(" ")
         temp = results[
-            (results["Tuning type"] == t)
-            & (results["Number of characteristics"] == int(nr))
+            (results["Tuning type"] == t) & (results["Set of features"] == no)
         ]
         chronological.append(
             float(temp[temp["Split type"] == "chronological"][measure_type])
@@ -227,7 +226,7 @@ def plot_summary(
     )
     plt.bar(br2, random, color="g", width=bar_width, edgecolor="grey", label="random")
 
-    plt.xlabel("Split type & nr of characteristics", fontweight="bold", fontsize=25)
+    plt.xlabel("Split type & no. characteristics", fontweight="bold", fontsize=25)
     plt.ylabel(measure_type, fontweight="bold", fontsize=25)
     plt.xticks([r + bar_width for r in range(len(chronological))], labels, fontsize=20)
 
@@ -260,7 +259,7 @@ def plot_one_type_split(
     'measure_type' under different conditions.
 
     :param results: A DataFrame with evaluation results, including 'Tuning type', 'Split type',
-    'Number of characteristics', and the 'measure_type' of interest.
+    'Set of features', and the 'measure_type' of interest.
     :param split_type: The type of data split (e.g., "chronological," "random") for which you want to visualize the evaluation metrics.
     :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
@@ -274,21 +273,19 @@ def plot_one_type_split(
     data = results[results["Split type"] == split_type]
 
     labels = data.apply(
-        lambda row: row["Tuning type"] + " " + str(row["Number of characteristics"]),
+        lambda row: row["Tuning type"] + " " + str(row["Set of features"]),
         axis="columns",
     )
     values = []
 
     for i, l in enumerate(labels):
-        t, nr = l.split(" ")
-        temp = data[
-            (data["Tuning type"] == t) & (data["Number of characteristics"] == int(nr))
-        ]
+        t, no = l.split(" ")
+        temp = data[(data["Tuning type"] == t) & (data["Set of features"] == no)]
         values.append(float(temp[measure_type]))
 
     plt.bar(labels, values, width=bar_width)
 
-    plt.xlabel("Split type & nr of characteristics", fontweight="bold", fontsize=25)
+    plt.xlabel("Split type & no. characteristics", fontweight="bold", fontsize=25)
     plt.ylabel(measure_type, fontweight="bold", fontsize=25)
     plt.xticks([r + bar_width for r in range(len(values))], labels, fontsize=20)
 
@@ -319,7 +316,7 @@ def plot_summary_all_models(
 
 
     :param results: A DataFrame with evaluation results, including 'Tuning type', 'Split type',
-    'Number of characteristics', and the 'measure_type' of interest.
+    'Set of features', and the 'measure_type' of interest.
     :param split_type: The type of data split (e.g., "chronological," "random") for which you want to visualize the evaluation metrics.
     :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
@@ -333,7 +330,7 @@ def plot_summary_all_models(
     data = results[results["Split type"] == split_type]
 
     labels = data.apply(
-        lambda row: row["Tuning type"] + " " + str(row["Number of characteristics"]),
+        lambda row: row["Tuning type"] + " " + str(row["Set of features"]),
         axis="columns",
     )
     labels = dict.fromkeys(labels).keys()
@@ -342,10 +339,8 @@ def plot_summary_all_models(
     lightgbm = []
 
     for i, l in enumerate(labels):
-        t, nr = l.split(" ")
-        temp = data[
-            (data["Tuning type"] == t) & (data["Number of characteristics"] == int(nr))
-        ]
+        t, no = l.split(" ")
+        temp = data[(data["Tuning type"] == t) & (data["Set of features"] == no)]
         linear_regression.append(
             float(temp[temp["Model type"] == "Linear regression"][measure_type])
         )
@@ -378,7 +373,7 @@ def plot_summary_all_models(
         br3, lightgbm, color="b", width=bar_width, edgecolor="grey", label="LightGBM"
     )
 
-    plt.xlabel("Tuning type & nr of characteristics", fontweight="bold", fontsize=25)
+    plt.xlabel("Tuning type & no. characteristics", fontweight="bold", fontsize=25)
     plt.ylabel(measure_type, fontweight="bold", fontsize=25)
     plt.xticks(
         [r + bar_width for r in range(len(linear_regression))], labels, fontsize=20
