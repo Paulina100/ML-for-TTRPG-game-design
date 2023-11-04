@@ -1,9 +1,5 @@
-import sys
-
 import joblib
 
-
-sys.path.append("../serving/backend")
 from serving.backend.calculate_level import calculate_level
 
 

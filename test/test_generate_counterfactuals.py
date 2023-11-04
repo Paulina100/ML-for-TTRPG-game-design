@@ -1,18 +1,12 @@
-import os
-import sys
 from test.constants import DATASET_PATHS
 
 import joblib
 import pytest
 
-from training.creating_dataset import load_and_preprocess_data
-
-
-# sys.path.insert(0, os.sep.join(os.path.normpath(__file__).split(os.sep)[:-2]).join("serving/backend"))
-sys.path.append("../..")
 from serving.backend.calculate_level import calculate_level
 from serving.backend.constants import ORDERED_CHARACTERISTICS
 from serving.backend.generate_counterfactuals import generate_counterfactuals
+from training.creating_dataset import load_and_preprocess_data
 
 
 df = load_and_preprocess_data(

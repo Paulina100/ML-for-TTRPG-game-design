@@ -55,19 +55,17 @@ def generate_counterfactuals(
     #     "model_type": "regressor", "desired_class": "opposite", "desired_range": [-0.67, 0.33],
     #     "metadata": {"version": "2.0"}}'
 
-    result = {
-        "values": sorted(
-            cf_json["cfs_list"][0], key=lambda x: abs(new_level - x[-1]), reverse=True
-        )
-    }
+    cfs = cf_json["cfs_list"][0]
     # Query can consist of more than one instance
     # so each data about original stats and counterfactuals is given as a list of lists - we always have one instance
     # "cfs_list": [[[1.0, 5.0, 2.0, 1.0, 7.0, 2.0, 29.0, 215.0, 10.231964445152919]]]
 
-    result["values"] = [
-        cf[:-1] for cf in result["values"] if cf[-1] != new_level - 1 + THRESHOLD
-    ]
+    cfs.sort(key=lambda x: abs(new_level - x[-1]), reverse=True)
+
     # If the predicted level is equal to `new_level - 1 + THRESHOLD`,
     # `calculate_level` would qualify this counterfactual for new_level - 1, not new_level.
+    cfs = [cf[:-1] for cf in cfs if cf[-1] != new_level - 1 + THRESHOLD]
+
+    result = {"values": cfs}
 
     return result
