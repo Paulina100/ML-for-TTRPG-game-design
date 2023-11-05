@@ -11,12 +11,11 @@ from sklearn.metrics import (
 
 def print_check_predictions(y: pd.Series, y_pred: np.ndarray):
     """
-    Calculate and print MSE and RMSE for predicted values.
+    Calculate and print RMSE for predicted values.
 
     :param y: True values.
     :param y_pred: Predicted values from a model.
     """
-    print(f"MSE: {mean_squared_error(y, y_pred):.2f}")
     print(f"RMSE: {mean_squared_error(y, y_pred, squared=False):.2f}\n")
 
 
@@ -152,7 +151,6 @@ def assess_regression_model(
     # calculate train and test RMSE, MSE and MAE
     rmse_train = mean_squared_error(y_train, y_pred_train, squared=False)
     rmse_test = mean_squared_error(y_test, y_pred_test, squared=False)
-    mse_test = mean_squared_error(y_test, y_pred_test)
     mae_test = mean_absolute_error(y_test, y_pred_test)
 
     if r2:
@@ -163,10 +161,9 @@ def assess_regression_model(
     # print train and test RMSE
     print(f"RMSE train: {rmse_train:.2f}")
     print(f"RMSE test: {rmse_test:.2f}")
-    print(f"MSE test: {mse_test:.2f}")
     print(f"MAE test: {mae_test:.2f}\n")
 
-    return rmse_test, mse_test, mae_test
+    return rmse_test, mae_test
 
 
 def plot_summary(

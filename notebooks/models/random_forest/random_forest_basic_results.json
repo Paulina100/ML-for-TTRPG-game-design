@@ -1,1 +1,50 @@
-{"Split type":{"0":"chronological","1":"chronological","2":"chronological","3":"random","4":"random","5":"random"},"Tuning type":{"0":"default","1":"RandomizedSearchCV","2":"minimise_overfitting","3":"default","4":"RandomizedSearchCV","5":"minimise_overfitting"},"Set of features":{"0":"basic","1":"basic","2":"basic","3":"basic","4":"basic","5":"basic"},"MSE":{"0":2.2320467972,"1":0.4585080738,"2":0.4702191201,"3":1.6711284975,"4":0.2279018863,"5":0.2311190496},"RMSE":{"0":1.4940036135,"1":0.6771322425,"2":0.6857252512,"3":1.2927213534,"4":0.4773907062,"5":0.4807484266},"MAE":{"0":1.1914953894,"1":0.435221135,"2":0.4429594491,"3":1.0495082755,"4":0.3053812594,"5":0.3031198475}}
+{
+  "Split type":{
+    "0":"chronological",
+    "1":"chronological",
+    "2":"chronological",
+    "3":"random",
+    "4":"random",
+    "5":"random"
+  },
+  "Tuning type":{
+    "0":"default",
+    "1":"RandomizedSearchCV",
+    "2":"minimise_overfitting",
+    "3":"default",
+    "4":"RandomizedSearchCV",
+    "5":"minimise_overfitting"
+  },
+  "Set of features":{
+    "0":"basic",
+    "1":"basic",
+    "2":"basic",
+    "3":"basic",
+    "4":"basic",
+    "5":"basic"
+  },
+  "MSE":{
+    "0":2.2320467972,
+    "1":0.4589338052,
+    "2":0.4611736503,
+    "3":1.6711284975,
+    "4":0.2273764768,
+    "5":0.2265323467
+  },
+  "RMSE":{
+    "0":1.4940036135,
+    "1":0.6774465331,
+    "2":0.6790976736,
+    "3":1.2927213534,
+    "4":0.4768400957,
+    "5":0.4759541435
+  },
+  "MAE":{
+    "0":1.1914953894,
+    "1":0.4353242009,
+    "2":0.4412743798,
+    "3":1.0495082755,
+    "4":0.3016821192,
+    "5":0.299932209
+  }
+}
