@@ -19,39 +19,33 @@ def print_check_predictions(y: pd.Series, y_pred: np.ndarray):
     print(f"RMSE: {mean_squared_error(y, y_pred, squared=False):.2f}\n")
 
 
-def round_predictions(threshold: str | float, predict: np.ndarray):
+def round_predictions(predict: np.ndarray, threshold: float = 0.5):
     """
     Round predicted values based on a specified threshold.
 
-    If threshold is a string "round", it rounds normally.
-    If 'threshold' is a float, values above the threshold are rounded up, and values below are rounded down.
+    Values above the threshold are rounded up, and values below are rounded down.
 
-    :param threshold: A round type threshold as a string ("round") or a float between 0 and 1.
     :param predict: Predicted values to be rounded.
+    :param threshold: A round type threshold as a float between 0 and 1. Default is 0.5.
     :return: Rounded values with a maximum value of 21.
     """
-    if type(threshold) == str:
-        if threshold != "round":
-            raise ValueError(f"No round type named {threshold}")
-        threshold_predict = np.round(predict).astype("int")
-    else:
-        if threshold > 1 or threshold < 0:
-            raise ValueError(f"Incorrect threshold value: {threshold}")
-        threshold_predict = np.where(
-            (predict % 1) > threshold, np.ceil(predict), np.floor(predict)
-        ).astype("int")
+    if threshold > 1 or threshold < 0:
+        raise ValueError(f"Incorrect threshold value: {threshold}")
+    threshold_predict = np.where(
+        (predict % 1) > threshold, np.ceil(predict), np.floor(predict)
+    ).astype("int")
 
     return np.where(threshold_predict > 20, 21, threshold_predict)
 
 
 def check_round_predictions(
-    round_types: list[str | float], y: pd.Series, predict: np.ndarray
+    round_types: list[float], y: pd.Series, predict: np.ndarray
 ):
     """
     Evaluate and print the predictions of a model at different round thresholds,
     including a normal prediction (no rounding), and for each threshold specified in the 'round_types' list.
 
-    :param round_types: A list of round thresholds specified as a list of strings or floats.
+    :param round_types: A list of round thresholds specified as a list of floats.
     :param y: True values.
     :param predict: Predicted values from the model.
     """
@@ -59,13 +53,22 @@ def check_round_predictions(
     print_check_predictions(y, predict)
 
     for threshold in round_types:
-        threshold_predict = round_predictions(threshold, predict)
+        threshold_predict = round_predictions(predict, threshold)
 
         print(f"Round type: {threshold}")
         print_check_predictions(y, threshold_predict)
 
 
 def plot_mae_by_level(y_test: pd.Series, y_pred_test: np.ndarray, title: str = None):
+    """
+    Plots Mean Absolute Error (MAE) by level.
+
+    Calculates MAE for each level and displays the value on a bar chart.
+
+    :param y_test: True values.
+    :param y_pred_test: Predicted values.
+    :param title: Plot title.
+    """
 
     y_test = y_test.reset_index(drop=True)
     level_max = y_test.max()
@@ -93,17 +96,18 @@ def plot_mae_by_level(y_test: pd.Series, y_pred_test: np.ndarray, title: str = N
 
 
 def plot_confusion_matrix(
-    threshold: str | float, predict: np.ndarray, y: pd.Series, title: str = None
+    predict: np.ndarray, y: pd.Series, threshold: float = 0.5, title: str = None
 ):
     """
-    Plot a confusion matrix for rounded predictions based on a specified threshold.
+    Plots a confusion matrix for rounded predictions based on a specified threshold.
     It visualizes the confusion matrix using a heatmap.
 
-    :param threshold: A round type threshold as a string ("round") or a float between 0 and 1.
     :param predict: Predicted values to be rounded.
     :param y: True values.
+    :param threshold: A round type threshold as a float between 0 and 1. Default is 0.5.
+    :param title: Plot title.
     """
-    round_predict = round_predictions(threshold, predict)
+    round_predict = round_predictions(predict, threshold)
     cm = confusion_matrix(y, round_predict)
 
     # min possible level: -1, max possible level: 21
@@ -259,6 +263,7 @@ def plot_one_type_split(
     'Set of features', and the 'measure_type' of interest.
     :param split_type: The type of data split (e.g., "chronological," "random") for which you want to visualize the evaluation metrics.
     :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
+    :param title: Plot title.
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
     """
 
@@ -316,6 +321,7 @@ def plot_summary_all_models(
     'Set of features', and the 'measure_type' of interest.
     :param split_type: The type of data split (e.g., "chronological," "random") for which you want to visualize the evaluation metrics.
     :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
+    :param title: Plot title.
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
     """
 
