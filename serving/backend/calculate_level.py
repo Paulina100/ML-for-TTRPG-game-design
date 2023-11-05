@@ -1,9 +1,10 @@
 import math
 
 import pandas as pd
+from constants import THRESHOLD
 
 
-def _round_monster_level(level: float, threshold=0.33) -> int:
+def _round_monster_level(level: float, threshold: float = THRESHOLD) -> int:
     """
     Rounds the monster's level based on a lower threshold.
 

@@ -284,22 +284,17 @@ def load_data(paths_to_books: list[str]) -> pd.DataFrame:
     return bestiary
 
 
-def load_and_preprocess_data(
-    paths_to_books: list[str],
-    characteristics: list[str],
-) -> pd.DataFrame:
+def preprocess_data(bestiary: pd.DataFrame, characteristics: list[str]) -> pd.DataFrame:
     """
-    Creates dataframe containing chosen characteristics, level and source book of monsters from chosen books
+    Creates dataframe containing chosen characteristics, level and source book of monsters from given bestiary.
 
-    :param paths_to_books: A list of file paths to books containing monster data in JSON format.
+    :param bestiary: A pandas DataFrame containing information about monsters.
     :param characteristics: A list of characteristics to load.
-    :return: DataFrame with monsters (NPC) from chosen books and with chosen characteristics and their origin book
+    :return: DataFrame with monsters from chosen books and with chosen characteristics and their origin book.
     """
     pd.options.mode.chained_assignment = None
     # silent warning (SettingWithCopyWarning) about view and copy
     # we don't need to go back to the original df - no matter if it is a view
-
-    bestiary = load_data(paths_to_books)
 
     characteristics_groups = split_characteristics_into_groups(set(characteristics))
 
@@ -366,4 +361,22 @@ def load_and_preprocess_data(
     df.loc[df["level"] > 20, "level"] = 21
 
     pd.reset_option("mode.chained_assignment")
+
     return df
+
+
+def load_and_preprocess_data(
+    paths_to_books: list[str],
+    characteristics: list[str],
+) -> pd.DataFrame:
+    """
+    Creates dataframe containing chosen characteristics, level and source book of monsters from chosen books
+
+    :param paths_to_books: A list of file paths to books containing monster data in JSON format.
+    :param characteristics: A list of characteristics to load.
+    :return: DataFrame with monsters (NPC) from chosen books and with chosen characteristics and their origin book
+    """
+
+    bestiary = load_data(paths_to_books)
+
+    return preprocess_data(bestiary, characteristics)

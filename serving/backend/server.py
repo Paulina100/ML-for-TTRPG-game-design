@@ -19,9 +19,8 @@ model = joblib.load(filename="../../saved_models/current_model.pkl")
 
 @app.post("/make_prediction")
 async def make_prediction(properties: Properties):
-    ordered_properties = ["cha", "con", "dex", "int", "str", "wis", "ac", "hp"]
     properties_dict = properties.dict()
-    stats = {p: properties_dict[p] for p in ordered_properties}
-    level = calculate_level(monster_stats=stats, model=model)
+    properties_dict.pop("name")
+    level = calculate_level(monster_stats=properties_dict, model=model)
     result = {"level": str(level) if level <= 20 else ">20"}
     return result
