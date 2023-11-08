@@ -3,6 +3,16 @@ This directory stores all Jupyter Notebook files that have been used as the firs
 divided into two subdirectories: `data_analysis` and `models`. TODO
 
 ## Table of contents
+* [characteristics](#characteristics)
+  * [melee.ipynb](#meleeipynb)
+  * [melee_ranged.ipynb](#melee_rangedipynb)
+  * [spells_number.ipynb](#spells_numberipynb)
+* [counterfactuals](#counterfactuals)
+  * [orcs](#orcs)
+    * [counterfactuals_orcs_8.ipynb](#counterfactuals_orcs_8ipynb)
+    * [counterfactuals_orcs_13.ipynb](#counterfactuals_orcs_13ipynb)
+    * [counterfactuals_orcs_50.ipynb](#counterfactuals_orcs_50ipynb)
+  * [counterfactuals_introduction.ipynb](#counterfactuals_introductionipynb)
 * [data_analysis](#data_analysis) - contains files used to analyse data about monsters from Pathfinder and roughly estimate which parts 
 of it will not be used in finished project. 
   * [abomination_vaults_bestiary_analysis.ipynb](#abomination_vaults_bestiary_analysisipynb)
@@ -32,7 +42,27 @@ of it will not be used in finished project.
     * [random_forest_summary.ipynb](#random_forest_summaryipynb)
   * [all_models_summary.ipynb](#all_models_summaryipynb)
 
-## data_analysis
+## characteristics
+
+### melee.ipynb
+
+### melee_ranged.ipynb
+
+### spells_number.ipynb
+
+### data_analysis
+
+## counterfactuals
+
+### orcs
+
+#### counterfactuals_orcs_8.ipynb
+
+#### counterfactuals_orcs_13.ipynb
+
+#### counterfactuals_orcs_50.ipynb
+
+### counterfactuals_introduction.ipynb
 
 ### abomination_vaults_bestiary_analysis.ipynb
 Analysis of `pathfinder_2e_data/abomination-vaults-bestiary.db`.
