@@ -59,7 +59,12 @@ def check_round_predictions(
         print_check_predictions(y, threshold_predict)
 
 
-def plot_mae_by_level(y_test: pd.Series, y_pred_test: np.ndarray, title: str = None):
+def plot_mae_by_level(
+    y_test: pd.Series,
+    y_pred_test: np.ndarray,
+    title: str = None,
+    figsize: tuple[int, int] = (20, 8),
+):
     """
     Plots Mean Absolute Error (MAE) by level.
 
@@ -68,6 +73,7 @@ def plot_mae_by_level(y_test: pd.Series, y_pred_test: np.ndarray, title: str = N
     :param y_test: True values.
     :param y_pred_test: Predicted values.
     :param title: Plot title.
+    :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
     """
 
     y_test = y_test.reset_index(drop=True)
@@ -81,22 +87,26 @@ def plot_mae_by_level(y_test: pd.Series, y_pred_test: np.ndarray, title: str = N
         mae = mean_absolute_error(y_test_curr, y_pred_test_curr)
         mae_by_level.loc[lvl + 1] = [lvl, mae]
 
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=figsize)
     plt.bar(mae_by_level["level"], mae_by_level["mae"])
-    plt.xlabel("Level")
-    plt.ylabel("Mean Absolute Error (MAE)")
+    plt.xlabel("Level", fontweight="bold", fontsize=20)
+    plt.ylabel("Mean Absolute Error (MAE)", fontweight="bold", fontsize=20)
 
     if title is None:
-        plt.title("MAE by level")
+        plt.title("MAE by level", fontsize=25, fontweight="bold")
     else:
-        plt.title(title)
+        plt.title(title, fontsize=25, fontweight="bold")
 
     plt.xticks(mae_by_level["level"])
     plt.show()
 
 
 def plot_confusion_matrix(
-    predict: np.ndarray, y: pd.Series, threshold: float = 0.5, title: str = None
+    predict: np.ndarray,
+    y: pd.Series,
+    threshold: float = 0.5,
+    title: str = None,
+    figsize: tuple[int, int] = (12, 12),
 ):
     """
     Plots a confusion matrix for rounded predictions based on a specified threshold.
@@ -106,6 +116,7 @@ def plot_confusion_matrix(
     :param y: True values.
     :param threshold: A round type threshold as a float between 0 and 1. Default is 0.5.
     :param title: Plot title.
+    :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
     """
     round_predict = round_predictions(predict, threshold)
     cm = confusion_matrix(y, round_predict)
@@ -115,12 +126,32 @@ def plot_confusion_matrix(
 
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
 
-    disp.plot()
+    # plt.figure(figsize=figsize)
+    # ax = plt.gca()
+
+    fig, ax = plt.subplots(figsize=figsize)
+    # Deactivate default colorbar
+    disp.plot(ax=ax, colorbar=False)
+
+    # Adding custom colorbar
+    cax = fig.add_axes(
+        [
+            ax.get_position().x1 + 0.01,
+            ax.get_position().y0,
+            0.02,
+            ax.get_position().height,
+        ]
+    )
+    plt.colorbar(disp.im_, cax=cax)
+
+    plt.xlabel("Predicted level", fontweight="bold", fontsize=25)
+    plt.ylabel("True level", fontweight="bold", fontsize=25)
 
     if title is None:
         plt.title("Confusion matrix")
     else:
         plt.title(title)
+
     plt.show()
 
 
