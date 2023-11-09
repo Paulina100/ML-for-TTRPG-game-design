@@ -93,9 +93,9 @@ def plot_mae_by_level(
     plt.ylabel("Mean Absolute Error (MAE)", fontweight="bold", fontsize=20)
 
     if title is None:
-        plt.title("MAE by level", fontsize=25, fontweight="bold")
+        plt.title("MAE by level", fontsize=23, fontweight="bold")
     else:
-        plt.title(title, fontsize=25, fontweight="bold")
+        plt.title(title, fontsize=23, fontweight="bold")
 
     plt.xticks(mae_by_level["level"])
     plt.show()
@@ -106,7 +106,7 @@ def plot_confusion_matrix(
     y: pd.Series,
     threshold: float = 0.5,
     title: str = None,
-    figsize: tuple[int, int] = (12, 12),
+    figsize: tuple[int, int] = (10, 10),
 ):
     """
     Plots a confusion matrix for rounded predictions based on a specified threshold.
@@ -116,7 +116,7 @@ def plot_confusion_matrix(
     :param y: True values.
     :param threshold: A round type threshold as a float between 0 and 1. Default is 0.5.
     :param title: Plot title.
-    :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
+    :param figsize: A tuple specifying the figure size (width, height). Default is (10, 10).
     """
     round_predict = round_predictions(predict, threshold)
     cm = confusion_matrix(y, round_predict)
@@ -126,11 +126,7 @@ def plot_confusion_matrix(
 
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
 
-    # plt.figure(figsize=figsize)
-    # ax = plt.gca()
-
     fig, ax = plt.subplots(figsize=figsize)
-    # Deactivate default colorbar
     disp.plot(ax=ax, colorbar=False)
 
     # Adding custom colorbar
@@ -144,13 +140,13 @@ def plot_confusion_matrix(
     )
     plt.colorbar(disp.im_, cax=cax)
 
-    plt.xlabel("Predicted level", fontweight="bold", fontsize=25)
-    plt.ylabel("True level", fontweight="bold", fontsize=25)
+    disp.ax_.set_xlabel("Predicted level", fontweight="bold", fontsize=20)
+    disp.ax_.set_ylabel("True level", fontweight="bold", fontsize=20)
 
     if title is None:
-        plt.title("Confusion matrix")
+        disp.ax_.set_title("Confusion matrix", fontweight="bold", fontsize=20)
     else:
-        plt.title(title)
+        disp.ax_.set_title(title, fontweight="bold", fontsize=20)
 
     plt.show()
 
@@ -258,12 +254,12 @@ def plot_summary(
     )
     plt.bar(br2, random, color="g", width=bar_width, edgecolor="grey", label="random")
 
-    plt.xlabel("Split type & no. characteristics", fontweight="bold", fontsize=25)
+    plt.xlabel("Tuning type & set of features", fontweight="bold", fontsize=25)
     plt.ylabel(measure_type, fontweight="bold", fontsize=25)
     plt.xticks([r + bar_width for r in range(len(chronological))], labels, fontsize=20)
 
     plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment="right")
-    plt.legend(fontsize=20)
+    plt.legend(fontsize=20, title="Split type", title_fontsize=20)
 
     if title is None:
         plt.title(
@@ -318,7 +314,7 @@ def plot_one_type_split(
 
     plt.bar(labels, values, width=bar_width)
 
-    plt.xlabel("Split type & no. characteristics", fontweight="bold", fontsize=25)
+    plt.xlabel("Tuning type & set of features", fontweight="bold", fontsize=25)
     plt.ylabel(measure_type, fontweight="bold", fontsize=25)
     plt.xticks([r + bar_width for r in range(len(values))], labels, fontsize=20)
 
@@ -407,14 +403,14 @@ def plot_summary_all_models(
         br3, lightgbm, color="b", width=bar_width, edgecolor="grey", label="LightGBM"
     )
 
-    plt.xlabel("Tuning type & no. characteristics", fontweight="bold", fontsize=25)
+    plt.xlabel("Tuning type & set of features", fontweight="bold", fontsize=25)
     plt.ylabel(measure_type, fontweight="bold", fontsize=25)
     plt.xticks(
         [r + bar_width for r in range(len(linear_regression))], labels, fontsize=20
     )
 
     plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment="right")
-    plt.legend(fontsize=20)
+    plt.legend(fontsize=20, title="Model", title_fontsize=20)
 
     if title is None:
         plt.title(
