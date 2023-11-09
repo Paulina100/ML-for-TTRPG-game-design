@@ -9,17 +9,18 @@ from sklearn.metrics import (
 )
 
 
-def print_check_predictions(y: pd.Series, y_pred: np.ndarray):
+def print_check_predictions(y: pd.Series, y_pred: np.ndarray) -> None:
     """
     Calculate and print RMSE for predicted values.
 
     :param y: True values.
     :param y_pred: Predicted values from a model.
+    :return: None
     """
     print(f"RMSE: {mean_squared_error(y, y_pred, squared=False):.2f}\n")
 
 
-def round_predictions(predict: np.ndarray, threshold: float = 0.5):
+def round_predictions(predict: np.ndarray, threshold: float = 0.5) -> np.ndarray:
     """
     Round predicted values based on a specified threshold.
 
@@ -38,9 +39,9 @@ def round_predictions(predict: np.ndarray, threshold: float = 0.5):
     return np.where(threshold_predict > 20, 21, threshold_predict)
 
 
-def check_round_predictions(
+def evaluate_round_predictions(
     round_types: list[float], y: pd.Series, predict: np.ndarray
-):
+) -> None:
     """
     Evaluate and print the predictions of a model at different round thresholds,
     including a normal prediction (no rounding), and for each threshold specified in the 'round_types' list.
@@ -48,6 +49,7 @@ def check_round_predictions(
     :param round_types: A list of round thresholds specified as a list of floats.
     :param y: True values.
     :param predict: Predicted values from the model.
+    :return: None
     """
     print("Default:")
     print_check_predictions(y, predict)
@@ -64,7 +66,7 @@ def plot_mae_by_level(
     y_pred_test: np.ndarray,
     title: str = None,
     figsize: tuple[int, int] = (20, 8),
-):
+) -> None:
     """
     Plots Mean Absolute Error (MAE) by level.
 
@@ -74,6 +76,7 @@ def plot_mae_by_level(
     :param y_pred_test: Predicted values.
     :param title: Plot title.
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
+    :return: None
     """
 
     y_test = y_test.reset_index(drop=True)
@@ -107,7 +110,7 @@ def plot_confusion_matrix(
     threshold: float = 0.5,
     title: str = None,
     figsize: tuple[int, int] = (10, 10),
-):
+) -> None:
     """
     Plots a confusion matrix for rounded predictions based on a specified threshold.
     It visualizes the confusion matrix using a heatmap.
@@ -117,6 +120,7 @@ def plot_confusion_matrix(
     :param threshold: A round type threshold as a float between 0 and 1. Default is 0.5.
     :param title: Plot title.
     :param figsize: A tuple specifying the figure size (width, height). Default is (10, 10).
+    :return: None
     """
     round_predict = round_predictions(predict, threshold)
     cm = confusion_matrix(y, round_predict)
@@ -158,7 +162,7 @@ def assess_regression_model(
     y_train: pd.Series,
     y_test: pd.Series,
     r2: bool = False,
-):
+) -> tuple[float, float]:
     """
     Assess the performance of a regression model and print evaluation metrics.
 
@@ -172,7 +176,7 @@ def assess_regression_model(
     :param y_train: True values for the training data.
     :param y_test: True values for the testing data.
     :param r2: If True, calculate and print the R2 coefficient for the training data.
-    :return: Tuple of RMSE, MSE and MAE for the test data.
+    :return: Tuple of RMSE and MAE for the test data.
     """
 
     # predict for train and test
@@ -202,7 +206,7 @@ def plot_summary(
     measure_type: str,
     title: str = None,
     figsize: tuple[int, int] = (20, 8),
-):
+) -> None:
     """
     Plot a summary bar chart of evaluation metrics for different model tuning types and characteristics.
 
@@ -215,6 +219,7 @@ def plot_summary(
     :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
     :param title: Plot tile.
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
+    :return: None
     """
 
     bar_width = 0.25
@@ -279,7 +284,7 @@ def plot_one_type_split(
     measure_type: str,
     title: str = None,
     figsize: tuple[int, int] = (20, 8),
-):
+) -> None:
     """
     Plot a summary bar chart of evaluation metrics for a specific split type and measure type.
 
@@ -292,6 +297,7 @@ def plot_one_type_split(
     :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
     :param title: Plot title.
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
+    :return: None
     """
 
     bar_width = 0.25
@@ -336,7 +342,7 @@ def plot_summary_all_models(
     measure_type: str,
     title: str = None,
     figsize: tuple[int, int] = (20, 8),
-):
+) -> None:
     """
     Plot a summary bar chart of evaluation metrics for different models, model tuning types and characteristics.
 
@@ -350,6 +356,7 @@ def plot_summary_all_models(
     :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
     :param title: Plot title.
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
+    :return: None
     """
 
     bar_width = 0.25

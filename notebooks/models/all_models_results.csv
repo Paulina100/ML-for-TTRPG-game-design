@@ -1,0 +1,49 @@
+Model type,Split type,Tuning type,Set of features,RMSE,MAE
+Linear regression,chronological,default,basic,0.947648,0.673958
+Linear regression,random,default,basic,0.824599,0.538489
+Linear regression,chronological,Ridge,basic,0.956457,0.67798
+Linear regression,chronological,Lasso,basic,0.953894,0.677665
+Linear regression,random,Ridge,basic,0.825067,0.538193
+Linear regression,random,Lasso,basic,0.823513,0.535896
+Linear regression,chronological,default,expanded,0.594538,0.438196
+Linear regression,random,default,expanded,0.570687,0.382039
+Linear regression,chronological,Ridge,expanded,0.601106,0.441633
+Linear regression,chronological,Lasso,expanded,0.595102,0.435859
+Linear regression,random,Ridge,expanded,0.571694,0.380043
+Linear regression,random,Lasso,expanded,0.570531,0.38164
+Linear regression,chronological,default,full,0.742648,0.457334
+Linear regression,random,default,full,0.573386,0.356771
+Linear regression,chronological,Ridge,full,0.762007,0.475612
+Linear regression,chronological,Lasso,full,0.69803,0.454756
+Linear regression,random,Ridge,full,0.585067,0.354016
+Linear regression,random,Lasso,full,0.561733,0.350091
+Random forest,chronological,default,basic,1.494004,1.191495
+Random forest,chronological,RandomizedSearchCV,basic,0.675481,0.43081
+Random forest,chronological,minimise_overfitting,basic,0.676719,0.434398
+Random forest,random,default,basic,1.292721,1.049508
+Random forest,random,RandomizedSearchCV,basic,0.483886,0.302737
+Random forest,random,minimise_overfitting,basic,0.47871,0.300321
+Random forest,chronological,default,expanded,1.454971,1.160199
+Random forest,chronological,RandomizedSearchCV,expanded,0.495759,0.334286
+Random forest,chronological,minimise_overfitting,expanded,0.514428,0.345717
+Random forest,random,default,expanded,1.252547,1.016585
+Random forest,random,RandomizedSearchCV,expanded,0.355139,0.234711
+Random forest,random,minimise_overfitting,expanded,0.3659,0.238332
+Random forest,chronological,default,full,2.247843,1.454898
+Random forest,chronological,RandomizedSearchCV,full,0.839817,0.439841
+Random forest,chronological,minimise_overfitting,full,1.000135,0.475917
+Random forest,random,default,full,1.229497,0.996461
+Random forest,random,RandomizedSearchCV,full,0.330725,0.219593
+Random forest,random,minimise_overfitting,full,0.356312,0.230085
+LightGBM,chronological,default,basic,0.669004,0.467604
+LightGBM,chronological,Optuna,basic,0.675257,0.479835
+LightGBM,random,default,basic,0.488404,0.336785
+LightGBM,random,Optuna,basic,0.506754,0.333149
+LightGBM,chronological,default,expanded,0.510755,0.35718
+LightGBM,chronological,Optuna,expanded,0.456978,0.334893
+LightGBM,random,default,expanded,0.384853,0.267273
+LightGBM,random,Optuna,expanded,0.34385,0.2304
+LightGBM,chronological,default,full,0.965662,0.463517
+LightGBM,chronological,Optuna,full,0.678976,0.389351
+LightGBM,random,default,full,0.371349,0.246737
+LightGBM,random,Optuna,full,0.312773,0.219705

@@ -1,0 +1,5 @@
+,Split type,Tuning type,Set of features,RMSE,MAE
+0,chronological,default,expanded,0.5107545080107806,0.3571799179690266
+1,chronological,Optuna,expanded,0.4569778807534996,0.3348927505982732
+2,random,default,expanded,0.3848525011269789,0.2672732635450484
+3,random,Optuna,expanded,0.3438495471982581,0.23040000785205775
