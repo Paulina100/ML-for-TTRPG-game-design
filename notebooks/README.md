@@ -1,7 +1,7 @@
 # "notebooks" directory
 
 This directory stores all Jupyter Notebook files that have been used as the first step of creating this project. It is 
-divided into two subdirectories: `data_analysis` and `models`.
+divided into four subdirectories: `data_analysis`, `items`, `models` and `counterfactuals`.
 
 ## Table of contents
 
@@ -21,11 +21,6 @@ of it will not be used in finished project.
         * [basic set of features](#basic-set-of-features)
         * [expanded set of features](#expanded-set-of-features)
         * [full set of features](#full-set-of-features)
-    * [lightgbm](#lightgbm)
-        * [lightgbm_basic.ipynb](#lightgbm_basicipynb)
-        * [lightgbm_expanded.ipynb](#lightgbm_expandedipynb)
-        * [lightgbm_full.ipynb](#lightgbm_fullipynb)
-        * [lightgbm_summary.ipynb](#lightgbm_summaryipynb)
     * [linear_regression](#linear_regression)
         * [linear_regression_basic.ipynb](#linear_regression_basicipynb)
         * [linear_regression_expanded.ipynb](#linear_regression_expandedipynb)
@@ -36,6 +31,11 @@ of it will not be used in finished project.
         * [random_forest_expanded.ipynb](#random_forest_expandedipynb)
         * [random_forest_full.ipynb](#random_forest_fullipynb)
         * [random_forest_summary.ipynb](#random_forest_summaryipynb)
+    * [lightgbm](#lightgbm)
+        * [lightgbm_basic.ipynb](#lightgbm_basicipynb)
+        * [lightgbm_expanded.ipynb](#lightgbm_expandedipynb)
+        * [lightgbm_full.ipynb](#lightgbm_fullipynb)
+        * [lightgbm_summary.ipynb](#lightgbm_summaryipynb)
     * [all_models_summary.ipynb](#all_models_summaryipynb)
 * [counterfactuals](#counterfactuals) - contains experiments related to counterfactual explanations
   and `DiCE` - implementation of counterfactual.
@@ -252,25 +252,7 @@ Items
     * melee
     * ranged
     * spells nr
-
-### lightgbm
-
-#### lightgbm_basic.ipynb
-
-LightGBM for predicting monster's level based on basic set of features.
-
-#### lightgbm_expanded.ipynb
-
-LightGBM for predicting monster's level based on expanded set of features.
-
-#### lightgbm_full.ipynb
-
-LightGBM for predicting monster's level based on full set of features.
-
-#### lightgbm_summary.ipynb
-
-Summary of all LightGBM experiments.
-
+    
 ### linear_regression
 
 #### linear_regression_basic.ipynb
@@ -307,6 +289,24 @@ Random forest for predicting monster's level based on full set of features.
 
 Summary of all random forest experiments.
 
+### lightgbm
+
+#### lightgbm_basic.ipynb
+
+LightGBM for predicting monster's level based on basic set of features.
+
+#### lightgbm_expanded.ipynb
+
+LightGBM for predicting monster's level based on expanded set of features.
+
+#### lightgbm_full.ipynb
+
+LightGBM for predicting monster's level based on full set of features.
+
+#### lightgbm_summary.ipynb
+
+Summary of all LightGBM experiments.
+
 ### all_models_summary.ipynb
 
 Summary of experiments on all models.
@@ -323,7 +323,7 @@ Analysis of the counterfactual explanations using 3 types of orcs:
 * Orc Warchief - level 2
 
 Counterfactuals for orcs were generated for LightGBM models and 3 different sets of features, referred to as: basic, expanded and full.
-([sets of features](#sets_of_features)).
+([sets of features](#sets-of-features)).
 
 For each orc there were generated counterfactuals for both levels' of remaining 2 monsters.
 Results were compared to original monster and the other orc with requested level.
