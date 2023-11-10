@@ -379,10 +379,10 @@ def plot_summary_all_models(
         t, no = l.split(" ")
         temp = data[(data["Tuning type"] == t) & (data["Set of features"] == no)]
         linear_regression.append(
-            float(temp[temp["Model type"] == "Linear regression"][measure_type])
+            float(temp[temp["Model type"] == "Linear Regression"][measure_type])
         )
         random_forest.append(
-            float(temp[temp["Model type"] == "Random forest"][measure_type])
+            float(temp[temp["Model type"] == "Random Forest"][measure_type])
         )
         lightgbm.append(float(temp[temp["Model type"] == "LightGBM"][measure_type]))
 
@@ -396,7 +396,7 @@ def plot_summary_all_models(
         color="r",
         width=bar_width,
         edgecolor="grey",
-        label="Linear regression",
+        label="Linear Regression",
     )
     plt.bar(
         br2,
@@ -404,7 +404,7 @@ def plot_summary_all_models(
         color="g",
         width=bar_width,
         edgecolor="grey",
-        label="Random forest",
+        label="Random Forest",
     )
     plt.bar(
         br3, lightgbm, color="b", width=bar_width, edgecolor="grey", label="LightGBM"
