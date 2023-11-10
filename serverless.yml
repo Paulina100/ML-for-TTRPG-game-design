@@ -28,10 +28,8 @@ provider:
 package:
   patterns:
     # excludes in addition to https://www.serverless.com/framework/docs/providers/aws/guide/packaging#patterns
-    - '!.idea/**'
     - '!config/**'
     - '!node_modules/**'
-    - '!scripts/**'
     - '!.nvmrc'
     - '!Makefile'
     - '!package.json'
@@ -54,7 +52,7 @@ resources:
         OwnershipControls:
           Rules:
             - ObjectOwnership: BucketOwnerPreferred
-        BucketName: "monster-creator-dev"
+        BucketName: ${file(config/${self:provider.stage}.yml):AWS_BUCKET_NAME}
     CloudFrontDistribution:
       Type: AWS::CloudFront::Distribution
       DependsOn:
@@ -62,26 +60,22 @@ resources:
       Properties:
         DistributionConfig:
           Origins:
-            - DomainName: "monster-creator-dev.s3.us-east-1.amazonaws.com"
-              Id: monster-creator-dev
+            - DomainName: ${file(config/${self:provider.stage}.yml):AWS_BUCKET_DOMAIN_NAME}
+              Id: ${file(config/${self:provider.stage}.yml):AWS_BUCKET_NAME}
               S3OriginConfig:
                 OriginAccessIdentity: ""
-          Enabled: "true"
+          Enabled: true
           DefaultRootObject: index.html
           HttpVersion: http2
           DefaultCacheBehavior:
             AllowedMethods:
-              - DELETE
               - GET
               - HEAD
               - OPTIONS
-              - PATCH
-              - POST
-              - PUT
             Compress: true
-            TargetOriginId: monster-creator-dev
+            TargetOriginId: ${file(config/${self:provider.stage}.yml):AWS_BUCKET_NAME}
             ForwardedValues:
-              QueryString: "false"
+              QueryString: false
               Cookies:
                 Forward: none
             ViewerProtocolPolicy: redirect-to-https
