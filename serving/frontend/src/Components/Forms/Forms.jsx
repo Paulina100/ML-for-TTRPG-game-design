@@ -22,7 +22,7 @@ const Forms = ({setResultsFunction}) => {
     }
 
     return (
-        <div>
+        <div id={"forms-section"}>
             {renderCaption()}
             <div id="forms-grid">
                 {PropertiesForm(monsterProperties, setMonsterProperties, setResultsFunction)}

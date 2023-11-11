@@ -1,7 +1,11 @@
 @import url("https://fonts.googleapis.com/css?family=Bruno+Ace+SC");
 
 :root {
-    --theme-color: rgb(9, 74, 32);
+    --dark-green: #094A20;
+    --middle-green: #86996D;
+    --light-green: #D4D4A0;
+    --brown: #43281C;
+    --light-beige: #FDFDED;
     --theme-font: "Bruno Ace SC", sans-serif;
     --transition-duration: 0.3s;
 }
@@ -20,7 +24,7 @@
 
 #page-background {
     display: flex;
-    background-color: lightgray;
+    background-color: var(--light-green);
     background-position: center;
     background-size: cover;
     width: 100%;
@@ -31,23 +35,30 @@
 #page-content {
     display: flex;
     flex-direction: column;
-    background-color: white;
+    background-color: var(--light-beige);
+    /*background-color: rgba(255, 255, 255, 0.9);*/
     width: 67%;
-    margin: 80px 0 15px 0;
+    margin: 100px 0 15px 0;
     border-radius: 25px;
     justify-content: center;
-    padding: 15px;
+    padding: 25px;
     height: fit-content;
 }
 
 .content-header, .message {
     font-family: var(--theme-font);
-    color: var(--theme-color);
+    color: var(--dark-green);
     padding: 10px;
 }
 
 .content-header {
     font-size: xx-large;
+}
+
+.subheader {
+    font-family: var(--theme-font);
+    color: var(--brown);
+    padding: 10px;
 }
 
 .message {
@@ -66,8 +77,8 @@ p, label, input {
 
 /* HEADER */
 #header {
-    padding: 10px;
-    background-color: var(--theme-color);
+    padding: 15px;
+    background-color: var(--dark-green);
     position: fixed;
     top: 0;
     width: 100%;
@@ -79,7 +90,34 @@ p, label, input {
 #header > h1 {
     font-family: var(--theme-font);
     font-size: 35px;
-    color: white;
+    color: var(--light-green);
+    letter-spacing: 5px;
+    text-shadow: var(--brown) -2px 2px 2px;
+
+}
+
+#header-ribbon {
+    height: 15px;
+    width: 100vw;
+    background-color: var(--brown);
+    content: "";
+    display: block;
+    position: fixed;
+    top: 70px;
+    z-index: 1;
+    left: 0;
+}
+
+#header-ribbon::after {
+    height: 5px;
+    width: 100vw;
+    background-color: var(--middle-green);
+    content: "";
+    display: block;
+    position: fixed;
+    top: 85px;
+    z-index: 1;
+    left: 0;
 }
 
 /* PAGE INFO */
@@ -88,7 +126,19 @@ p, label, input {
     padding: 0 40px 0 40px;
 }
 
+#introduction {
+    /*background-color: var(--light-green);*/
+    padding-bottom: 15px;
+    width: 80%;
+    margin-left: 10%;
+    margin-bottom: 20px;
+}
+
 /* FORMS */
+#forms-section {
+    border: 10px solid var(--middle-green);
+}
+
 #forms-grid {
     display: grid;
     grid-template-columns: 50% 50%;
@@ -97,10 +147,14 @@ p, label, input {
     width: 100%;
 }
 
+#forms-grid h1 {
+    color: var(--brown);
+}
+
 button[type="submit"], #file-input-button {
     padding: 10px;
     margin: 5% 10% 5% 10%;
-    background-color: var(--theme-color);
+    background-color: var(--dark-green);
     font-family: var(--theme-font);
     color: white;
     border-radius: 25px;
@@ -110,13 +164,14 @@ button[type="submit"], #file-input-button {
 }
 
 button[type="submit"]:hover, #file-input-button:hover {
-    background-color: black;
+    background-color: var(--brown);
     transition-duration: var(--transition-duration);
 }
 
 #properties-form-container, #file-form-container {
     padding: 0 20px 10px 20px;
-    border: 1px solid black;
+    border: 2px solid var(--brown);
+    /*border-radius: 25px;*/
     width: calc(100% - 15px);
 }
 
@@ -170,7 +225,7 @@ input[type="text"] {
 
 /* HOVERS */
 #properties-form-container:hover, #file-form-container:hover {
-    box-shadow: 0 0 5px 4px lightgray;
+    box-shadow: 0 0 1px 1px var(--brown);
     transform: scale(1.03);
     transition-duration: var(--transition-duration);
 }
@@ -178,7 +233,7 @@ input[type="text"] {
 #forms-grid:has(#file-form-container:hover) > #properties-form-container,
 #forms-grid:has(#properties-form-container:hover) > #file-form-container {
     transform: scale(0.97);
-    background-color: rgba(9, 74, 32, 0.1);
+    background-color: var(--middle-green);
     transition-duration: var(--transition-duration);
 }
 
@@ -210,11 +265,53 @@ input[type="text"] {
     margin-top: -5px;
 }
 
+#counterfactuals-form {
+    margin-bottom: 15px;
+}
+
+#counterfactuals-submit-button {
+    width: max-content;
+    margin: 0 20px;
+}
+
+#selectedLevel {
+    width: 50px;
+    margin-left: 5px;
+    text-align: center;
+    padding: 5px;
+}
+
+#counterfactuals-wait-info {
+    color: gray;
+}
+
+#counterfactuals-table, .counterfactuals-table-row, .counterfactuals-table-cell {
+    border: 1px solid gray;
+    border-collapse: collapse;
+}
+
+.counterfactuals-table-cell {
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    width: 12.5%;
+    text-align: center;
+}
+
+.counterfactual-changed-value {
+    color: var(--dark-green);
+    font-weight: bold;
+}
+
+.counterfactual-unchanged-value {
+    color: gray;
+}
+
 /* FOOTER */
 #footer {
     width: 100%;
     padding: 10px 20px 10px 20px;
-    background-color: gray;
+    background-color: var(--middle-green);
 }
 
 a:link, a:visited {

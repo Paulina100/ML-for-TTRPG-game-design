@@ -2,7 +2,7 @@ import {renderHeader} from "../utils";
 
 const PageInfo = () => {
     return (
-        <div className="page-info">
+        <div className="page-info" id={"introduction"}>
             {renderHeader("Welcome to our app!")}
             <p>Pathfinder Monster Creator is a project supporting pen & paper RPG game design using machine learning.
                 It offers such functionalities as calculating monster's Challenge Rating (CR) based on its properties
