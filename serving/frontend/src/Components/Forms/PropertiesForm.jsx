@@ -1,4 +1,4 @@
-import {displaySubmitInfo, renderHeader} from "../../utils";
+import {displaySubmitInfo, renderSubheader} from "../../utils";
 import {minimumPropertyValues} from "./rules";
 import HelpTooltip from "../HelpTooltip";
 
@@ -105,7 +105,7 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunct
 
     return (
         <div id="properties-form-container">
-            {renderHeader("Insert monster's properties")}
+            {renderSubheader("Insert monster's properties")}
             <form onSubmit={handleSubmit} id="properties-form">
                 {renderNameFormRow()}
                 {properties.map(value => renderPropertiesFormRow(value))}

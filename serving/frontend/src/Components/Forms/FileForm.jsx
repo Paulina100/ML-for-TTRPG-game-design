@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {displaySubmitInfo, renderHeader} from "../../utils";
+import {displaySubmitInfo, renderSubheader} from "../../utils";
 import {minimumPropertyValues} from "./rules";
 
 const FileForm = (setMonsterProperties, setResultsFunction) => {
@@ -95,7 +95,7 @@ const FileForm = (setMonsterProperties, setResultsFunction) => {
 
     return (
         <div id="file-form-container">
-            {renderHeader("Select JSON file containing monster's properties")}
+            {renderSubheader("Select JSON file containing monster's properties")}
             <p>This file has to have the same structure as files from Pathfinder books.</p>
             <form onSubmit={submitForm} id="file-form">
                 <label htmlFor="file-input">
