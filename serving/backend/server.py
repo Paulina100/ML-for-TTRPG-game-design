@@ -1,14 +1,17 @@
+from copy import deepcopy
 from multiprocessing import Manager, Process
+
 import joblib
 import uvicorn
 from api_models import CounterfactualsInput, Properties
 from calculate_level import calculate_level
 from constants import ORDERED_CHARACTERISTICS
 from fastapi import FastAPI
-from mangum import Mangum
 from generate_counterfactuals import TOTAL_CF, generate_counterfactuals
-from training.creating_dataset import load_and_preprocess_data
+from mangum import Mangum
 from starlette.middleware.cors import CORSMiddleware
+
+from training.creating_dataset import load_and_preprocess_data
 
 
 app = FastAPI()
@@ -56,7 +59,9 @@ def generate_counterfactuals_in_process(stats, level, counterfactual_values):
 @app.post("/get_counterfactuals")
 async def get_counterfactuals(properties: CounterfactualsInput):
     properties_dict = properties.dict()
-    stats = {p: properties_dict[p] for p in ORDERED_CHARACTERISTICS}
+    stats = deepcopy(properties_dict)
+    stats.pop("name")
+    stats.pop("level")
     with Manager() as manager:
         counterfactual_values = manager.list(range(TOTAL_CF))
         process = Process(

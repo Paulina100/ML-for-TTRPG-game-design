@@ -51,7 +51,14 @@ const CounterfactualExamples = (monsterProperties, setMonsterProperties, level) 
 
         setDisplayedInfo({"text": "Calculating, please wait..."});
 
-        fetch("http://" + process.env.REACT_APP_HOST + ":" + process.env.REACT_APP_PORT + process.env.REACT_APP_COUNTERFACTUALS_ENDPOINT, {
+        let serverUrl;
+        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+            serverUrl = process.env.REACT_APP_HOST;
+        } else {
+            serverUrl = process.env.REACT_APP_AWS_HOST;
+        }
+
+        fetch(serverUrl + process.env.REACT_APP_COUNTERFACTUALS_ENDPOINT, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(requestBody)
