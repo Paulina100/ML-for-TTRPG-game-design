@@ -24,5 +24,8 @@ test:
 	cd ./test && pytest $(FILE)
 
 install:
-	poetry export --without-hashes --format=requirements.txt --with="style,test,webserver" --output=requirements.txt
 	poetry lock && poetry install --sync
+	poetry export --without-hashes --format=requirements.txt --output=requirements.txt
+	poetry export --without-hashes --format=requirements.txt --with="style" --output=requirements_style.txt
+	poetry export --without-hashes --format=requirements.txt --with="test" --output=requirements_test.txt
+	poetry export --without-hashes --format=requirements.txt --with="webserver" --output=requirements_webserver.txt
