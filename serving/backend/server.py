@@ -58,7 +58,7 @@ def generate_counterfactuals_in_process(stats, level, counterfactual_values):
 
 @app.post("/get_counterfactuals")
 async def get_counterfactuals(properties: CounterfactualsInput):
-    properties_dict = properties.dict()
+    properties_dict = properties.dict(by_alias=True)
     stats = deepcopy(properties_dict)
     stats.pop("name")
     stats.pop("level")
