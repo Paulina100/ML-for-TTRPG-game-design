@@ -1,7 +1,7 @@
 import {useState} from "react";
 import HelpTooltip from "../HelpTooltip";
 
-const CounterfactualExamples = (monsterProperties, setMonsterProperties, level) => {
+const CounterfactualExamples = ({monsterProperties, setMonsterProperties, level}) => {
     const [counterfactualExamples, setCounterfactualExamples] = useState([]);
     const [selectedLevel, setSelectedLevel] = useState("");
     const [displayedInfo, setDisplayedInfo] = useState({});
@@ -38,7 +38,7 @@ const CounterfactualExamples = (monsterProperties, setMonsterProperties, level) 
         const formJson = Object.fromEntries(formData.entries());
 
         const value = parseInt(selectedLevel);
-        if (isNaN(value) || value < -1) {
+        if (isNaN(value) || value < -1 || value > 20) {
             window.alert("Entered input is invalid. Form will not be submitted.");
             return;
         }
@@ -46,8 +46,7 @@ const CounterfactualExamples = (monsterProperties, setMonsterProperties, level) 
         const requestBody = {};
         requestBody["level"] = formJson["selectedLevel"];
 
-        Object.keys(monsterProperties.monsterProperties)
-          .forEach(key => requestBody[key] = monsterProperties.monsterProperties[key]);
+        Object.keys(monsterProperties).forEach(key => requestBody[key] = monsterProperties[key]);
 
         setDisplayedInfo({"text": "Calculating, please wait..."});
 
@@ -77,11 +76,18 @@ const CounterfactualExamples = (monsterProperties, setMonsterProperties, level) 
         });
     }
 
+    const applyCounterfactualExample = (counterfactualExample) => {
+        let newMonsterProperties = {};
+        counterfactualExample.forEach((value, index) =>
+            newMonsterProperties[Object.keys(monsterProperties).at(index+1)] = value);
+        setMonsterProperties(newMonsterProperties);
+    }
+
     const renderCounterfactualExampleRow = (counterfactualExample, exampleIndex) => {
         let monsterPropertiesValues = [];
-        for (let key in monsterProperties.monsterProperties) {
+        for (let key in monsterProperties) {
             if (key !== "name") {
-                monsterPropertiesValues.push(monsterProperties.monsterProperties[key]);
+                monsterPropertiesValues.push(monsterProperties[key]);
             }
         }
         return (
@@ -96,12 +102,20 @@ const CounterfactualExamples = (monsterProperties, setMonsterProperties, level) 
                         </td>
                     );
                 })}
+                <td className={"counterfactuals-table-cell counterfactuals-button-cell"}>
+                    <button className={"counterfactuals-button"} onClick={() => {applyCounterfactualExample(counterfactualExample)}}>Apply</button>
+                </td>
+                <td className={"counterfactuals-table-cell counterfactuals-button-cell"}>
+                    <button className={"counterfactuals-button"}>Save</button>
+                </td>
             </tr>
         );
     }
 
     return (
         <div id={"counterfactual-examples"}>
+            <p>You can now generate new sets of properties to create a monster with selected level.
+                The properties will be based on the ones from the forms above. New level's value has to be bigger than -2 and smaller than 21.</p>
             <form onSubmit={handleSubmit} id="counterfactuals-form">
                 <label htmlFor="selectedLevel" id="counterfactuals-form-label">Modify calculated level to value: </label>
                 <input id="selectedLevel" name="selectedLevel" type="text" required
@@ -126,6 +140,8 @@ const CounterfactualExamples = (monsterProperties, setMonsterProperties, level) 
                     <thead>
                         <tr className={"counterfactuals-table-row"}>
                             {properties.map(property => {return <th key={property} className={"counterfactuals-table-cell"}>{property}</th>})}
+                            <th className={"counterfactuals-button-column"}></th>
+                            <th className={"counterfactuals-button-column"}></th>
                         </tr>
                     </thead>
                     <tbody>
