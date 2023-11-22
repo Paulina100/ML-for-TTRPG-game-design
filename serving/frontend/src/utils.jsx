@@ -29,3 +29,22 @@ export function displaySubmitInfo(submitButtonId, formId) {
         submitButton.setAttribute("style", "display: block");
     }, 1250);
 }
+
+export function getDisplayablePropertiesNames() {
+    return  ["Strength (Str)", "Dexterity (Dex)", "Constitution  (Con)", "Intelligence (Int)",
+        "Wisdom (Wis)", "Charisma (Cha)", "Armor Class (AC)", "Hit Points (HP)"];
+}
+
+export function getGroupedSystemProperties() {
+    return new Map([
+        ["abilities", ["str", "dex", "con", "int", "wis", "cha"]],  // mod
+        ["attributes", ["ac", "hp"]]  // value
+    ]);
+}
+
+export function getPropertiesValuesKeys() {
+    return new Map([
+        ["abilities", "mod"],
+        ["attributes", "value"]
+    ]);
+}

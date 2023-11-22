@@ -1,18 +1,10 @@
 import {useState} from "react";
-import {displaySubmitInfo, renderSubheader} from "../../utils";
+import {displaySubmitInfo, getGroupedSystemProperties, getPropertiesValuesKeys, renderSubheader} from "../../utils";
 import {minimumPropertyValues} from "./rules";
 
 const FileForm = (setMonsterProperties, setResultsFunction) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("");
-    const systemProperties = new Map([
-        ["abilities", ["str", "dex", "con", "int", "wis", "cha"]],  // mod
-        ["attributes", ["ac", "hp"]]  // value
-    ]);
-    const propertiesValuesKey = new Map([
-        ["abilities", "mod"],
-        ["attributes", "value"]
-    ]);
 
     const uploadFile = (file) => {
         if (file === undefined) {
@@ -38,10 +30,11 @@ const FileForm = (setMonsterProperties, setResultsFunction) => {
         const fileDict = JSON.parse(fileReader.result);
         const systemDict = fileDict.system;
         let resultDict = {};
+        const propertiesValuesKeys = getPropertiesValuesKeys();
         try {
             resultDict["name"] = fileDict.name;
-            systemProperties.forEach((subproperties, property) => {
-                const valuesKey = propertiesValuesKey.get(property);
+            getGroupedSystemProperties().forEach((subproperties, property) => {
+                const valuesKey = propertiesValuesKeys.get(property);
                 for (let subproperty of subproperties) {
                     const unpackedValue = unpackValue(systemDict, [property, subproperty, valuesKey]);
                     resultDict[subproperty] = unpackedValue;

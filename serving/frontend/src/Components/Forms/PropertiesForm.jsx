@@ -1,10 +1,9 @@
-import {displaySubmitInfo, renderSubheader} from "../../utils";
+import {displaySubmitInfo, getDisplayablePropertiesNames, renderSubheader} from "../../utils";
 import {minimumPropertyValues} from "./rules";
 import HelpTooltip from "../HelpTooltip";
 
 const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunction) => {
-    const properties = ["Strength (Str)", "Dexterity (Dex)", "Constitution  (Con)", "Intelligence (Int)",
-        "Wisdom (Wis)", "Charisma (Cha)", "Armor Class (AC)", "Hit Points (HP)"]
+    const properties = getDisplayablePropertiesNames();
 
     const extractBracketedWord = (property) => {
         return property.substring(property.indexOf("(") + 1, property.indexOf(")")).toLowerCase();

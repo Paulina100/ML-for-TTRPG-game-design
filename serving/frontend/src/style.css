@@ -245,13 +245,14 @@ input[type="text"] {
     padding: 5px;
     align-items: center;
     justify-content: center;
-    width: 10%;
+    width: 12.5%;
     text-align: center;
 }
 
 .counterfactuals-button-column, .counterfactuals-button-cell {
     border: 1px solid transparent;
-    padding: 1px;
+    padding: 0;
+    width: 30px;
 }
 
 .counterfactual-changed-value {
@@ -264,18 +265,11 @@ input[type="text"] {
 }
 
 .counterfactuals-button {
-    padding: 2px;
-    background-color: var(--theme-color);
-    font-family: var(--theme-font);
-    color: white;
-    border-radius: 25px;
-    width: 90%;
-    text-align: center;
-}
-
-.counterfactuals-button:hover {
-    background-color: black;
-    transition-duration: var(--transition-duration);
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    width: 30px;
 }
 
 /* FOOTER */

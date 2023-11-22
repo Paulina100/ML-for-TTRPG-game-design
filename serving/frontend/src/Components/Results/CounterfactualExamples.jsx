@@ -1,13 +1,18 @@
 import {useState} from "react";
 import HelpTooltip from "../HelpTooltip";
+import {getDisplayablePropertiesNames, getGroupedSystemProperties, getPropertiesValuesKeys} from "../../utils";
+import {IconButton, Tooltip} from "@mui/material";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import SaveIcon from "@mui/icons-material/Save";
 
 const CounterfactualExamples = ({monsterProperties, setMonsterProperties, level}) => {
     const [counterfactualExamples, setCounterfactualExamples] = useState([]);
     const [selectedLevel, setSelectedLevel] = useState("");
     const [displayedInfo, setDisplayedInfo] = useState({});
+    const [fileDownloadUrl, setFileDownloadUrl] = useState("");
+    const [fileDownload, dofileDownload] = useState(null);
 
-    const properties = ["Strength (Str)", "Dexterity (Dex)", "Constitution  (Con)", "Intelligence (Int)",
-        "Wisdom (Wis)", "Charisma (Cha)", "Armor Class (AC)", "Hit Points (HP)"];
+    const properties = getDisplayablePropertiesNames();
 
     const validatePressedKey = (event) => {
         const allowedKeys = ["Backspace", "Enter", "Tab", "ArrowLeft", "ArrowRight"];
@@ -22,7 +27,7 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, level}
     const validateInput = () => {
         const value = parseInt(selectedLevel);
         const inputCell = document.getElementById("selectedLevel");
-        if (isNaN(value) || value < -1) {
+        if (isNaN(value) || value < -1 || value > 20) {
             inputCell.className = "invalid-input";
         } else {
             inputCell.className = "";
@@ -78,9 +83,45 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, level}
 
     const applyCounterfactualExample = (counterfactualExample) => {
         let newMonsterProperties = {};
+        newMonsterProperties.name = monsterProperties.name;
         counterfactualExample.forEach((value, index) =>
             newMonsterProperties[Object.keys(monsterProperties).at(index+1)] = value);
         setMonsterProperties(newMonsterProperties);
+        setCounterfactualExamples([]);
+        setSelectedLevel("");
+    }
+
+    const getStandardizedPropertiesJson = (counterfactualExample) => {
+        const standardizedProperties = {"system": {}};
+        const groupedSystemProperties = getGroupedSystemProperties();
+        const propertiesValuesKeys = getPropertiesValuesKeys();
+        let index = 0;
+        groupedSystemProperties.forEach((subproperties, property) => {
+            standardizedProperties.system[property] = {};
+            const valuesKey = propertiesValuesKeys.get(property);
+            for (let subproperty of subproperties) {
+                standardizedProperties.system[property][subproperty] = {};
+                standardizedProperties.system[property][subproperty][valuesKey] = counterfactualExample[index];
+                index++;
+            }
+        });
+        standardizedProperties["name"] = monsterProperties.name;
+        return standardizedProperties;
+    }
+
+    const saveCounterfactualExample = (counterfactualExample, event) => {
+        event.preventDefault();
+        const blob = new Blob([JSON.stringify(getStandardizedPropertiesJson(counterfactualExample))]);
+        const fileDownloadUrl = URL.createObjectURL(blob);
+        setFileDownloadUrl(fileDownloadUrl);
+        const interval = setInterval(() => {  // wait until fileDownloadUrl is set
+            if (fileDownloadUrl !== "") {
+                fileDownload.click();
+                URL.revokeObjectURL(fileDownloadUrl);
+                setFileDownloadUrl("");
+                clearInterval(interval);
+            }
+        }, 100);
     }
 
     const renderCounterfactualExampleRow = (counterfactualExample, exampleIndex) => {
@@ -102,11 +143,54 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, level}
                         </td>
                     );
                 })}
-                <td className={"counterfactuals-table-cell counterfactuals-button-cell"}>
-                    <button className={"counterfactuals-button"} onClick={() => {applyCounterfactualExample(counterfactualExample)}}>Apply</button>
+                <td className={"counterfactuals-button-cell"}>
+                    <Tooltip
+                        title={"click to insert these properties to form above"}
+                        placement="top"
+                        arrow PopperProps={{
+                            modifiers: [
+                                {
+                                    name: "offset",
+                                    options: {
+                                        offset: [0, -15],
+                                    },
+                                },
+                            ],
+                        }}>
+                        <button className={"counterfactuals-button"}
+                                onClick={() => {applyCounterfactualExample(counterfactualExample)}}>
+                            <IconButton>
+                                <CheckBoxIcon />
+                            </IconButton>
+                        </button>
+                    </Tooltip>
                 </td>
-                <td className={"counterfactuals-table-cell counterfactuals-button-cell"}>
-                    <button className={"counterfactuals-button"}>Save</button>
+                <td className={"counterfactuals-button-cell"}>
+                    <Tooltip
+                        title={"click to download these properties to JSON file"}
+                        placement="top"
+                        arrow PopperProps={{
+                            modifiers: [
+                                {
+                                    name: "offset",
+                                    options: {
+                                        offset: [0, -15],
+                                    },
+                                },
+                            ],
+                        }}>
+                        <button className={"counterfactuals-button"}
+                                onClick={(event) => {saveCounterfactualExample(counterfactualExample, event)}}>
+                            <IconButton>
+                                <SaveIcon />
+                            </IconButton>
+                        </button>
+                    </Tooltip>
+                    <a download={"cf.json"}
+                       href={fileDownloadUrl}
+                       ref={e => dofileDownload(e)}
+                       style={{display: "none"}}
+                    >Save file</a>
                 </td>
             </tr>
         );
@@ -118,7 +202,7 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, level}
                 The properties will be based on the ones from the forms above. New level's value has to be bigger than -2 and smaller than 21.</p>
             <form onSubmit={handleSubmit} id="counterfactuals-form">
                 <label htmlFor="selectedLevel" id="counterfactuals-form-label">Modify calculated level to value: </label>
-                <input id="selectedLevel" name="selectedLevel" type="text" required
+                <input id="selectedLevel" name="selectedLevel" type="text" value={selectedLevel} required
                        onKeyDown={(event) => {
                            validatePressedKey(event);
                        }}
