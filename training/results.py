@@ -206,6 +206,7 @@ def plot_summary(
     measure_type: str,
     title: str = None,
     figsize: tuple[int, int] = (20, 8),
+    export: bool = False,
 ) -> None:
     """
     Plot a summary bar chart of evaluation metrics for different model tuning types and characteristics.
@@ -219,6 +220,7 @@ def plot_summary(
     :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
     :param title: Plot tile.
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
+    :param export: If true, saves plot to results_diagrams file. Default is False.
     :return: None
     """
 
@@ -274,6 +276,10 @@ def plot_summary(
         )
     else:
         plt.title(title, fontsize=30, fontweight="bold")
+
+    fig.tight_layout()
+    if export:
+        plt.savefig(f"../results_diagrams/rmse_and_mae/{title}.svg")
 
     plt.show()
 
