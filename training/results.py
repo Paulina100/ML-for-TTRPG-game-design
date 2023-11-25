@@ -66,6 +66,7 @@ def plot_mae_by_level(
     y_pred_test: np.ndarray,
     title: str = None,
     figsize: tuple[int, int] = (20, 8),
+    export: bool = False,
 ) -> None:
     """
     Plots Mean Absolute Error (MAE) by level.
@@ -76,6 +77,7 @@ def plot_mae_by_level(
     :param y_pred_test: Predicted values.
     :param title: Plot title.
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
+    :param export: If true, saves plot to results_diagrams file. Default is False.
     :return: None
     """
 
@@ -90,7 +92,8 @@ def plot_mae_by_level(
         mae = mean_absolute_error(y_test_curr, y_pred_test_curr)
         mae_by_level.loc[lvl + 1] = [lvl, mae]
 
-    plt.figure(figsize=figsize)
+    fig, ax = plt.subplots(figsize=figsize)
+    # plt.figure(figsize=figsize)
     plt.bar(mae_by_level["level"], mae_by_level["mae"])
     plt.xlabel("Level", fontweight="bold", fontsize=20)
     plt.ylabel("Mean Absolute Error (MAE)", fontweight="bold", fontsize=20)
@@ -101,6 +104,11 @@ def plot_mae_by_level(
         plt.title(title, fontsize=23, fontweight="bold")
 
     plt.xticks(mae_by_level["level"])
+
+    fig.tight_layout()
+    if export:
+        plt.savefig(f"../results_diagrams/other/mae_by_level/{title}.svg")
+
     plt.show()
 
 
@@ -110,6 +118,7 @@ def plot_confusion_matrix(
     threshold: float = 0.5,
     title: str = None,
     figsize: tuple[int, int] = (10, 10),
+    export: bool = False,
 ) -> None:
     """
     Plots a confusion matrix for rounded predictions based on a specified threshold.
@@ -120,6 +129,7 @@ def plot_confusion_matrix(
     :param threshold: A round type threshold as a float between 0 and 1. Default is 0.5.
     :param title: Plot title.
     :param figsize: A tuple specifying the figure size (width, height). Default is (10, 10).
+    :param export: If true, saves plot to results_diagrams file. Default is False.
     :return: None
     """
     round_predict = round_predictions(predict, threshold)
@@ -151,6 +161,13 @@ def plot_confusion_matrix(
         disp.ax_.set_title("Confusion matrix", fontweight="bold", fontsize=20)
     else:
         disp.ax_.set_title(title, fontweight="bold", fontsize=20)
+
+    if export:
+        title = title.replace("\n", " ")
+        fig.savefig(
+            f"../results_diagrams/other/confusion_matrix/{title}.svg",
+            bbox_inches="tight",
+        )
 
     plt.show()
 
@@ -206,6 +223,7 @@ def plot_summary(
     measure_type: str,
     title: str = None,
     figsize: tuple[int, int] = (20, 8),
+    export: bool = False,
 ) -> None:
     """
     Plot a summary bar chart of evaluation metrics for different model tuning types and characteristics.
@@ -219,6 +237,7 @@ def plot_summary(
     :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
     :param title: Plot tile.
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
+    :param export: If true, saves plot to results_diagrams file. Default is False.
     :return: None
     """
 
@@ -274,6 +293,10 @@ def plot_summary(
         )
     else:
         plt.title(title, fontsize=30, fontweight="bold")
+
+    fig.tight_layout()
+    if export:
+        plt.savefig(f"../results_diagrams/rmse_and_mae/{title}.svg")
 
     plt.show()
 
@@ -342,6 +365,7 @@ def plot_summary_all_models(
     measure_type: str,
     title: str = None,
     figsize: tuple[int, int] = (20, 8),
+    export: bool = False,
 ) -> None:
     """
     Plot a summary bar chart of evaluation metrics for different models, model tuning types and characteristics.
@@ -356,6 +380,7 @@ def plot_summary_all_models(
     :param measure_type: The evaluation metric to be displayed on the y-axis (e.g., "RMSE", "MSE").
     :param title: Plot title.
     :param figsize: A tuple specifying the figure size (width, height). Default is (20, 8).
+    :param export: If true, saves plot to results_diagrams file. Default is False.
     :return: None
     """
 
@@ -427,5 +452,9 @@ def plot_summary_all_models(
         )
     else:
         plt.title(title, fontsize=30, fontweight="bold")
+
+    fig.tight_layout()
+    if export:
+        plt.savefig(f"results_diagrams/rmse_and_mae/summary/{title}.svg")
 
     plt.show()
