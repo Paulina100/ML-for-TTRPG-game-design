@@ -51,7 +51,11 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, setRes
         const requestBody = {};
         requestBody["level"] = formJson["selectedLevel"];
 
-        Object.keys(monsterProperties).forEach(key => requestBody[key] = monsterProperties[key]);
+        Object.keys(monsterProperties).forEach(key => {
+            if (key !== "name") {
+                requestBody[key] = monsterProperties[key]
+            }
+        });
 
         setDisplayedInfo({"text": "Calculating, please wait..."});
 
@@ -200,7 +204,7 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, setRes
     return (
         <div id={"counterfactual-examples"}>
             <p>You can now generate new sets of properties to create a monster with selected level.
-                The properties will be based on the ones from the forms above. New level's value has to be bigger than -2 and smaller than 21.</p>
+                The properties will be based on the ones from the forms above. New level's value has to be between -1 and 20.</p>
             <form onSubmit={handleSubmit} id="counterfactuals-form">
                 <label htmlFor="selectedLevel" id="counterfactuals-form-label">Modify calculated level to value: </label>
                 <input id="selectedLevel" name="selectedLevel" type="text" value={selectedLevel} required

@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field
 
 
 class Properties(BaseModel):
-    name: str
     strength: int = Field(alias="str")
     dexterity: int = Field(alias="dex")
     constitution: int = Field(alias="con")
@@ -14,7 +13,6 @@ class Properties(BaseModel):
 
 
 class CounterfactualsInput(BaseModel):
-    name: str
     strength: int = Field(alias="str")
     dexterity: int = Field(alias="dex")
     constitution: int = Field(alias="con")

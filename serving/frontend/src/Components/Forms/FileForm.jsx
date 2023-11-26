@@ -72,7 +72,7 @@ const FileForm = (setMonsterProperties, setResultsFunction) => {
             fetch(serverUrl + process.env.REACT_APP_UPLOAD_ENDPOINT, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(properties)
+                body: JSON.stringify(Object.entries(properties).filter(([key]) => key !== "name"))
             }).then((response) => {
                 response.json().then(json => setResultsFunction(json));
                 displaySubmitInfo("file-submit-button", "file-form");

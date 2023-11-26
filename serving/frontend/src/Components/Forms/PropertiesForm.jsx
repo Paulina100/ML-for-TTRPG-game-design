@@ -93,7 +93,7 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunct
         fetch(serverUrl + process.env.REACT_APP_UPLOAD_ENDPOINT, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(formJson)
+            body: JSON.stringify(Object.entries(formJson).filter(([key]) => key !== "name"))
         }).then((response) => {
             response.json().then(json => setResultsFunction(json));
             displaySubmitInfo("properties-submit-button", "properties-form");

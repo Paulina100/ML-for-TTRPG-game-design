@@ -1,4 +1,3 @@
-from copy import deepcopy
 from multiprocessing import Manager, Process
 
 import joblib
@@ -44,7 +43,6 @@ df = load_and_preprocess_data(
 @app.post("/make_prediction")
 async def make_prediction(properties: Properties):
     properties_dict = properties.dict()
-    properties_dict.pop("name")
     level = calculate_level(monster_stats=properties_dict, model=model)
     result = {"level": str(level) if level <= 20 else ">20"}
     return result
@@ -59,14 +57,12 @@ def generate_counterfactuals_in_process(stats, level, counterfactual_values):
 @app.post("/get_counterfactuals")
 async def get_counterfactuals(properties: CounterfactualsInput):
     properties_dict = properties.dict(by_alias=True)
-    stats = deepcopy(properties_dict)
-    stats.pop("name")
-    stats.pop("level")
+    level = properties_dict.pop("level")
     with Manager() as manager:
         counterfactual_values = manager.list(range(TOTAL_CF))
         process = Process(
             target=generate_counterfactuals_in_process,
-            args=(stats, properties_dict["level"], counterfactual_values),
+            args=(properties_dict, level, counterfactual_values),
         )
         process.start()
         process.join(30)  # timeout is set to 30s
