@@ -5,7 +5,7 @@ import {IconButton, Tooltip} from "@mui/material";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import SaveIcon from "@mui/icons-material/Save";
 
-const CounterfactualExamples = ({monsterProperties, setMonsterProperties, level}) => {
+const CounterfactualExamples = ({monsterProperties, setMonsterProperties, setResults}) => {
     const [counterfactualExamples, setCounterfactualExamples] = useState([]);
     const [selectedLevel, setSelectedLevel] = useState("");
     const [displayedInfo, setDisplayedInfo] = useState({});
@@ -83,6 +83,7 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, level}
 
     const applyCounterfactualExample = (counterfactualExample) => {
         let newMonsterProperties = {};
+        setResults({"level": selectedLevel});
         newMonsterProperties.name = monsterProperties.name;
         counterfactualExample.forEach((value, index) =>
             newMonsterProperties[Object.keys(monsterProperties).at(index+1)] = value);
@@ -186,7 +187,7 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, level}
                             </IconButton>
                         </button>
                     </Tooltip>
-                    <a download={"cf.json"}
+                    <a download={`generated_level_${selectedLevel}.json`}
                        href={fileDownloadUrl}
                        ref={e => dofileDownload(e)}
                        style={{display: "none"}}

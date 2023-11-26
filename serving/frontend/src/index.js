@@ -21,8 +21,10 @@ function App() {
             <div id="page-background">
                 <div id="page-content">
                     <PageInfo />
-                    <Forms setResultsFunction={setResults} monsterProperties={monsterProperties} setMonsterProperties={setMonsterProperties} />
-                    <Results results={results} monsterProperties={monsterProperties} setMonsterProperties={setMonsterProperties}/>
+                    <Forms setResultsFunction={setResults}
+                           monsterProperties={monsterProperties} setMonsterProperties={setMonsterProperties} />
+                    <Results results={results} setResults={setResults}
+                             monsterProperties={monsterProperties} setMonsterProperties={setMonsterProperties} />
                 </div>
             </div>
             <Footer />
