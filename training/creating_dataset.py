@@ -348,6 +348,9 @@ def preprocess_data(bestiary: pd.DataFrame, characteristics: list[str]) -> pd.Da
     df = bestiary[raw_names]
     df.columns = target_names
 
+    if "hp" in characteristics_groups.characteristics_rename:
+        df["hp"] = df["hp"].astype("int64")
+
     extract_and_assign_chars(
         characteristics_groups.resistances, RESISTANCE_PATH, bestiary, df, "_resistance"
     )
