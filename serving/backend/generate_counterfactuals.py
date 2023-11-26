@@ -6,9 +6,6 @@ from constants import ORDERED_CHARACTERISTICS, THRESHOLD
 from dice_ml import Dice
 
 
-TOTAL_CF = 5
-
-
 def generate_counterfactuals(
     monster_stats: dict,
     model,
