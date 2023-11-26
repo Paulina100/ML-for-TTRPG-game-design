@@ -1,10 +1,10 @@
 Model type,Split type,Tuning type,Set of features,RMSE,MAE
-Linear Regression,chronological,default,basic,0.9476,0.6740
-Linear Regression,random,default,basic,0.8246,0.5385
-Linear Regression,chronological,Ridge,basic,0.9565,0.6780
-Linear Regression,chronological,Lasso,basic,0.9539,0.6777
-Linear Regression,random,Ridge,basic,0.8251,0.5382
-Linear Regression,random,Lasso,basic,0.8235,0.5359
+Linear Regression,chronological,default,basic,0.9886,0.6677
+Linear Regression,random,default,basic,0.8850,0.5902
+Linear Regression,chronological,Ridge,basic,0.9889,0.6694
+Linear Regression,chronological,Lasso,basic,0.9885,0.6647
+Linear Regression,random,Ridge,basic,0.8850,0.5903
+Linear Regression,random,Lasso,basic,0.8860,0.5905
 Linear Regression,chronological,default,expanded,0.5945,0.4382
 Linear Regression,random,default,expanded,0.5707,0.3820
 Linear Regression,chronological,Ridge,expanded,0.6011,0.4416
@@ -14,36 +14,36 @@ Linear Regression,random,Lasso,expanded,0.5705,0.3816
 Linear Regression,chronological,default,full,0.7426,0.4573
 Linear Regression,random,default,full,0.5734,0.3568
 Linear Regression,chronological,Ridge,full,0.7620,0.4756
-Linear Regression,chronological,Lasso,full,0.6959,0.4543
+Linear Regression,chronological,Lasso,full,0.6959,0.4541
 Linear Regression,random,Ridge,full,0.5851,0.3540
-Linear Regression,random,Lasso,full,0.5617,0.3499
-Random Forest,chronological,default,basic,1.4940,1.1915
-Random Forest,chronological,RandomizedSearchCV,basic,0.6762,0.4299
-Random Forest,chronological,minimize_overfitting,basic,0.6808,0.4390
-Random Forest,random,default,basic,1.2927,1.0495
-Random Forest,random,RandomizedSearchCV,basic,0.4849,0.3080
-Random Forest,random,minimize_overfitting,basic,0.4803,0.3022
-Random Forest,chronological,default,expanded,1.4544,1.1596
-Random Forest,chronological,RandomizedSearchCV,expanded,0.4959,0.3346
-Random Forest,chronological,minimize_overfitting,expanded,0.5165,0.3463
-Random Forest,random,default,expanded,1.2525,1.0166
-Random Forest,random,RandomizedSearchCV,expanded,0.3655,0.2386
-Random Forest,random,minimize_overfitting,expanded,0.3663,0.2392
-Random Forest,chronological,default,full,2.2477,1.4550
-Random Forest,chronological,RandomizedSearchCV,full,0.8932,0.4516
-Random Forest,chronological,minimize_overfitting,full,1.0020,0.4789
-Random Forest,random,default,full,1.2295,0.9965
-Random Forest,random,RandomizedSearchCV,full,0.3362,0.2209
-Random Forest,random,minimize_overfitting,full,0.3558,0.2299
-LightGBM,chronological,default,basic,0.6690,0.4676
-LightGBM,chronological,Optuna,basic,0.6753,0.4798
-LightGBM,random,default,basic,0.4884,0.3368
-LightGBM,random,Optuna,basic,0.5068,0.3331
-LightGBM,chronological,default,expanded,0.5108,0.3572
-LightGBM,chronological,Optuna,expanded,0.4570,0.3349
-LightGBM,random,default,expanded,0.3849,0.2673
-LightGBM,random,Optuna,expanded,0.3438,0.2304
-LightGBM,chronological,default,full,0.9619,0.4648
-LightGBM,chronological,Optuna,full,0.8006,0.4035
-LightGBM,random,default,full,0.3713,0.2467
-LightGBM,random,Optuna,full,0.3262,0.2230
+Linear Regression,random,Lasso,full,0.5620,0.3500
+Random Forest,chronological,default,basic,1.6247,1.2696
+Random Forest,chronological,RandomizedSearchCV,basic,0.7421,0.4212
+Random Forest,chronological,minimize_overfitting,basic,0.7546,0.4475
+Random Forest,random,default,basic,1.5478,1.2449
+Random Forest,random,RandomizedSearchCV,basic,0.5324,0.3179
+Random Forest,random,minimize_overfitting,basic,0.5330,0.3198
+Random Forest,chronological,default,expanded,1.5958,1.2541
+Random Forest,chronological,RandomizedSearchCV,expanded,0.5939,0.3567
+Random Forest,chronological,minimize_overfitting,expanded,0.6227,0.3828
+Random Forest,random,default,expanded,1.4712,1.1774
+Random Forest,random,RandomizedSearchCV,expanded,0.4034,0.2493
+Random Forest,random,minimize_overfitting,expanded,0.4120,0.2519
+Random Forest,chronological,default,full,1.5949,1.2532
+Random Forest,chronological,RandomizedSearchCV,full,0.5734,0.3353
+Random Forest,chronological,minimize_overfitting,full,0.6033,0.3616
+Random Forest,random,default,full,1.4661,1.1738
+Random Forest,random,RandomizedSearchCV,full,0.3620,0.2262
+Random Forest,random,minimize_overfitting,full,0.3800,0.2330
+LightGBM,chronological,default,basic,0.7586,0.4479
+LightGBM,chronological,Optuna,basic,0.7550,0.4591
+LightGBM,random,default,basic,0.5681,0.3684
+LightGBM,random,Optuna,basic,0.5676,0.3650
+LightGBM,chronological,default,expanded,0.6143,0.3769
+LightGBM,chronological,Optuna,expanded,0.5905,0.3677
+LightGBM,random,default,expanded,0.4167,0.2779
+LightGBM,random,Optuna,expanded,0.4348,0.2802
+LightGBM,chronological,default,full,0.5962,0.3560
+LightGBM,chronological,Optuna,full,0.5551,0.3514
+LightGBM,random,default,full,0.3799,0.2582
+LightGBM,random,Optuna,full,0.3692,0.2402
