@@ -2,7 +2,7 @@ import {displaySubmitInfo, getDisplayablePropertiesNames, renderSubheader} from 
 import {minimumPropertyValues} from "./rules";
 import HelpTooltip from "../HelpTooltip";
 
-const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunction) => {
+const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => {
     const properties = getDisplayablePropertiesNames();
 
     const extractBracketedWord = (property) => {
@@ -82,6 +82,7 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunct
                 return;
             }
         }
+        setResults({});
 
         let serverUrl;
         if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
@@ -95,7 +96,7 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunct
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(Object.entries(formJson).filter(([key]) => key !== "name"))
         }).then((response) => {
-            response.json().then(json => setResultsFunction(json));
+            response.json().then(json => setResults(json));
             displaySubmitInfo("properties-submit-button", "properties-form");
         }).catch(error => {
             alert(error);

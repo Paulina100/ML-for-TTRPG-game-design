@@ -2,7 +2,7 @@ import {useState} from "react";
 import {displaySubmitInfo, getGroupedSystemProperties, getPropertiesValuesKeys, renderSubheader} from "../../utils";
 import {minimumPropertyValues} from "./rules";
 
-const FileForm = (setMonsterProperties, setResultsFunction) => {
+const FileForm = (setMonsterProperties, setResults) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("");
 
@@ -61,6 +61,7 @@ const FileForm = (setMonsterProperties, setResultsFunction) => {
             if (properties === null) {
                 return;
             }
+            setResults({});
 
             let serverUrl;
             if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
@@ -74,7 +75,7 @@ const FileForm = (setMonsterProperties, setResultsFunction) => {
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(Object.entries(properties).filter(([key]) => key !== "name"))
             }).then((response) => {
-                response.json().then(json => setResultsFunction(json));
+                response.json().then(json => setResults(json));
                 displaySubmitInfo("file-submit-button", "file-form");
                 setMonsterProperties(properties);
                 alert("File was uploaded successfully. " +
