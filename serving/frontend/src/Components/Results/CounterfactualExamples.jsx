@@ -10,7 +10,7 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, setRes
     const [selectedLevel, setSelectedLevel] = useState("");
     const [displayedInfo, setDisplayedInfo] = useState({});
     const [fileDownloadUrl, setFileDownloadUrl] = useState("");
-    const [fileDownload, dofileDownload] = useState(null);
+    const [fileDownloadRef, setFileDownloadRef] = useState(null);
 
     const properties = getDisplayablePropertiesNames();
 
@@ -121,7 +121,7 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, setRes
         setFileDownloadUrl(fileDownloadUrl);
         const interval = setInterval(() => {  // wait until fileDownloadUrl is set
             if (fileDownloadUrl !== "") {
-                fileDownload.click();
+                fileDownloadRef.click();
                 URL.revokeObjectURL(fileDownloadUrl);
                 setFileDownloadUrl("");
                 clearInterval(interval);
@@ -193,7 +193,7 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, setRes
                     </Tooltip>
                     <a download={`generated_level_${selectedLevel}.json`}
                        href={fileDownloadUrl}
-                       ref={e => dofileDownload(e)}
+                       ref={e => setFileDownloadRef(e)}
                        style={{display: "none"}}
                     >Save file</a>
                 </td>
