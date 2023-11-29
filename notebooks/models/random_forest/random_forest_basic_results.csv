@@ -1,7 +1,7 @@
 ,Split type,Tuning type,Set of features,RMSE,MAE
-0,chronological,default,basic,1.4940036135028385,1.1914953894274922
-1,chronological,RandomizedSearchCV,basic,0.6732201147442654,0.43176125244618396
-2,chronological,minimize_overfitting,basic,0.6780866642281923,0.4370728805366797
-3,random,default,basic,1.292721353373297,1.049508275484858
-4,random,RandomizedSearchCV,basic,0.4759403488313376,0.30066225165562915
-5,random,minimize_overfitting,basic,0.47616463561253636,0.3010443035592425
+0,chronological,default,basic,1.624714418101114,1.2696173326984603
+1,chronological,RandomizedSearchCV,basic,0.7397734817718101,0.4208545580538417
+2,chronological,minimize_overfitting,basic,0.7549268375345475,0.44693313053454015
+3,random,default,basic,1.5477696617996661,1.2449155490138233
+4,random,RandomizedSearchCV,basic,0.5299489595071283,0.31691175123598414
+5,random,minimize_overfitting,basic,0.535815172305421,0.321880783698631

@@ -34,5 +34,6 @@ def calculate_level(monster_stats: dict, model) -> int:
 
     monster_y = model.predict(monster_X)
     monster_y = _round_monster_level(monster_y[0])
+    monster_y = max(monster_y, -1)  # minimum possible level is -1
 
     return monster_y
