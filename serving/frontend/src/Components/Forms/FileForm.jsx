@@ -1,18 +1,10 @@
 import {useState} from "react";
-import {displaySubmitInfo, renderHeader} from "../../utils";
+import {displaySubmitInfo, getGroupedSystemProperties, getPropertiesValuesKeys, renderSubheader} from "../../utils";
 import {minimumPropertyValues} from "./rules";
 
-const FileForm = (setMonsterProperties, setResultsFunction) => {
+const FileForm = (setMonsterProperties, setResults) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("");
-    const systemProperties = new Map([
-        ["abilities", ["str", "dex", "con", "int", "wis", "cha"]],  // mod
-        ["attributes", ["ac", "hp"]]  // value
-    ]);
-    const propertiesValuesKey = new Map([
-        ["abilities", "mod"],
-        ["attributes", "value"]
-    ]);
 
     const uploadFile = (file) => {
         if (file === undefined) {
@@ -38,10 +30,11 @@ const FileForm = (setMonsterProperties, setResultsFunction) => {
         const fileDict = JSON.parse(fileReader.result);
         const systemDict = fileDict.system;
         let resultDict = {};
+        const propertiesValuesKeys = getPropertiesValuesKeys();
         try {
             resultDict["name"] = fileDict.name;
-            systemProperties.forEach((subproperties, property) => {
-                const valuesKey = propertiesValuesKey.get(property);
+            getGroupedSystemProperties().forEach((subproperties, property) => {
+                const valuesKey = propertiesValuesKeys.get(property);
                 for (let subproperty of subproperties) {
                     const unpackedValue = unpackValue(systemDict, [property, subproperty, valuesKey]);
                     resultDict[subproperty] = unpackedValue;
@@ -68,6 +61,7 @@ const FileForm = (setMonsterProperties, setResultsFunction) => {
             if (properties === null) {
                 return;
             }
+            setResults({});
 
             let serverUrl;
             if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
@@ -79,9 +73,9 @@ const FileForm = (setMonsterProperties, setResultsFunction) => {
             fetch(serverUrl + process.env.REACT_APP_UPLOAD_ENDPOINT, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(properties)
+                body: JSON.stringify(Object.entries(properties).filter(([key]) => key !== "name"))
             }).then((response) => {
-                response.json().then(json => setResultsFunction(json));
+                response.json().then(json => setResults(json));
                 displaySubmitInfo("file-submit-button", "file-form");
                 setMonsterProperties(properties);
                 alert("File was uploaded successfully. " +
@@ -95,7 +89,7 @@ const FileForm = (setMonsterProperties, setResultsFunction) => {
 
     return (
         <div id="file-form-container">
-            {renderHeader("Select JSON file containing monster's properties")}
+            {renderSubheader("Select JSON file containing monster's properties")}
             <p>This file has to have the same structure as files from Pathfinder books.</p>
             <form onSubmit={submitForm} id="file-form">
                 <label htmlFor="file-input">

@@ -1,8 +1,16 @@
 export function renderHeader(headerText) {
     return (
-        <h1 className="content-header">
+        <h1 className={"content-header"}>
             {headerText}
         </h1>
+    );
+}
+
+export function renderSubheader(subheaderText) {
+    return (
+        <h2 className={"subheader"}>
+            {subheaderText}
+        </h2>
     );
 }
 
@@ -20,4 +28,23 @@ export function displaySubmitInfo(submitButtonId, formId) {
         form.removeChild(submittedMessage);
         submitButton.setAttribute("style", "display: block");
     }, 1250);
+}
+
+export function getDisplayablePropertiesNames() {
+    return  ["Strength (Str)", "Dexterity (Dex)", "Constitution  (Con)", "Intelligence (Int)",
+        "Wisdom (Wis)", "Charisma (Cha)", "Armor Class (AC)", "Hit Points (HP)"];
+}
+
+export function getGroupedSystemProperties() {
+    return new Map([
+        ["abilities", ["str", "dex", "con", "int", "wis", "cha"]],  // mod
+        ["attributes", ["ac", "hp"]]  // value
+    ]);
+}
+
+export function getPropertiesValuesKeys() {
+    return new Map([
+        ["abilities", "mod"],
+        ["attributes", "value"]
+    ]);
 }

@@ -1,10 +1,9 @@
-import {displaySubmitInfo, renderHeader} from "../../utils";
+import {displaySubmitInfo, getDisplayablePropertiesNames, renderSubheader} from "../../utils";
 import {minimumPropertyValues} from "./rules";
 import HelpTooltip from "../HelpTooltip";
 
-const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunction) => {
-    const properties = ["Strength (Str)", "Dexterity (Dex)", "Constitution  (Con)", "Intelligence (Int)",
-        "Wisdom (Wis)", "Charisma (Cha)", "Armor Class (AC)", "Hit Points (HP)"]
+const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => {
+    const properties = getDisplayablePropertiesNames();
 
     const extractBracketedWord = (property) => {
         return property.substring(property.indexOf("(") + 1, property.indexOf(")")).toLowerCase();
@@ -83,6 +82,7 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunct
                 return;
             }
         }
+        setResults({});
 
         let serverUrl;
         if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
@@ -94,9 +94,9 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunct
         fetch(serverUrl + process.env.REACT_APP_UPLOAD_ENDPOINT, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(formJson)
+            body: JSON.stringify(Object.entries(formJson).filter(([key]) => key !== "name"))
         }).then((response) => {
-            response.json().then(json => setResultsFunction(json));
+            response.json().then(json => setResults(json));
             displaySubmitInfo("properties-submit-button", "properties-form");
         }).catch(error => {
             alert(error);
@@ -105,7 +105,7 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResultsFunct
 
     return (
         <div id="properties-form-container">
-            {renderHeader("Insert monster's properties")}
+            {renderSubheader("Insert monster's properties")}
             <form onSubmit={handleSubmit} id="properties-form">
                 {renderNameFormRow()}
                 {properties.map(value => renderPropertiesFormRow(value))}

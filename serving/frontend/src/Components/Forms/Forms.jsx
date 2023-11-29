@@ -1,11 +1,8 @@
 import FileForm from "./FileForm";
 import PropertiesForm from "./PropertiesForm";
-import {useState} from "react";
 import {renderHeader} from "../../utils";
 
-const Forms = ({setResultsFunction}) => {
-    const [monsterProperties, setMonsterProperties] = useState({});
-
+const Forms = ({setResultsFunction, monsterProperties, setMonsterProperties}) => {
     const renderCaption = () => {
         return (
             <div className="page-info">

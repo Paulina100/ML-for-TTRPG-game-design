@@ -1,13 +1,18 @@
 import {renderHeader} from "../../utils";
 import Level from "./Level";
+import CounterfactualExamples from "./CounterfactualExamples";
 
-const Results = ({results}) => {
+const Results = ({results, monsterProperties, setMonsterProperties}) => {
     return (
         <div id="results">
             {renderHeader("Results")}
             {JSON.stringify(results) === "{}" ?
                 <p>Results will be calculated after you submit monster's properties.</p> :
-                <Level level={results.level} />
+                <div>
+                    <Level level={results.level} />
+                    <CounterfactualExamples monsterProperties={monsterProperties}
+                                            setMonsterProperties={setMonsterProperties} />
+                </div>
             }
         </div>
     );
