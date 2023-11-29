@@ -2,10 +2,10 @@ import {useState} from "react";
 import HelpTooltip from "../HelpTooltip";
 import {getDisplayablePropertiesNames, getGroupedSystemProperties, getPropertiesValuesKeys} from "../../utils";
 import {IconButton, Tooltip} from "@mui/material";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from "@mui/icons-material/Save";
 
-const CounterfactualExamples = ({monsterProperties, setMonsterProperties, setResults}) => {
+const CounterfactualExamples = ({monsterProperties, setMonsterProperties}) => {
     const [counterfactualExamples, setCounterfactualExamples] = useState([]);
     const [selectedLevel, setSelectedLevel] = useState("");
     const [displayedInfo, setDisplayedInfo] = useState({});
@@ -87,13 +87,10 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, setRes
 
     const applyCounterfactualExample = (counterfactualExample) => {
         let newMonsterProperties = {};
-        setResults({"level": selectedLevel});
         newMonsterProperties.name = monsterProperties.name;
         counterfactualExample.forEach((value, index) =>
             newMonsterProperties[Object.keys(monsterProperties).at(index+1)] = value);
         setMonsterProperties(newMonsterProperties);
-        setCounterfactualExamples([]);
-        setSelectedLevel("");
     }
 
     const getStandardizedPropertiesJson = (counterfactualExample) => {
@@ -141,7 +138,8 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, setRes
                 {counterfactualExample.map((value, valueIndex) => {
                     return (
                         <td className={"counterfactuals-table-cell"}>
-                            {(monsterPropertiesValues[valueIndex] !== value) ?
+                            {(monsterPropertiesValues[valueIndex] !== value &&
+                                monsterPropertiesValues[valueIndex] !== value.toString()) ?  // values in PropertiesForm are of type String
                                 <span className={"counterfactual-changed-value"}>{value}</span> :
                                 <span className={"counterfactual-unchanged-value"}>{value}</span>
                             }
@@ -165,7 +163,7 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, setRes
                         <button className={"counterfactuals-button"}
                                 onClick={() => {applyCounterfactualExample(counterfactualExample)}}>
                             <IconButton>
-                                <CheckBoxIcon />
+                                <EditIcon />
                             </IconButton>
                         </button>
                     </Tooltip>
@@ -225,20 +223,25 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties, setRes
                 : <></>}
             {(counterfactualExamples.length === 0)
                 ? <></>
-                : <table id={"counterfactuals-table"}>
-                    <thead>
-                        <tr className={"counterfactuals-table-row"}>
-                            {properties.map(property => {return <th key={property} className={"counterfactuals-table-cell"}>{property}</th>})}
-                            <th className={"counterfactuals-button-column"}></th>
-                            <th className={"counterfactuals-button-column"}></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {counterfactualExamples.map((counterfactualExample, index) =>
-                            renderCounterfactualExampleRow(counterfactualExample, index)
-                        )}
-                    </tbody>
-                </table>
+                : <div>
+                    <p>Click on <EditIcon fontSize={"small"} /> to insert selected properties to the form above.
+                        You will have to resubmit the form manually. Alternatively, click on <SaveIcon fontSize={"small"}/> to
+                        save properties to a JSON file.</p>
+                    <table id={"counterfactuals-table"}>
+                        <thead>
+                            <tr className={"counterfactuals-table-row"}>
+                                {properties.map(property => {return <th key={property} className={"counterfactuals-table-cell"}>{property}</th>})}
+                                <th className={"counterfactuals-button-column"}></th>
+                                <th className={"counterfactuals-button-column"}></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {counterfactualExamples.map((counterfactualExample, index) =>
+                                renderCounterfactualExampleRow(counterfactualExample, index)
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             }
         </div>
     );

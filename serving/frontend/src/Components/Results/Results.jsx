@@ -2,7 +2,7 @@ import {renderHeader} from "../../utils";
 import Level from "./Level";
 import CounterfactualExamples from "./CounterfactualExamples";
 
-const Results = ({results, setResults, monsterProperties, setMonsterProperties}) => {
+const Results = ({results, monsterProperties, setMonsterProperties}) => {
     return (
         <div id="results">
             {renderHeader("Results")}
@@ -11,8 +11,7 @@ const Results = ({results, setResults, monsterProperties, setMonsterProperties})
                 <div>
                     <Level level={results.level} />
                     <CounterfactualExamples monsterProperties={monsterProperties}
-                                            setMonsterProperties={setMonsterProperties}
-                                            setResults={setResults} />
+                                            setMonsterProperties={setMonsterProperties} />
                 </div>
             }
         </div>

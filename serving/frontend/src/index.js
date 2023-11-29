@@ -23,7 +23,7 @@ function App() {
                     <PageInfo />
                     <Forms setResultsFunction={setResults}
                            monsterProperties={monsterProperties} setMonsterProperties={setMonsterProperties} />
-                    <Results results={results} setResults={setResults}
+                    <Results results={results}
                              monsterProperties={monsterProperties} setMonsterProperties={setMonsterProperties} />
                 </div>
             </div>
