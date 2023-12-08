@@ -22,9 +22,9 @@ handler = Mangum(app)
 model = joblib.load(filename="./saved_models/current_model.pkl")
 
 
-DATASET_PATH = "./counterfactuals_datasets/bestiaries_basic.csv"
+DATASET_PATH = "./counterfactual_datasets/bestiaries_basic.csv"
 
-df = read_csv(DATASET_PATH)
+DF = read_csv(DATASET_PATH)
 
 
 @app.post("/make_prediction")
@@ -40,7 +40,7 @@ async def get_counterfactuals(properties: CounterfactualsInput):
     properties_dict = properties.dict(by_alias=True)
     level = properties_dict.pop("level")
     counterfactual_examples = generate_counterfactuals(
-        properties_dict, model, level, df
+        properties_dict, model, level, DF
     )
     return counterfactual_examples
 

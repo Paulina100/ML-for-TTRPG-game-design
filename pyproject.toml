@@ -39,5 +39,6 @@ uvicorn = "0.22.*"
 
 [tool.poetry.group.notebooks.dependencies]
 jupyter = "1.0.*"
+matplotlib = "3.8.*"
 
 # poetry export --without-hashes --format=requirements.txt --with="style,test,webserver,notebooks" --output=requirements.txt

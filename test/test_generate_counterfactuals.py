@@ -1,18 +1,12 @@
-from test.constants import DATASET_PATHS
-
 import joblib
 import pytest
+from pandas import read_csv
 
 from serving.backend.calculate_level import calculate_level
-from serving.backend.constants import ORDERED_CHARACTERISTICS
 from serving.backend.generate_counterfactuals import generate_counterfactuals
-from training.creating_dataset import load_and_preprocess_data
 
 
-df = load_and_preprocess_data(
-    DATASET_PATHS,
-    characteristics=ORDERED_CHARACTERISTICS,
-)
+df = read_csv("../counterfactual_datasets/bestiaries_basic.csv")
 
 testdata = [
     (
