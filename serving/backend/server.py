@@ -2,13 +2,11 @@ import joblib
 import uvicorn
 from api_models import CounterfactualsInput, Properties
 from calculate_level import calculate_level
-from constants import ORDERED_CHARACTERISTICS
 from fastapi import FastAPI
 from generate_counterfactuals import generate_counterfactuals
 from mangum import Mangum
+from pandas import read_csv
 from starlette.middleware.cors import CORSMiddleware
-
-from training.creating_dataset import load_and_preprocess_data
 
 
 app = FastAPI()
@@ -24,18 +22,9 @@ handler = Mangum(app)
 model = joblib.load(filename="./saved_models/current_model.pkl")
 
 
-DATASETS_DIR = "pathfinder_2e_data"
-DATASET_FILES = [
-    "pathfinder-bestiary.db",
-    "pathfinder-bestiary-2.db",
-    "pathfinder-bestiary-3.db",
-]
-DATASET_PATHS = [f"{DATASETS_DIR}/{file}" for file in DATASET_FILES]
+DATASET_PATH = "./counterfactuals_datasets/bestiaries_basic.csv"
 
-df = load_and_preprocess_data(
-    DATASET_PATHS,
-    characteristics=ORDERED_CHARACTERISTICS,
-)
+df = read_csv(DATASET_PATH)
 
 
 @app.post("/make_prediction")
