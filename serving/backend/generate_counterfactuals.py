@@ -2,7 +2,7 @@ import json
 
 import dice_ml
 import pandas as pd
-from constants import ORDERED_CHARACTERISTICS, THRESHOLD
+from constants import ORDERED_CHARACTERISTICS_BASIC, THRESHOLD
 from dice_ml import Dice
 
 
@@ -12,7 +12,7 @@ def generate_counterfactuals(
     new_level: int,
     df: pd.DataFrame,
     total_cf: int = 5,
-    ordered_characteristics: list[str] = ORDERED_CHARACTERISTICS,
+    ordered_characteristics: list[str] = ORDERED_CHARACTERISTICS_BASIC,
 ) -> dict[str, list]:
     """
     Generate counterfactual explanations for a monster's characteristics to achieve a new level.

@@ -2,7 +2,8 @@ import pathlib
 
 import joblib
 
-from serving.backend.constants import ORDERED_CHARACTERISTICS
+from serving.backend.constants import ORDERED_CHARACTERISTICS_FULL
+from training.constants import FEATURES
 from training.create_model import get_fitted_model
 from training.creating_dataset import load_and_preprocess_data
 
@@ -52,12 +53,12 @@ if __name__ == "__main__":
 
     X = load_and_preprocess_data(
         DATASET_PATHS,
-        characteristics=ORDERED_CHARACTERISTICS,
+        characteristics=FEATURES,
     )
     X.pop("book")
     y = X.pop("level")
-    X = X[ORDERED_CHARACTERISTICS]
+    X = X[ORDERED_CHARACTERISTICS_FULL]
 
     lightgbm = get_fitted_model(classifier_name="lightgbm", X_train=X, y_train=y)
 
-    joblib.dump(value=lightgbm, filename="../saved_models/current_model.pkl")
+    joblib.dump(value=lightgbm, filename="../saved_models/current_model_full.pkl")

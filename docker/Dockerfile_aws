@@ -13,10 +13,8 @@ COPY requirements_webserver.txt ${FUNCTION_DIR}
 COPY serving/backend ${FUNCTION_DIR}
 COPY training/creating_dataset.py ${FUNCTION_DIR}/training/creating_dataset.py
 COPY saved_models ${FUNCTION_DIR}/saved_models
-COPY pathfinder_2e_data/pathfinder-bestiary.db  \
-    pathfinder_2e_data/pathfinder-bestiary-2.db  \
-    pathfinder_2e_data/pathfinder-bestiary-3.db  \
-    ${FUNCTION_DIR}/pathfinder_2e_data/
+COPY counterfactual_datasets/bestiaries_basic.csv \
+    ${FUNCTION_DIR}/counterfactual_datasets/
 
 # Install the function's dependencies
 RUN pip install --target ${FUNCTION_DIR} awslambdaric
