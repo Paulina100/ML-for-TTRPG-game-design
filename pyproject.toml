@@ -36,7 +36,7 @@ mangum = "0.17.*"
 pandas = "1.4.*"
 scikit-learn = "1.2.*"
 uvicorn = "0.22.*"
-greenlet = "3.0.1" # uptade to 3.0.2 is not working with poetry
+greenlet = "3.0.1" # new greenlet 3.0.2 is not working with poetry
 
 [tool.poetry.group.notebooks.dependencies]
 jupyter = "1.0.*"
