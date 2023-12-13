@@ -57,6 +57,8 @@ if __name__ == "__main__":
     )
     X.pop("book")
     y = X.pop("level")
+
+    X.columns = [column_name.replace("-", "_") for column_name in X.columns]
     X = X[ORDERED_CHARACTERISTICS_FULL]
 
     lightgbm = get_fitted_model(classifier_name="lightgbm", X_train=X, y_train=y)

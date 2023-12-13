@@ -22,5 +22,6 @@ if __name__ == "__main__":
         characteristics=FEATURES,
     )
 
+    df.columns = [column_name.replace("-", "_") for column_name in df.columns]
     df = df[ORDERED_CHARACTERISTICS_FULL]
     df.to_csv("../counterfactual_datasets/bestiaries_full.csv")
