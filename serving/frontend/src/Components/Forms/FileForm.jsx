@@ -1,10 +1,18 @@
 import {useState} from "react";
-import {displaySubmitInfo, getGroupedSystemProperties, getPropertiesValuesKeys, renderSubheader} from "../../utils";
+import {
+    displaySubmitInfo,
+    getActualPropertiesNames,
+    getExtractionMethods,
+    renderSubheader
+} from "../../utils";
 import {minimumPropertyValues} from "./rules";
 
 const FileForm = (setMonsterProperties, setResults) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("");
+
+    const requiredProperties = getActualPropertiesNames()[0];
+    const extractionMethods = getExtractionMethods();
 
     const uploadFile = (file) => {
         if (file === undefined) {
@@ -14,36 +22,27 @@ const FileForm = (setMonsterProperties, setResults) => {
         setSelectedFileName(file.name);
     };
 
-    const unpackValue = (dict, dictKeys) => {
-        let current = dict;
-        for (let dictKey of dictKeys) {
-            if (! current.hasOwnProperty(dictKey)) {
-                const keyPath = dictKeys.join("/");
-                throw new Error("Selected JSON is invalid: value from " + keyPath + " was not found.")
-            }
-            current = current[dictKey];
-        }
-        return current;
-    }
-
     const parseFile = (fileReader) => {
         const fileDict = JSON.parse(fileReader.result);
         const systemDict = fileDict.system;
         let resultDict = {};
-        const propertiesValuesKeys = getPropertiesValuesKeys();
         try {
             resultDict["name"] = fileDict.name;
-            getGroupedSystemProperties().forEach((subproperties, property) => {
-                const valuesKey = propertiesValuesKeys.get(property);
-                for (let subproperty of subproperties) {
-                    const unpackedValue = unpackValue(systemDict, [property, subproperty, valuesKey]);
-                    resultDict[subproperty] = unpackedValue;
-                    if (unpackedValue < minimumPropertyValues.get(subproperty)) {
-                        throw new Error("Selected JSON is invalid: value of " + property + "/" + subproperty +
-                            " has to be grater than or equal to " + minimumPropertyValues.get(subproperty) +
-                            " (currently is " + unpackedValue + ").");
+            extractionMethods.forEach((extractionMethod, property) => {
+                let propertyValue = extractionMethod(systemDict);
+                if (propertyValue === undefined) {
+                    if (requiredProperties.indexOf(property) !== -1) {
+                        throw new Error(`Selected JSON is invalid: value of ${property} was not found.`);
+                    } else {
+                        propertyValue = 0;
                     }
                 }
+                if (propertyValue < minimumPropertyValues.get(property)) {
+                    throw new Error(`Selected JSON is invalid: value of ${property} has to be ` +
+                        `grater than or equal to ${minimumPropertyValues.get(property)} ` +
+                        `(currently is ${propertyValue}).`);
+                }
+                resultDict[property] = propertyValue;
             })
         } catch (e) {
             alert(e);
