@@ -58,7 +58,8 @@
 
 .message {
     text-align: center;
-    margin: 5% 10% 5% 10%;
+    margin: 10px 0;
+    font-size: medium;
 }
 
 p {
