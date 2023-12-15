@@ -1,13 +1,13 @@
-import {displaySubmitInfo, getDisplayablePropertiesNames, renderSubheader} from "../../utils";
+import {displaySubmitInfo, getActualPropertiesNames, getDisplayablePropertiesNames, renderSubheader} from "../../utils";
 import {minimumPropertyValues} from "./rules";
 import HelpTooltip from "../HelpTooltip";
+import {useState} from "react";
 
 const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => {
-    const properties = getDisplayablePropertiesNames();
+    const [isGroupVisible, setIsGroupVisible] = useState({});
 
-    const extractBracketedWord = (property) => {
-        return property.substring(property.indexOf("(") + 1, property.indexOf(")")).toLowerCase();
-    }
+    const properties = getDisplayablePropertiesNames();
+    const actualProperties = getActualPropertiesNames();
 
     const validatePressedKey = (event, propertyName) => {
         const allowedKeys = ["Backspace", "Enter", "Tab", "ArrowLeft", "ArrowRight", "ArrowTop", "ArrowDown"];
@@ -19,36 +19,56 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
         }
     }
 
-    const validateInput = (property) => {
+    const validateInput = (property, isRequired) => {
         const value = parseInt(monsterProperties[property]);
         const inputCell = document.getElementById(property);
-        if (isNaN(value) || value < minimumPropertyValues.get(property)) {
+        if ((isRequired && isNaN(value)) || value < minimumPropertyValues.get(property)) {
             inputCell.className = "invalid-input";
         } else {
             inputCell.className = "";
         }
     }
 
-    const renderPropertiesFormRow = (property) => {
-        const propertyShort = extractBracketedWord(property);
+    const renderPropertiesFormRow = (property, actualProperty, isRequired) => {
         return (
-            <div className="properties-form-row" key={propertyShort}>
-                <label htmlFor={propertyShort} id="properties-form-label">{property}</label>
-                <input id={propertyShort} name={propertyShort} type="text" required
+            <div className="properties-form-row" key={actualProperty}>
+                <label htmlFor={actualProperty} id="properties-form-label">{property}</label>
+                <input id={actualProperty} name={actualProperty} type="text" required={isRequired}
                        onKeyDown={(event) => {
-                           validatePressedKey(event, propertyShort);
+                           validatePressedKey(event, actualProperty);
                        }}
                        onChange={(event) => {
                            setMonsterProperties(monsterProperties => ({
                                ...monsterProperties,
-                               ...{[propertyShort]: event.target.value}
+                               ...{[actualProperty]: event.target.value}
                            }));
                        }}
-                       onBlur={() => {validateInput(propertyShort)}}
-                       value={(monsterProperties === null) ? "" : monsterProperties[propertyShort]}/>
+                       onBlur={() => {validateInput(actualProperty, isRequired)}}
+                       value={(monsterProperties === null) ? "" : monsterProperties[actualProperty]}/>
                 <HelpTooltip
-                    helpText={"Enter a number greater than or equal to " + minimumPropertyValues.get(propertyShort)}
+                    helpText={"Enter a number greater than or equal to " + minimumPropertyValues.get(actualProperty)}
                 />
+            </div>
+        );
+    }
+
+    const renderComplexPropertiesFormRow = (complexProperty, actualComplexProperty) => {
+        const groupName = complexProperty[0];
+        return (
+            <div className={"properties-form-group"}>
+                <span className={"properties-form-row"}
+                   onClick={() =>
+                       setIsGroupVisible(isGroupVisible =>
+                           ({...isGroupVisible, ...{[groupName]: !isGroupVisible[groupName]}})
+                       )}>
+                    {isGroupVisible[groupName] ? "˅" : "˃"} {groupName}
+                </span>
+                <div className={"properties-form-group-rows"}
+                     style={{visibility: isGroupVisible[groupName] ? "visible" : "hidden",
+                         height: isGroupVisible[groupName] ? "max-content" : "0"}}>
+                    {complexProperty[1].map((value, i) =>
+                        renderPropertiesFormRow(value, actualComplexProperty[i], false))}
+                </div>
             </div>
         );
     }
@@ -66,11 +86,28 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
         );
     }
 
+    const fillNotRequiredProperties = () => {
+        actualProperties[1].concat(actualProperties[2]).forEach((value) => {
+            if (typeof value === "string") {
+                if (!monsterProperties.hasOwnProperty(value) || monsterProperties[value] === "") {
+                    monsterProperties[value] = "0";
+                }
+            } else {
+                value.forEach((subvalue) => {
+                    if (!monsterProperties.hasOwnProperty(subvalue) || monsterProperties[subvalue] === "") {
+                        monsterProperties[subvalue] = "0";
+                    }
+                })
+            }
+        });
+    }
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
         const formJson = Object.fromEntries(formData.entries());
         setMonsterProperties(formJson);
+        fillNotRequiredProperties();
 
         for (let property in monsterProperties) {
             if (property === "name") {
@@ -94,7 +131,7 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
         fetch(serverUrl + process.env.REACT_APP_UPLOAD_ENDPOINT, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(Object.entries(formJson).filter(([key]) => key !== "name"))
+            body: JSON.stringify(Object.entries(monsterProperties).filter(([key]) => key !== "name"))
         }).then((response) => {
             response.json().then(json => setResults(json));
             displaySubmitInfo("properties-submit-button", "properties-form");
@@ -107,8 +144,31 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
         <div id="properties-form-container">
             {renderSubheader("Insert monster's properties")}
             <form onSubmit={handleSubmit} id="properties-form">
-                {renderNameFormRow()}
-                {properties.map(value => renderPropertiesFormRow(value))}
+                <div id={"properties-form-grid"}>
+                    <div className={"properties-form-column"}>
+                        {renderNameFormRow()}
+                        {properties[0].map((value, i) =>
+                            renderPropertiesFormRow(value, actualProperties[0][i], true))}
+                    </div>
+                    <div className={"properties-form-column"}>
+                        {properties[1].map((value, i) => {
+                            if (typeof value === "string") {
+                                return renderPropertiesFormRow(value, actualProperties[1][i], false)
+                            } else {
+                                return renderComplexPropertiesFormRow(value, actualProperties[1][i])
+                            }
+                        })}
+                    </div>
+                    <div className={"properties-form-column"}>
+                        {properties[2].map((value, i) => {
+                            if (typeof value === "string") {
+                                return renderPropertiesFormRow(value, actualProperties[2][i], false)
+                            } else {
+                                return renderComplexPropertiesFormRow(value, actualProperties[2][i])
+                            }
+                        })}
+                    </div>
+                </div>
                 <button type="submit" id="properties-submit-button">Submit</button>
             </form>
         </div>

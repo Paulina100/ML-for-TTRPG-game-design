@@ -91,13 +91,16 @@ const FileForm = (setMonsterProperties, setResults) => {
         <div id="file-form-container">
             {renderSubheader("Select JSON file containing monster's properties")}
             <p>This file has to have the same structure as files from Pathfinder books.</p>
-            <form onSubmit={submitForm} id="file-form">
-                <label htmlFor="file-input">
-                    <div id="file-input-button">Select file</div>
-                </label>
-                <input type="file" id="file-input" accept=".json" onInput={(e) => uploadFile(e.target.files[0])}
-                       required/>
-                <p id="selected-file">{(selectedFileName === "") ? "No file selected." : selectedFileName}</p>
+            <form onSubmit={submitForm} id={"file-form"}>
+                <div id={"file-form-input-row"}>
+                    <p id="selected-file">{(selectedFileName === "") ? "No file selected." : selectedFileName}</p>
+                    <label htmlFor="file-input">
+                        <div id="file-input-button">Select file</div>
+                    </label>
+                    <input type="file" id="file-input" accept=".json"
+                           onInput={(e) => uploadFile(e.target.files[0])}
+                           required/>
+                </div>
                 <button type="submit" id="file-submit-button">Submit</button>
             </form>
         </div>

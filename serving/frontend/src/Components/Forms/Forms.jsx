@@ -22,8 +22,8 @@ const Forms = ({setResultsFunction, monsterProperties, setMonsterProperties}) =>
         <div>
             {renderCaption()}
             <div id="forms-grid">
-                {PropertiesForm(monsterProperties, setMonsterProperties, setResultsFunction)}
                 {FileForm(setMonsterProperties, setResultsFunction)}
+                {PropertiesForm(monsterProperties, setMonsterProperties, setResultsFunction)}
             </div>
         </div>
     );
