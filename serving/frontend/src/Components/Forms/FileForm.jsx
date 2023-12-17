@@ -24,12 +24,11 @@ const FileForm = (setMonsterProperties, setResults) => {
 
     const parseFile = (fileReader) => {
         const fileDict = JSON.parse(fileReader.result);
-        const systemDict = fileDict.system;
         let resultDict = {};
         try {
             resultDict["name"] = fileDict.name;
             extractionMethods.forEach((extractionMethod, property) => {
-                let propertyValue = extractionMethod(systemDict);
+                let propertyValue = extractionMethod(fileDict);
                 if (propertyValue === undefined) {
                     if (requiredProperties.indexOf(property) !== -1) {
                         throw new Error(`Selected JSON is invalid: value of ${property} was not found.`);

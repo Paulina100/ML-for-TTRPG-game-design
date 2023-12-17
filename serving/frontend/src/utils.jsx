@@ -96,7 +96,7 @@ function getMaxBonus(itemsList, weaponType) {
     }
     let maxBonus = melee[0].bonus.value;
     for (let i=1; i<melee.length; i++) {
-        let meleeBonus = melee[i].bonus.value();
+        let meleeBonus = melee[i].bonus.value;
         if (meleeBonus > maxBonus) {
             maxBonus = meleeBonus;
         }
@@ -120,7 +120,7 @@ function getAvgDamage(itemsList, weaponType) {
     let maxBonus = melee[0].bonus.value;
     let maxBonusIndex = 0;
     for (let i=1; i<melee.length; i++) {
-        let meleeBonus = melee[i].bonus.value();
+        let meleeBonus = melee[i].bonus.value;
         if (meleeBonus > maxBonus) {
             maxBonus = meleeBonus;
             maxBonusIndex = i;
@@ -160,76 +160,76 @@ function getAvgDamage(itemsList, weaponType) {
 
 export function getExtractionMethods() {
     return new Map([
-        ["str", (system_dict) => {return system_dict.abilities?.str?.mod}],
-        ["dex", (system_dict) => {return system_dict.abilities?.dex?.mod}],
-        ["con", (system_dict) => {return system_dict.abilities?.con?.mod}],
-        ["int", (system_dict) => {return system_dict.abilities?.int?.mod}],
-        ["wis", (system_dict) => {return system_dict.abilities?.wis?.mod}],
-        ["cha", (system_dict) => {return system_dict.abilities?.cha?.mod}],
-        ["ac", (system_dict) => {return system_dict.attributes?.ac?.value}],
-        ["hp", (system_dict) => {return system_dict.attributes?.hp?.value}],
-        ["perception", (system_dict) => {return system_dict.attributes?.perception?.value}],
-        ["fortitude", (system_dict) => {return system_dict.saves?.fortitude?.value}],
-        ["reflex", (system_dict) => {return system_dict.saves?.reflex?.value}],
-        ["will", (system_dict) => {return system_dict.saves?.will?.value}],
-        ["focus", (system_dict) => {return system_dict.resources?.focus?.value}],
-        ["num_immunities", (system_dict) => {
-            const immunities = system_dict.attributes?.immunities;
+        ["str", (monster_dict) => {return monster_dict.system?.abilities?.str?.mod}],
+        ["dex", (monster_dict) => {return monster_dict.system?.abilities?.dex?.mod}],
+        ["con", (monster_dict) => {return monster_dict.system?.abilities?.con?.mod}],
+        ["int", (monster_dict) => {return monster_dict.system?.abilities?.int?.mod}],
+        ["wis", (monster_dict) => {return monster_dict.system?.abilities?.wis?.mod}],
+        ["cha", (monster_dict) => {return monster_dict.system?.abilities?.cha?.mod}],
+        ["ac", (monster_dict) => {return monster_dict.system?.attributes?.ac?.value}],
+        ["hp", (monster_dict) => {return monster_dict.system?.attributes?.hp?.value}],
+        ["perception", (monster_dict) => {return monster_dict.system?.attributes?.perception?.value}],
+        ["fortitude", (monster_dict) => {return monster_dict.system?.saves?.fortitude?.value}],
+        ["reflex", (monster_dict) => {return monster_dict.system?.saves?.reflex?.value}],
+        ["will", (monster_dict) => {return monster_dict.system?.saves?.will?.value}],
+        ["focus", (monster_dict) => {return monster_dict.system?.resources?.focus?.value}],
+        ["num_immunities", (monster_dict) => {
+            const immunities = monster_dict.system?.attributes?.immunities;
             return immunities === undefined ? 0 : immunities.length;}],
-        ["land_speed", (system_dict) => {return system_dict.attributes?.speed?.value}],
-        ["fly", (system_dict) => {return getSelectedTypeValue(system_dict.attributes?.speed?.otherSpeeds, "fly")}],
-        ["climb", (system_dict) => {return getSelectedTypeValue(system_dict.attributes?.speed?.otherSpeeds, "climb")}],
-        ["swim", (system_dict) => {return getSelectedTypeValue(system_dict.attributes?.speed?.otherSpeeds, "swim")}],
-        ["spells_nr_lvl_1", (system_dict) => {return getSpellsNumberWithLevel(system_dict.items, 1)}],
-        ["spells_nr_lvl_2", (system_dict) => {return getSpellsNumberWithLevel(system_dict.items, 2)}],
-        ["spells_nr_lvl_3", (system_dict) => {return getSpellsNumberWithLevel(system_dict.items, 3)}],
-        ["spells_nr_lvl_4", (system_dict) => {return getSpellsNumberWithLevel(system_dict.items, 4)}],
-        ["spells_nr_lvl_5", (system_dict) => {return getSpellsNumberWithLevel(system_dict.items, 5)}],
-        ["spells_nr_lvl_6", (system_dict) => {return getSpellsNumberWithLevel(system_dict.items, 6)}],
-        ["spells_nr_lvl_7", (system_dict) => {return getSpellsNumberWithLevel(system_dict.items, 7)}],
-        ["spells_nr_lvl_8", (system_dict) => {return getSpellsNumberWithLevel(system_dict.items, 8)}],
-        ["spells_nr_lvl_9", (system_dict) => {return getSpellsNumberWithLevel(system_dict.items, 9)}],
-        ["melee_max_bonus", (system_dict) => {return getMaxBonus(system_dict.items, "melee")}],
-        ["avg_melee_dmg", (system_dict) => {return getAvgDamage(system_dict.items, "melee")}],
-        ["ranged_max_bonus", (system_dict) => {return getMaxBonus(system_dict.items, "ranged")}],
-        ["avg_ranged_dmg", (system_dict) => {return getAvgDamage(system_dict.items, "ranged")}],
-        ["acid_resistance", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.resistances, "acid")}],
-        ["all_damage_resistance", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.resistances, "all-damage")}],
-        ["bludgeoning_resistance", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.resistances, "bludgeoning")}],
-        ["cold_resistance", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.resistances, "cold")}],
-        ["electricity_resistance", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.resistances, "electricity")}],
-        ["fire_resistance", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.resistances, "fire")}],
-        ["mental_resistance", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.resistances, "mental")}],
-        ["physical_resistance", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.resistances, "physical")}],
-        ["piercing_resistance", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.resistances, "piercing")}],
-        ["poison_resistance", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.resistances, "poison")}],
-        ["slashing_resistance", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.resistances, "slashing")}],
-        ["area_damage_weakness", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.weaknesses, "area-damage")}],
-        ["cold_weakness", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.weaknesses, "cold")}],
-        ["cold_iron_weakness", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.weaknesses, "cold-iron")}],
-        ["evil_weakness", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.weaknesses, "evil")}],
-        ["fire_weakness", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.weaknesses, "fire")}],
-        ["good_weakness", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.weaknesses, "good")}],
-        ["slashing_weakness", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.weaknesses, "slashing")}],
-        ["splash_damage_weakness", (system_dict) => {
-            return getSelectedTypeValue(system_dict.attributes?.weaknesses, "splash-damage")}]
+        ["land_speed", (monster_dict) => {return monster_dict.system?.attributes?.speed?.value}],
+        ["fly", (monster_dict) => {return getSelectedTypeValue(monster_dict.system?.attributes?.speed?.otherSpeeds, "fly")}],
+        ["climb", (monster_dict) => {return getSelectedTypeValue(monster_dict.system?.attributes?.speed?.otherSpeeds, "climb")}],
+        ["swim", (monster_dict) => {return getSelectedTypeValue(monster_dict.system?.attributes?.speed?.otherSpeeds, "swim")}],
+        ["spells_nr_lvl_1", (monster_dict) => {return getSpellsNumberWithLevel(monster_dict.items, 1)}],
+        ["spells_nr_lvl_2", (monster_dict) => {return getSpellsNumberWithLevel(monster_dict.items, 2)}],
+        ["spells_nr_lvl_3", (monster_dict) => {return getSpellsNumberWithLevel(monster_dict.items, 3)}],
+        ["spells_nr_lvl_4", (monster_dict) => {return getSpellsNumberWithLevel(monster_dict.items, 4)}],
+        ["spells_nr_lvl_5", (monster_dict) => {return getSpellsNumberWithLevel(monster_dict.items, 5)}],
+        ["spells_nr_lvl_6", (monster_dict) => {return getSpellsNumberWithLevel(monster_dict.items, 6)}],
+        ["spells_nr_lvl_7", (monster_dict) => {return getSpellsNumberWithLevel(monster_dict.items, 7)}],
+        ["spells_nr_lvl_8", (monster_dict) => {return getSpellsNumberWithLevel(monster_dict.items, 8)}],
+        ["spells_nr_lvl_9", (monster_dict) => {return getSpellsNumberWithLevel(monster_dict.items, 9)}],
+        ["melee_max_bonus", (monster_dict) => {return getMaxBonus(monster_dict.items, "melee")}],
+        ["avg_melee_dmg", (monster_dict) => {return getAvgDamage(monster_dict.items, "melee")}],
+        ["ranged_max_bonus", (monster_dict) => {return getMaxBonus(monster_dict.items, "ranged")}],
+        ["avg_ranged_dmg", (monster_dict) => {return getAvgDamage(monster_dict.items, "ranged")}],
+        ["acid_resistance", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.resistances, "acid")}],
+        ["all_damage_resistance", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.resistances, "all-damage")}],
+        ["bludgeoning_resistance", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.resistances, "bludgeoning")}],
+        ["cold_resistance", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.resistances, "cold")}],
+        ["electricity_resistance", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.resistances, "electricity")}],
+        ["fire_resistance", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.resistances, "fire")}],
+        ["mental_resistance", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.resistances, "mental")}],
+        ["physical_resistance", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.resistances, "physical")}],
+        ["piercing_resistance", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.resistances, "piercing")}],
+        ["poison_resistance", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.resistances, "poison")}],
+        ["slashing_resistance", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.resistances, "slashing")}],
+        ["area_damage_weakness", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.weaknesses, "area-damage")}],
+        ["cold_weakness", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.weaknesses, "cold")}],
+        ["cold_iron_weakness", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.weaknesses, "cold-iron")}],
+        ["evil_weakness", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.weaknesses, "evil")}],
+        ["fire_weakness", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.weaknesses, "fire")}],
+        ["good_weakness", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.weaknesses, "good")}],
+        ["slashing_weakness", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.weaknesses, "slashing")}],
+        ["splash_damage_weakness", (monster_dict) => {
+            return getSelectedTypeValue(monster_dict.system?.attributes?.weaknesses, "splash-damage")}]
     ]);
 }
