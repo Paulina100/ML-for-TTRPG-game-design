@@ -12,8 +12,8 @@ COPY requirements.txt ${FUNCTION_DIR}
 COPY requirements_webserver.txt ${FUNCTION_DIR}
 COPY serving/backend ${FUNCTION_DIR}
 COPY training/creating_dataset.py ${FUNCTION_DIR}/training/creating_dataset.py
-COPY saved_models ${FUNCTION_DIR}/saved_models
-COPY counterfactual_datasets/bestiaries_basic.csv \
+COPY saved_models/current_model_full.pkl ${FUNCTION_DIR}/saved_models/
+COPY counterfactual_datasets/bestiaries_full.csv \
     ${FUNCTION_DIR}/counterfactual_datasets/
 
 # Install the function's dependencies

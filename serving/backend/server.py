@@ -19,10 +19,10 @@ app.add_middleware(
 )
 handler = Mangum(app)
 
-model = joblib.load(filename="./saved_models/current_model.pkl")
+model = joblib.load(filename="./saved_models/current_model_full.pkl")
 
 
-DATASET_PATH = "./counterfactual_datasets/bestiaries_basic.csv"
+DATASET_PATH = "./counterfactual_datasets/bestiaries_full.csv"
 
 DF = read_csv(DATASET_PATH)
 
@@ -36,9 +36,9 @@ async def make_prediction(properties: Properties):
 
 
 @app.post("/get_counterfactuals")
-async def get_counterfactuals(properties: CounterfactualsInput):
-    properties_dict = properties.dict(by_alias=True)
-    level = properties_dict.pop("level")
+async def get_counterfactuals(cf_input: CounterfactualsInput):
+    properties_dict = cf_input.properties.dict(by_alias=True)
+    level = cf_input.level
     counterfactual_examples = generate_counterfactuals(
         properties_dict, model, level, DF
     )
