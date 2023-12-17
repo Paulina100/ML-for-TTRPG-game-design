@@ -321,7 +321,7 @@ input[type="text"] {
     background-color: gray;
 }
 
-a:link, a:visited {
+#footer a:link, #footer a:visited {
     text-decoration-line: underline;
     color: black;
 }
