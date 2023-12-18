@@ -55,7 +55,7 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
     const renderComplexPropertiesFormRow = (complexProperty, actualComplexProperty) => {
         const groupName = complexProperty[0];
         return (
-            <div className={"properties-form-group"}>
+            <div className={"properties-group"}>
                 <span className={"properties-form-row"}
                    onClick={() =>
                        setIsGroupVisible(isGroupVisible =>
@@ -63,7 +63,7 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
                        )}>
                     {isGroupVisible[groupName] ? "˅" : "˃"} {groupName}
                 </span>
-                <div className={"properties-form-group-rows"}
+                <div className={"properties-group-rows"}
                      style={{visibility: isGroupVisible[groupName] ? "visible" : "hidden",
                          height: isGroupVisible[groupName] ? "max-content" : "0"}}>
                     {complexProperty[1].map((value, i) =>
@@ -143,14 +143,14 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
     return (
         <div id="properties-form-container">
             {renderSubheader("Insert monster's properties")}
-            <form onSubmit={handleSubmit} id="properties-form">
-                <div id={"properties-form-grid"}>
-                    <div className={"properties-form-column"}>
+            <form onSubmit={handleSubmit} id={"properties-form"}>
+                <div className={"properties-grid"}>
+                    <div className={"properties-column"}>
                         {renderNameFormRow()}
                         {properties[0].map((value, i) =>
                             renderPropertiesFormRow(value, actualProperties[0][i], true))}
                     </div>
-                    <div className={"properties-form-column"}>
+                    <div className={"properties-column"}>
                         {properties[1].map((value, i) => {
                             if (typeof value === "string") {
                                 return renderPropertiesFormRow(value, actualProperties[1][i], false)
@@ -159,7 +159,7 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
                             }
                         })}
                     </div>
-                    <div className={"properties-form-column"}>
+                    <div className={"properties-column"}>
                         {properties[2].map((value, i) => {
                             if (typeof value === "string") {
                                 return renderPropertiesFormRow(value, actualProperties[2][i], false)

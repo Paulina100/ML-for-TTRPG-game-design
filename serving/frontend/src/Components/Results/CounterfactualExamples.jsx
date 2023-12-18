@@ -1,6 +1,6 @@
 import {useState} from "react";
 import HelpTooltip from "../HelpTooltip";
-import {getDisplayablePropertiesNames, getGroupedSystemProperties, getPropertiesValuesKeys} from "../../utils";
+import {getDisplayablePropertiesNames} from "../../utils";
 import {IconButton, Tooltip} from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from "@mui/icons-material/Save";
@@ -11,6 +11,15 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties}) => {
     const [displayedInfo, setDisplayedInfo] = useState({});
     const [fileDownloadUrl, setFileDownloadUrl] = useState("");
     const [fileDownloadRef, setFileDownloadRef] = useState(null);
+    const [isGroupVisible, setIsGroupVisible] = useState([
+        {"Speed": true, "Spells": true, "Attacks": true, "Resistance": true, "Weakness": true},
+        {"Speed": true, "Spells": true, "Attacks": true, "Resistance": true, "Weakness": true},
+        {"Speed": true, "Spells": true, "Attacks": true, "Resistance": true, "Weakness": true},
+        {"Speed": true, "Spells": true, "Attacks": true, "Resistance": true, "Weakness": true},
+        {"Speed": true, "Spells": true, "Attacks": true, "Resistance": true, "Weakness": true}
+    ]);
+    const [isCounterfactualExampleVisible, setIsCounterfactualExampleVisible] =
+        useState([true, true, true, true, true]);
 
     const properties = getDisplayablePropertiesNames();
 
@@ -50,10 +59,11 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties}) => {
 
         const requestBody = {};
         requestBody["level"] = formJson["selectedLevel"];
+        requestBody["properties"] = {};
 
         Object.keys(monsterProperties).forEach(key => {
             if (key !== "name") {
-                requestBody[key] = monsterProperties[key]
+                requestBody.properties[key] = monsterProperties[key]
             }
         });
 
@@ -95,19 +105,19 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties}) => {
 
     const getStandardizedPropertiesJson = (counterfactualExample) => {
         const standardizedProperties = {"system": {}};
-        const groupedSystemProperties = getGroupedSystemProperties();
-        const propertiesValuesKeys = getPropertiesValuesKeys();
-        let index = 0;
-        groupedSystemProperties.forEach((subproperties, property) => {
-            standardizedProperties.system[property] = {};
-            const valuesKey = propertiesValuesKeys.get(property);
-            for (let subproperty of subproperties) {
-                standardizedProperties.system[property][subproperty] = {};
-                standardizedProperties.system[property][subproperty][valuesKey] = counterfactualExample[index];
-                index++;
-            }
-        });
-        standardizedProperties["name"] = monsterProperties.name;
+        // const groupedSystemProperties = getGroupedSystemProperties();
+        // const propertiesValuesKeys = getPropertiesValuesKeys();
+        // let index = 0;
+        // groupedSystemProperties.forEach((subproperties, property) => {
+        //     standardizedProperties.system[property] = {};
+        //     const valuesKey = propertiesValuesKeys.get(property);
+        //     for (let subproperty of subproperties) {
+        //         standardizedProperties.system[property][subproperty] = {};
+        //         standardizedProperties.system[property][subproperty][valuesKey] = counterfactualExample[index];
+        //         index++;
+        //     }
+        // });
+        // standardizedProperties["name"] = monsterProperties.name;
         return standardizedProperties;
     }
 
@@ -126,76 +136,131 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties}) => {
         }, 100);
     }
 
-    const renderCounterfactualExampleRow = (counterfactualExample, exampleIndex) => {
-        let monsterPropertiesValues = [];
-        for (let key in monsterProperties) {
-            if (key !== "name") {
-                monsterPropertiesValues.push(monsterProperties[key]);
-            }
-        }
+    const renderCounterfactualExampleIcons = (counterfactualExample) => {
         return (
-            <tr key={exampleIndex} className={"counterfactuals-table-row"}>
-                {counterfactualExample.map((value, valueIndex) => {
-                    return (
-                        <td className={"counterfactuals-table-cell"}>
-                            {(monsterPropertiesValues[valueIndex] !== value &&
-                                monsterPropertiesValues[valueIndex] !== value.toString()) ?  // values in PropertiesForm are of type String
-                                <span className={"counterfactual-changed-value"}>{value}</span> :
-                                <span className={"counterfactual-unchanged-value"}>{value}</span>
-                            }
-                        </td>
-                    );
-                })}
-                <td className={"counterfactuals-button-cell"}>
-                    <Tooltip
-                        title={"click to insert these properties to form above"}
-                        placement="top"
-                        arrow PopperProps={{
-                            modifiers: [
-                                {
-                                    name: "offset",
-                                    options: {
-                                        offset: [0, -15],
-                                    },
+            <div>
+                <Tooltip
+                    title={"click to insert these properties to form above"}
+                    placement="top"
+                    arrow PopperProps={{
+                        modifiers: [
+                            {
+                                name: "offset",
+                                options: {
+                                    offset: [0, -15],
                                 },
-                            ],
-                        }}>
-                        <button className={"counterfactuals-button"}
-                                onClick={() => {applyCounterfactualExample(counterfactualExample)}}>
-                            <IconButton>
-                                <EditIcon />
-                            </IconButton>
-                        </button>
-                    </Tooltip>
-                </td>
-                <td className={"counterfactuals-button-cell"}>
-                    <Tooltip
-                        title={"click to download these properties to JSON file"}
-                        placement="top"
-                        arrow PopperProps={{
-                            modifiers: [
-                                {
-                                    name: "offset",
-                                    options: {
-                                        offset: [0, -15],
-                                    },
+                            },
+                        ],
+                    }}>
+                    <button className={"counterfactuals-button"}
+                            onClick={() => {applyCounterfactualExample(counterfactualExample)}}>
+                        <IconButton>
+                            <EditIcon />
+                        </IconButton>
+                    </button>
+                </Tooltip>
+                <Tooltip
+                    title={"click to download these properties to JSON file"}
+                    placement="top"
+                    arrow PopperProps={{
+                        modifiers: [
+                            {
+                                name: "offset",
+                                options: {
+                                    offset: [0, -15],
                                 },
-                            ],
-                        }}>
-                        <button className={"counterfactuals-button"}
-                                onClick={(event) => {saveCounterfactualExample(counterfactualExample, event)}}>
-                            <IconButton>
-                                <SaveIcon />
-                            </IconButton>
-                        </button>
-                    </Tooltip>
-                    <a download={`generated_level_${selectedLevel}.json`}
-                       href={fileDownloadUrl}
-                       ref={e => setFileDownloadRef(e)}
-                       style={{display: "none"}}
-                    >Save file</a>
-                </td>
-            </tr>
+                            },
+                        ],
+                    }}>
+                    <button className={"counterfactuals-button"}
+                            onClick={(event) => {saveCounterfactualExample(counterfactualExample, event)}}>
+                        <IconButton>
+                            <SaveIcon />
+                        </IconButton>
+                    </button>
+                </Tooltip>
+                <a download={`generated_level_${selectedLevel}.json`}
+                   href={fileDownloadUrl}
+                   ref={e => setFileDownloadRef(e)}
+                   style={{display: "none"}}
+                >Save file</a>
+            </div>
+        );
+    }
+
+    const renderPropertiesFormRow = (property, actualProperty, currentProperty) => {
+        return (
+            <div key={property} className={"counterfactual-group-row"}>
+                {property}:
+                {(currentProperty !== actualProperty &&
+                    currentProperty.toString() !== actualProperty.toString()) ?  // values in PropertiesForm are of type String
+                    <span className={"counterfactual-changed-value"}>{actualProperty}</span> :
+                    <span className={"counterfactual-unchanged-value"}>{actualProperty}</span>
+                }
+            </div>
+        );
+    }
+
+    const renderComplexPropertiesFormRow = (complexProperty, counterfactualExample, counterfactualExampleIndex, monsterPropertiesValues, startIndex) => {
+        const groupName = complexProperty[0];
+        return (
+            <div className={"properties-group"}>
+                <span className={"counterfactual-group-row"}
+                   onClick={() => {
+                       const updatedGroupVisible = [...isGroupVisible];
+                       updatedGroupVisible[counterfactualExampleIndex][groupName] = !isGroupVisible[counterfactualExampleIndex][groupName];
+                       setIsGroupVisible(updatedGroupVisible);
+                   }}>
+                    {isGroupVisible[counterfactualExampleIndex][groupName] ? "˅" : "˃"} {groupName}
+                </span>
+                <div className={"properties-group-rows counterfactual-properties-group-rows"}
+                     style={{visibility: isGroupVisible[counterfactualExampleIndex][groupName] ? "visible" : "hidden",
+                         height: isGroupVisible[counterfactualExampleIndex][groupName] ? "max-content" : "0"}}>
+                    {complexProperty[1].map((value, i) =>
+                        renderPropertiesFormRow(value, counterfactualExample[startIndex + i],
+                            monsterPropertiesValues[startIndex + i], startIndex + i))}
+                </div>
+            </div>
+        );
+    }
+
+    const renderFullCounterfactualExample = (counterfactualExample, counterfactualExampleIndex) => {
+        const monsterPropertiesWithoutName = Object.fromEntries(Object.entries(monsterProperties).filter(([key]) => key !== "name"));
+        const monsterPropertiesValues = Object.values(monsterPropertiesWithoutName);
+        let j = -1;
+        return (
+            <div className={"properties-grid"}>
+                <div className={"properties-column"}>
+                    {properties[0].map((value) => {
+                        j++;
+                        return renderPropertiesFormRow(value, counterfactualExample[j], monsterPropertiesValues[j]);
+                    })}
+                </div>
+                <div className={"properties-column"}>
+                    {properties[1].map((value) => {
+                        if (typeof value === "string") {
+                            j++;
+                            return renderPropertiesFormRow(value, counterfactualExample[j], monsterPropertiesValues[j])
+                        } else {
+                            j += value[1].length;
+                            return renderComplexPropertiesFormRow(value, counterfactualExample, counterfactualExampleIndex, monsterPropertiesValues,
+                                j - value[1].length + 1)
+                        }
+                    })}
+                </div>
+                <div className={"properties-column"}>
+                    {properties[2].map((value) => {
+                        if (typeof value === "string") {
+                            j++;
+                            return renderPropertiesFormRow(value, counterfactualExample[j], monsterPropertiesValues[j])
+                        } else {
+                            j += value[1].length;
+                            return renderComplexPropertiesFormRow(value, counterfactualExample, counterfactualExampleIndex, monsterPropertiesValues,
+                                j - value[1].length + 1)
+                        }
+                    })}
+                </div>
+            </div>
         );
     }
 
@@ -227,20 +292,26 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties}) => {
                     <p>Click on <EditIcon fontSize={"small"} /> to insert selected properties to the form above.
                         You will have to resubmit the form manually. Alternatively, click on <SaveIcon fontSize={"small"}/> to
                         save properties to a JSON file.</p>
-                    <table id={"counterfactuals-table"}>
-                        <thead>
-                            <tr className={"counterfactuals-table-row"}>
-                                {properties.map(property => {return <th key={property} className={"counterfactuals-table-cell"}>{property}</th>})}
-                                <th className={"counterfactuals-button-column"}></th>
-                                <th className={"counterfactuals-button-column"}></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {counterfactualExamples.map((counterfactualExample, index) =>
-                                renderCounterfactualExampleRow(counterfactualExample, index)
-                            )}
-                        </tbody>
-                    </table>
+                    {counterfactualExamples.map((counterfactualExample, index) =>
+                        <div className={"counterfactual-group"}>
+                            <div className={"counterfactual-group-header"}>
+                                <h3 className={"counterfactual-group-header-text"}
+                                    onClick={() => {
+                                        const updatedIsCfVisible = [...isCounterfactualExampleVisible];
+                                        updatedIsCfVisible[index] = !isCounterfactualExampleVisible[index];
+                                        setIsCounterfactualExampleVisible(updatedIsCfVisible);
+                                    }}>
+                                    {isCounterfactualExampleVisible[index] ? "˅ " : "˃ "}
+                                    Modified properties #{index+1}
+                                </h3>
+                                {renderCounterfactualExampleIcons(counterfactualExample)}
+                            </div>
+                            {isCounterfactualExampleVisible[index] ?
+                                renderFullCounterfactualExample(counterfactualExample, index) :
+                                <></>
+                            }
+                        </div>
+                    )}
                 </div>
             }
         </div>

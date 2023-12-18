@@ -128,17 +128,17 @@ button[type="submit"]:hover, #file-input-button:hover {
 }
 
 /* PROPERTIES FORM */
-#properties-form-grid {
+.properties-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
 }
 
-.properties-form-column {
+.properties-column {
     padding: 0 10px;
     border-right: 1px solid gray;
 }
 
-.properties-form-column:last-child {
+.properties-column:last-child {
     border-right: none;
 }
 
@@ -153,23 +153,23 @@ button[type="submit"]:hover, #file-input-button:hover {
     height: fit-content;
 }
 
-.properties-form-group {
+.properties-group {
     border: 2px solid var(--theme-color);
     margin: calc((40px - 1em - 2px)) 0;
 }
 
-.properties-form-group > span {
+.properties-group > span {
     cursor: pointer;
     width: calc(100% - 10px);
     margin: 5px;
     background-color: rgba(9, 74, 32, 0.25);
 }
 
-.properties-form-group div {
+.properties-group-rows {
     margin-right: 10px;
 }
 
-.properties-form-group-rows div:last-child {
+.properties-group-rows div:last-child {
     margin-bottom: 10px;
 }
 
@@ -278,23 +278,41 @@ input[type="text"] {
     color: gray;
 }
 
-#counterfactuals-table, .counterfactuals-table-row, .counterfactuals-table-cell {
-    border: 1px solid gray;
-    border-collapse: collapse;
-}
-
-.counterfactuals-table-cell {
+.counterfactual-group {
+    margin: 20px 10px;
     padding: 5px;
-    align-items: center;
-    justify-content: center;
-    width: 12.5%;
-    text-align: center;
+    border: 3px solid var(--theme-color);
 }
 
-.counterfactuals-button-column, .counterfactuals-button-cell {
-    border: 1px solid transparent;
-    padding: 0;
-    width: 30px;
+.counterfactual-properties-group-rows {
+    margin-left: 10px;
+}
+
+.counterfactual-group-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 15px;
+    margin-bottom: 10px;
+    background-color: rgba(9, 74, 32, 0.25);
+}
+
+.counterfactual-group-header-text {
+    font-family: var(--theme-font);
+    color: var(--theme-color);
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+.counterfactual-group-row {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-column-gap: 10px;
+    align-items: center;
+    padding: 5px;
+    width: 100%;
+    min-height: 30px;
+    height: fit-content;
 }
 
 .counterfactual-changed-value {
