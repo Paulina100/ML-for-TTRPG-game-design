@@ -188,20 +188,20 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties}) => {
         );
     }
 
-    const renderPropertiesFormRow = (property, actualProperty, currentProperty) => {
+    const renderPropertiesRow = (property, cfProperty, currentProperty) => {
         return (
             <div key={property} className={"counterfactual-group-row"}>
                 {property}:
-                {(currentProperty !== actualProperty &&
-                    currentProperty.toString() !== actualProperty.toString()) ?  // values in PropertiesForm are of type String
-                    <span className={"counterfactual-changed-value"}>{actualProperty}</span> :
-                    <span className={"counterfactual-unchanged-value"}>{actualProperty}</span>
+                {(currentProperty.toString() !== cfProperty.toString()) ?  // values in PropertiesForm are of type String
+                    <span className={"counterfactual-changed-value"}>{cfProperty}</span> :
+                    <span className={"counterfactual-unchanged-value"}>{cfProperty}</span>
                 }
             </div>
         );
     }
 
-    const renderComplexPropertiesFormRow = (complexProperty, counterfactualExample, counterfactualExampleIndex, monsterPropertiesValues, startIndex) => {
+    const renderComplexPropertiesRow = (complexProperty, counterfactualExample, counterfactualExampleIndex,
+                                        monsterPropertiesValues, startIndex) => {
         const groupName = complexProperty[0];
         return (
             <div className={"properties-group"}>
@@ -217,7 +217,7 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties}) => {
                      style={{visibility: isGroupVisible[counterfactualExampleIndex][groupName] ? "visible" : "hidden",
                          height: isGroupVisible[counterfactualExampleIndex][groupName] ? "max-content" : "0"}}>
                     {complexProperty[1].map((value, i) =>
-                        renderPropertiesFormRow(value, counterfactualExample[startIndex + i],
+                        renderPropertiesRow(value, counterfactualExample[startIndex + i],
                             monsterPropertiesValues[startIndex + i], startIndex + i))}
                 </div>
             </div>
@@ -233,18 +233,18 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties}) => {
                 <div className={"properties-column"}>
                     {properties[0].map((value) => {
                         j++;
-                        return renderPropertiesFormRow(value, counterfactualExample[j], monsterPropertiesValues[j]);
+                        return renderPropertiesRow(value, counterfactualExample[j], monsterPropertiesValues[j]);
                     })}
                 </div>
                 <div className={"properties-column"}>
                     {properties[1].map((value) => {
                         if (typeof value === "string") {
                             j++;
-                            return renderPropertiesFormRow(value, counterfactualExample[j], monsterPropertiesValues[j])
+                            return renderPropertiesRow(value, counterfactualExample[j], monsterPropertiesValues[j])
                         } else {
                             j += value[1].length;
-                            return renderComplexPropertiesFormRow(value, counterfactualExample, counterfactualExampleIndex, monsterPropertiesValues,
-                                j - value[1].length + 1)
+                            return renderComplexPropertiesRow(value, counterfactualExample, counterfactualExampleIndex,
+                                monsterPropertiesValues, j - value[1].length + 1)
                         }
                     })}
                 </div>
@@ -252,11 +252,11 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties}) => {
                     {properties[2].map((value) => {
                         if (typeof value === "string") {
                             j++;
-                            return renderPropertiesFormRow(value, counterfactualExample[j], monsterPropertiesValues[j])
+                            return renderPropertiesRow(value, counterfactualExample[j], monsterPropertiesValues[j])
                         } else {
                             j += value[1].length;
-                            return renderComplexPropertiesFormRow(value, counterfactualExample, counterfactualExampleIndex, monsterPropertiesValues,
-                                j - value[1].length + 1)
+                            return renderComplexPropertiesRow(value, counterfactualExample, counterfactualExampleIndex,
+                                monsterPropertiesValues, j - value[1].length + 1)
                         }
                     })}
                 </div>
