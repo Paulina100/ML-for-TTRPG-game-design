@@ -1,6 +1,6 @@
 import {useState} from "react";
 import HelpTooltip from "../HelpTooltip";
-import {getDisplayablePropertiesNames} from "../../utils";
+import {generateMonsterJSON, getDisplayablePropertiesNames} from "../../utils";
 import {IconButton, Tooltip} from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from "@mui/icons-material/Save";
@@ -103,27 +103,9 @@ const CounterfactualExamples = ({monsterProperties, setMonsterProperties}) => {
         setMonsterProperties(newMonsterProperties);
     }
 
-    const getStandardizedPropertiesJson = (counterfactualExample) => {
-        const standardizedProperties = {"system": {}};
-        // const groupedSystemProperties = getGroupedSystemProperties();
-        // const propertiesValuesKeys = getPropertiesValuesKeys();
-        // let index = 0;
-        // groupedSystemProperties.forEach((subproperties, property) => {
-        //     standardizedProperties.system[property] = {};
-        //     const valuesKey = propertiesValuesKeys.get(property);
-        //     for (let subproperty of subproperties) {
-        //         standardizedProperties.system[property][subproperty] = {};
-        //         standardizedProperties.system[property][subproperty][valuesKey] = counterfactualExample[index];
-        //         index++;
-        //     }
-        // });
-        // standardizedProperties["name"] = monsterProperties.name;
-        return standardizedProperties;
-    }
-
     const saveCounterfactualExample = (counterfactualExample, event) => {
         event.preventDefault();
-        const blob = new Blob([JSON.stringify(getStandardizedPropertiesJson(counterfactualExample))]);
+        const blob = new Blob([JSON.stringify(generateMonsterJSON(monsterProperties.name, counterfactualExample))]);
         const fileDownloadUrl = URL.createObjectURL(blob);
         setFileDownloadUrl(fileDownloadUrl);
         const interval = setInterval(() => {  // wait until fileDownloadUrl is set
