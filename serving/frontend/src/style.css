@@ -104,7 +104,7 @@ p, label, input {
     width: 100%;
 }
 
-button[type="submit"], #file-input-button {
+button[type="submit"], #file-input-button, #save-properties-button {
     padding: 10px;
     margin: 15px 25%;
     background-color: var(--theme-color);

@@ -1,4 +1,9 @@
-import {displaySubmitInfo, getActualPropertiesNames, getDisplayablePropertiesNames, renderSubheader} from "../../utils";
+import {
+    displaySubmitInfo,
+    getActualPropertiesNames,
+    getDisplayablePropertiesNames,
+    renderSubheader
+} from "../../utils";
 import {minimumPropertyValues} from "./rules";
 import HelpTooltip from "../HelpTooltip";
 import {useState} from "react";
@@ -11,16 +16,38 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
 
     const validatePressedKey = (event, propertyName) => {
         const allowedKeys = ["Backspace", "Enter", "Tab", "ArrowLeft", "ArrowRight", "ArrowTop", "ArrowDown"];
+        if (propertyName === "avg_melee_dmg" || propertyName === "avg_ranged_dmg") {
+            allowedKeys.push(".")
+        }
         if (!/[0-9]/.test(event.key) && !allowedKeys.includes(event.key) && event.key !== "-") {
             event.preventDefault();
         }
         if (event.key === "-" && monsterProperties[propertyName] !== undefined && monsterProperties[propertyName] !== "") {
             event.preventDefault();
         }
+        if ((propertyName === "avg_melee_dmg" || propertyName === "avg_ranged_dmg") &&
+            monsterProperties[propertyName] !== undefined &&
+            monsterProperties[propertyName].indexOf(".") !== -1) {
+            // prevent multiple "."
+            if (event.key === ".") {
+                event.preventDefault();
+            }
+            // allow only 0 or 5 after "."
+            if (monsterProperties[propertyName].endsWith(".") && event.key !== "0" && event.key !== "5" && !allowedKeys.includes(event.key)) {
+                event.preventDefault();
+            }
+            // allow only one digit after "."
+            if (monsterProperties[propertyName].indexOf(".") === monsterProperties[propertyName].length - 2  && !allowedKeys.includes(event.key)) {
+                event.preventDefault();
+            }
+        }
+
     }
 
     const validateInput = (property, isRequired) => {
-        const value = parseInt(monsterProperties[property]);
+        const value = property === "avg_melee_dmg" || property === "avg_ranged_dmg" ?
+            parseFloat(monsterProperties[property]) :
+            parseInt(monsterProperties[property]);
         const inputCell = document.getElementById(property);
         if ((isRequired && isNaN(value)) || value < minimumPropertyValues.get(property)) {
             inputCell.className = "invalid-input";
@@ -87,57 +114,73 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
     }
 
     const fillNotRequiredProperties = () => {
+        let newMonsterProperties = {"name": monsterProperties.name};
+        actualProperties[0].forEach((value) => {newMonsterProperties[value] = monsterProperties[value]})
         actualProperties[1].concat(actualProperties[2]).forEach((value) => {
             if (typeof value === "string") {
                 if (!monsterProperties.hasOwnProperty(value) || monsterProperties[value] === "") {
-                    monsterProperties[value] = "0";
+                    newMonsterProperties[value] = "0";
+                } else {
+                    newMonsterProperties[value] = monsterProperties[value];
                 }
             } else {
                 value.forEach((subvalue) => {
                     if (!monsterProperties.hasOwnProperty(subvalue) || monsterProperties[subvalue] === "") {
-                        monsterProperties[subvalue] = "0";
+                        newMonsterProperties[subvalue] = "0";
+                    } else {
+                        newMonsterProperties[subvalue] = monsterProperties[subvalue];
                     }
                 })
             }
         });
+        setMonsterProperties(newMonsterProperties);
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
         const formJson = Object.fromEntries(formData.entries());
         setMonsterProperties(formJson);
         fillNotRequiredProperties();
+        const propertiesCheckInterval = setInterval(() => {
+            if (Object.keys(monsterProperties).length === 51) {
+                clearInterval(propertiesCheckInterval);
 
-        for (let property in monsterProperties) {
-            if (property === "name") {
-                continue;
+                for (let property in monsterProperties) {
+                    if (property === "name") {
+                        continue;
+                    }
+                    const value = property === "avg_melee_dmg" || property === "avg_ranged_dmg" ?
+                        parseFloat(monsterProperties[property]) :
+                        parseInt(monsterProperties[property]);
+                    if (isNaN(value) || value < minimumPropertyValues.get(property)) {
+                        window.alert("Entered input is invalid. Form will not be submitted.");
+                        return;
+                    }
+                }
+                setResults({});
+
+                let serverUrl;
+                if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+                    serverUrl = process.env.REACT_APP_HOST;
+                } else {
+                    serverUrl = process.env.REACT_APP_AWS_HOST;
+                }
+
+                fetch(serverUrl + process.env.REACT_APP_UPLOAD_ENDPOINT, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify(Object.entries(monsterProperties).filter(([key]) => key !== "name"))
+                }).then((response) => {
+                    response.json().then(json => setResults(json));
+                    displaySubmitInfo("properties-submit-button", "properties-form");
+                }).catch(error => {
+                    alert(error);
+                });
             }
-            let value = parseInt(monsterProperties[property]);
-            if (isNaN(value) || value < minimumPropertyValues.get(property)) {
-                window.alert("Entered input is invalid. Form will not be submitted.");
-                return;
-            }
-        }
-        setResults({});
+        }, 500);
 
-        let serverUrl;
-        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-            serverUrl = process.env.REACT_APP_HOST;
-        } else {
-            serverUrl = process.env.REACT_APP_AWS_HOST;
-        }
 
-        fetch(serverUrl + process.env.REACT_APP_UPLOAD_ENDPOINT, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(Object.entries(monsterProperties).filter(([key]) => key !== "name"))
-        }).then((response) => {
-            response.json().then(json => setResults(json));
-            displaySubmitInfo("properties-submit-button", "properties-form");
-        }).catch(error => {
-            alert(error);
-        });
     }
 
     return (

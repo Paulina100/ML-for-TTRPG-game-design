@@ -30,9 +30,9 @@ class Properties(BaseModel):
     spells_nr_lvl_8: int
     spells_nr_lvl_9: int
     melee_max_bonus: int
-    avg_melee_dmg: int
+    avg_melee_dmg: float
     ranged_max_bonus: int
-    avg_ranged_dmg: int
+    avg_ranged_dmg: float
     acid_resistance: int
     all_damage_resistance: int
     bludgeoning_resistance: int
