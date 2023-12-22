@@ -155,7 +155,7 @@ function getAvgDamage(itemsList, weaponType) {
         }
         avgDamage += parseInt(splitDamage[0]) * (parseInt(diceType) + 1) / 2 + diceResult;
     }
-    return avgDamage;
+    return avgDamage.toString();
 }
 
 export function getExtractionMethods() {
@@ -236,11 +236,69 @@ export function getExtractionMethods() {
 
 export function generateMonsterJSON(monsterName, monsterValues) {
     function generateImmunities(numImmunities) {
+        if (numImmunities === 0) {
+            return {};
+        }
         let immunities = [];
         for (let i=0; i<numImmunities; i++) {
             immunities.push({"type": ""})
         }
-        return immunities;
+        return {"immunities": immunities};
+    }
+
+    function generateSpeeds() {
+        const value = parseInt(monsterValues[14]);
+        const fly = parseInt(monsterValues[15]);
+        const climb = parseInt(monsterValues[16]);
+        const swim = parseInt(monsterValues[17]);
+
+        if (value === 0  && fly === 0 && climb === 0 && swim === 0) {
+            return {};
+        }
+
+        const speedDict = {"speed": {"value": value, "otherSpeeds": []}}
+        if (fly !== 0) {
+            speedDict.speed.otherSpeeds.push({"type": "fly", "value": fly})
+        }
+        if (climb !== 0) {
+            speedDict.speed.otherSpeeds.push({"type": "climb", "value": climb})
+        }
+        if (swim !== 0) {
+            speedDict.speed.otherSpeeds.push({"type": "swim", "value": swim})
+        }
+        return speedDict;
+    }
+
+    function generateResistances() {
+        const resistanceTypes = ["acid", "all-damage", "bludgeoning", "cold", "electricity", "fire", "mental",
+            "physical", "piercing", "poison", "slashing"];
+        const resistances = [];
+        for (let i=0; i<resistanceTypes.length; i++) {
+            let resistanceValue = parseInt(monsterValues[31 + i]);
+            if (resistanceValue !== 0) {
+                resistances.push({"type": resistanceTypes[i], "value": resistanceValue});
+            }
+        }
+        if (resistances.length > 0) {
+            return {"resistances": resistances};
+        }
+        return {};
+    }
+
+    function generateWeaknesses() {
+        const weaknessTypes = ["area-damage", "cold", "cold-iron", "evil", "fire", "good",
+            "slashing", "splash-damage"];
+        const weaknesses = [];
+        for (let i=0; i<weaknessTypes.length; i++) {
+            let weaknessValue = parseInt(monsterValues[42 + i]);
+            if (weaknessValue !== 0) {
+                weaknesses.push({"type": weaknessTypes[i], "value": weaknessValue});
+            }
+        }
+        if (weaknesses.length > 0) {
+            return {"weaknesses": weaknesses};
+        }
+        return {};
     }
 
     function generateSpells(spellsLevel, spellsNumber) {
@@ -276,57 +334,52 @@ export function generateMonsterJSON(monsterName, monsterValues) {
 
     }
 
+    function generateAttacks(weaponType) {
+        let bonusValue, damage;
+        if (weaponType === "melee") {
+            bonusValue = parseInt(monsterValues[27]);
+            damage = parseFloat(monsterValues[28]);
+        } else {  // "ranged"
+            bonusValue = parseInt(monsterValues[29]);
+            damage = parseFloat(monsterValues[30]);
+        }
+
+        if (bonusValue === 0) {
+            return [];
+        }
+        return [{
+            "type": "melee", "system": {
+                "weaponType": {"value": weaponType},
+                "bonus": {"value": parseInt(bonusValue)},
+                "damageRolls": {"id": {"damage": calculateAttackDamage(parseFloat(damage)), "damageType": ""}}
+            }
+        }];
+    }
+
     return {
         "name": monsterName,
         "system": {
             "abilities": {
-                "str": {"mod": parseInt(monsterValues[0])},
-                "dex": {"mod": parseInt(monsterValues[1])},
-                "con": {"mod": parseInt(monsterValues[2])},
-                "int": {"mod": parseInt(monsterValues[3])},
-                "wis": {"mod": parseInt(monsterValues[4])},
-                "cha": {"mod": parseInt(monsterValues[5])}
+                "str": {"mod": parseInt(monsterValues[0])},  // required
+                "dex": {"mod": parseInt(monsterValues[1])},  // required
+                "con": {"mod": parseInt(monsterValues[2])},  // required
+                "int": {"mod": parseInt(monsterValues[3])},  // required
+                "wis": {"mod": parseInt(monsterValues[4])},  // required
+                "cha": {"mod": parseInt(monsterValues[5])}  // required
             },
             "attributes": {
-                "ac": {"value": parseInt(monsterValues[6])},
-                "hp": {"value": parseInt(monsterValues[7])},
-                "perception": {"value": parseInt(monsterValues[8])},
-                "immunities": generateImmunities(parseInt(monsterValues[13])),
-                "speed": {
-                    "value": parseInt(monsterValues[14]), "otherSpeeds": [
-                        {"type": "fly", "value": parseInt(monsterValues[15])},
-                        {"type": "climb", "value": parseInt(monsterValues[16])},
-                        {"type": "swim", "value": parseInt(monsterValues[17])}
-                    ]
-                },
-                "resistances": [
-                    {"type": "acid", "value": parseInt(monsterValues[31])},
-                    {"type": "all-damage", "value": parseInt(monsterValues[32])},
-                    {"type": "bludgeoning", "value": parseInt(monsterValues[33])},
-                    {"type": "cold", "value": parseInt(monsterValues[34])},
-                    {"type": "electricity", "value": parseInt(monsterValues[35])},
-                    {"type": "fire", "value": parseInt(monsterValues[36])},
-                    {"type": "mental", "value": parseInt(monsterValues[37])},
-                    {"type": "physical", "value": parseInt(monsterValues[38])},
-                    {"type": "piercing", "value": parseInt(monsterValues[39])},
-                    {"type": "poison", "value": parseInt(monsterValues[40])},
-                    {"type": "slashing", "value": parseInt(monsterValues[41])}
-                ],
-                "weaknesses": [
-                    {"type": "area-damage", "value": parseInt(monsterValues[42])},
-                    {"type": "cold", "value": parseInt(monsterValues[43])},
-                    {"type": "cold-iron", "value": parseInt(monsterValues[44])},
-                    {"type": "evil", "value": parseInt(monsterValues[45])},
-                    {"type": "fire", "value": parseInt(monsterValues[46])},
-                    {"type": "good", "value": parseInt(monsterValues[47])},
-                    {"type": "slashing", "value": parseInt(monsterValues[48])},
-                    {"type": "splash-damage", "value": parseInt(monsterValues[49])}
-                ]
+                "ac": {"value": parseInt(monsterValues[6])},  // required
+                "hp": {"value": parseInt(monsterValues[7])},  // required
+                "perception": {"value": parseInt(monsterValues[8])},  // required
+                ...generateImmunities(parseInt(monsterValues[13])),
+                ...generateSpeeds(),
+                ...generateResistances(),
+                ...generateWeaknesses()
             },
             "saves": {
-                "fortitude": {"value": parseInt(monsterValues[9])},
-                "reflex": {"value": parseInt(monsterValues[10])},
-                "will": {"value": parseInt(monsterValues[11])}
+                "fortitude": {"value": parseInt(monsterValues[9])},  // required
+                "reflex": {"value": parseInt(monsterValues[10])},  // required
+                "will": {"value": parseInt(monsterValues[11])}  // required
             },
             "resources": {
                 "focus": {"value": parseInt(monsterValues[12])}
@@ -342,20 +395,8 @@ export function generateMonsterJSON(monsterName, monsterValues) {
             ...generateSpells(7, parseInt(monsterValues[24])),
             ...generateSpells(8, parseInt(monsterValues[25])),
             ...generateSpells(9, parseInt(monsterValues[26])),
-            {
-                "type": "melee", "system": {
-                    "weaponType": {"value": "melee"},
-                    "bonus": {"value": parseInt(monsterValues[27])},
-                    "damageRolls": {"id": {"damage": calculateAttackDamage(parseFloat(monsterValues[28])), "damageType": ""}}
-                }
-            },
-            {
-                "type": "melee", "system": {
-                    "weaponType": {"value": "ranged"},
-                    "bonus": {"value": parseInt(monsterValues[29])},
-                    "damageRolls": {"id": {"damage": calculateAttackDamage(parseFloat(monsterValues[30])), "damageType": ""}}
-                }
-            }
+            ...generateAttacks("melee"),
+            ...generateAttacks("ranged")
         ]
     };
 }
