@@ -85,17 +85,16 @@ function getMaxBonus(itemsList, weaponType) {
     if (itemsList === undefined) {
         return 0;
     }
-    const melee = [];
+    const bonusValues = [];
     for (let item of itemsList) {
         if (item.type === "melee" && item.system.weaponType.value === weaponType) {
-            melee.push(item.system);
+            bonusValues.push(item.system.bonus.value);
         }
     }
-    if (melee.length === 0) {
+    if (bonusValues.length === 0) {
         return 0;
     }
-    const maxMelee = melee.reduce((max, attack) => max.bonus.value > attack.bonus.value ? max : attack);
-    return maxMelee.bonus.value;
+    return Math.max(...bonusValues);
 }
 
 function getAvgDamage(itemsList, weaponType) {
