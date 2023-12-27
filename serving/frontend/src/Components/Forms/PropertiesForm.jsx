@@ -4,7 +4,7 @@ import {
     getDisplayablePropertiesNames,
     renderSubheader
 } from "../../utils";
-import {minimumPropertyValues} from "./rules";
+import {maxPropertyValues, minimumPropertyValues} from "./rules";
 import HelpTooltip from "../HelpTooltip";
 import {useState} from "react";
 
@@ -49,7 +49,9 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
             parseFloat(monsterProperties[property]) :
             parseInt(monsterProperties[property]);
         const inputCell = document.getElementById(property);
-        if ((isRequired && isNaN(value)) || value < minimumPropertyValues.get(property)) {
+        if ((isRequired && isNaN(value)) ||
+            value < minimumPropertyValues.get(property) ||
+            (maxPropertyValues.get(property) !== undefined && value > maxPropertyValues.get(property))) {
             inputCell.className = "invalid-input";
         } else {
             inputCell.className = "";
@@ -73,7 +75,10 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
                        onBlur={() => {validateInput(actualProperty, isRequired)}}
                        value={(monsterProperties === null) ? "" : monsterProperties[actualProperty]}/>
                 <HelpTooltip
-                    helpText={"Enter a number greater than or equal to " + minimumPropertyValues.get(actualProperty)}
+                    helpText={`Enter a number greater than or equal to ${minimumPropertyValues.get(actualProperty)}` +
+                        `${maxPropertyValues.get(actualProperty) !== undefined ? 
+                            ` and smaller than or equal to ${maxPropertyValues.get(actualProperty)}` : 
+                            ""}`}
                 />
             </div>
         );

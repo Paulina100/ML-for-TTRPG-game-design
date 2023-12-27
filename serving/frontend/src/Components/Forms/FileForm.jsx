@@ -5,7 +5,7 @@ import {
     getExtractionMethods,
     renderSubheader
 } from "../../utils";
-import {minimumPropertyValues} from "./rules";
+import {maxPropertyValues, minimumPropertyValues} from "./rules";
 
 const FileForm = (setMonsterProperties, setResults) => {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -41,6 +41,11 @@ const FileForm = (setMonsterProperties, setResults) => {
                         `grater than or equal to ${minimumPropertyValues.get(property)} ` +
                         `(currently is ${propertyValue}).`);
                 }
+                if (maxPropertyValues.get(property) !== undefined && propertyValue > maxPropertyValues.get(property)) {
+                    throw new Error(`Selected JSON is invalid: value of ${property} has to be ` +
+                        `smaller than or equal to ${maxPropertyValues.get(property)} ` +
+                        `(currently is ${propertyValue}).`);
+                }
                 resultDict[property] = propertyValue;
             })
         } catch (e) {
@@ -53,7 +58,11 @@ const FileForm = (setMonsterProperties, setResults) => {
     const submitForm = async (e) => {
         e.preventDefault();
         let reader = new FileReader();
-        reader.readAsText(selectedFile);
+        try {
+            reader.readAsText(selectedFile);
+        } catch (error) {
+            alert("Something went wrong... Please try reuploading the file.");
+        }
         reader.addEventListener("load", (event) => {
             const properties = parseFile(reader);
             if (properties === null) {

@@ -50,3 +50,7 @@ export const minimumPropertyValues = new Map([
     ["slashing_weakness", 0],
     ["splash-damage_weakness", 0]
 ])
+
+export const maxPropertyValues = new Map([
+    ["focus", 3]
+])

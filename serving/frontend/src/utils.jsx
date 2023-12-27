@@ -94,19 +94,13 @@ function getMaxBonus(itemsList, weaponType) {
     if (melee.length === 0) {
         return 0;
     }
-    let maxBonus = melee[0].bonus.value;
-    for (let i=1; i<melee.length; i++) {
-        let meleeBonus = melee[i].bonus.value;
-        if (meleeBonus > maxBonus) {
-            maxBonus = meleeBonus;
-        }
-    }
-    return maxBonus;
+    const maxMelee = melee.reduce((max, attack) => max.bonus.value > attack.bonus.value ? max : attack);
+    return maxMelee.bonus.value;
 }
 
 function getAvgDamage(itemsList, weaponType) {
     if (itemsList === undefined) {
-        return 0;
+        return "0";
     }
     const melee = [];
     for (let item of itemsList) {
@@ -115,7 +109,7 @@ function getAvgDamage(itemsList, weaponType) {
         }
     }
     if (melee.length === 0) {
-        return 0;
+        return "0";
     }
     let maxBonus = melee[0].bonus.value;
     let maxBonusIndex = 0;
@@ -253,7 +247,7 @@ export function generateMonsterJSON(monsterName, monsterValues) {
         const swim = parseInt(monsterValues[17]);
 
         if (value === 0  && fly === 0 && climb === 0 && swim === 0) {
-            return {};
+            return {"speed": {"value": 0, "otherSpeeds": []}};
         }
 
         const speedDict = {"speed": {"value": value, "otherSpeeds": []}}
