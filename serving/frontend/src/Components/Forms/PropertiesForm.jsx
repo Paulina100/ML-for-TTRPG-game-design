@@ -158,7 +158,9 @@ const PropertiesForm = (monsterProperties, setMonsterProperties, setResults) => 
                     const value = property === "avg_melee_dmg" || property === "avg_ranged_dmg" ?
                         parseFloat(monsterProperties[property]) :
                         parseInt(monsterProperties[property]);
-                    if (isNaN(value) || value < minimumPropertyValues.get(property)) {
+                    if (isNaN(value) ||
+                        value < minimumPropertyValues.get(property) ||
+                        (maxPropertyValues.get(property) !== undefined && value > maxPropertyValues.get(property))) {
                         window.alert("Entered input is invalid. Form will not be submitted.");
                         return;
                     }
