@@ -6,6 +6,7 @@ const HelpTooltip = ({helpText}) => {
         <Tooltip
             title={helpText}
             placement="right"
+            style={{margin: 0, padding: 0}}
             arrow PopperProps={{
                 modifiers: [
                     {
