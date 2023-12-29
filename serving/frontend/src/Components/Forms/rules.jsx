@@ -31,7 +31,7 @@ export const minimumPropertyValues = new Map([
     ["ranged_max_bonus", 0],
     ["avg_ranged_dmg", 0],
     ["acid_resistance", 0],
-    ["all-damage_resistance", 0],
+    ["all_damage_resistance", 0],
     ["bludgeoning_resistance", 0],
     ["cold_resistance", 0],
     ["electricity_resistance", 0],
@@ -41,14 +41,14 @@ export const minimumPropertyValues = new Map([
     ["piercing_resistance", 0],
     ["poison_resistance", 0],
     ["slashing_resistance", 0],
-    ["area-damage_weakness", 0],
+    ["area_damage_weakness", 0],
     ["cold_weakness", 0],
-    ["cold-iron_weakness", 0],
+    ["cold_iron_weakness", 0],
     ["evil_weakness", 0],
     ["fire_weakness", 0],
     ["good_weakness", 0],
     ["slashing_weakness", 0],
-    ["splash-damage_weakness", 0]
+    ["splash_damage_weakness", 0]
 ])
 
 export const maxPropertyValues = new Map([
