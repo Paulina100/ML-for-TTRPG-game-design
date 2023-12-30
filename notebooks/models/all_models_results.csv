@@ -1,0 +1,43 @@
+Model type,Split type,Tuning type,Set of features,RMSE,MAE
+Linear Regression,chronological,default,basic,0.9886,0.6677
+Linear Regression,random,default,basic,0.8850,0.5902
+Linear Regression,chronological,Ridge,basic,0.9889,0.6694
+Linear Regression,chronological,Lasso,basic,0.9885,0.6647
+Linear Regression,random,Ridge,basic,0.8850,0.5903
+Linear Regression,random,Lasso,basic,0.8860,0.5905
+Linear Regression,chronological,default,expanded,0.7410,0.4776
+Linear Regression,random,default,expanded,0.6293,0.4179
+Linear Regression,chronological,Ridge,expanded,0.7169,0.4715
+Linear Regression,chronological,Lasso,expanded,0.7131,0.4746
+Linear Regression,random,Ridge,expanded,0.6315,0.4184
+Linear Regression,random,Lasso,expanded,0.6367,0.4218
+Linear Regression,chronological,default,full,0.6819,0.4539
+Linear Regression,random,default,full,0.5756,0.3930
+Linear Regression,chronological,Ridge,full,0.6692,0.4560
+Linear Regression,chronological,Lasso,full,0.6684,0.4532
+Linear Regression,random,Ridge,full,0.5760,0.3897
+Linear Regression,random,Lasso,full,0.5761,0.3899
+Random Forest,chronological,default,basic,1.6247,1.2696
+Random Forest,chronological,RandomizedSearchCV,basic,0.7458,0.4217
+Random Forest,random,default,basic,1.5478,1.2449
+Random Forest,random,RandomizedSearchCV,basic,0.5315,0.3170
+Random Forest,chronological,default,expanded,1.5958,1.2541
+Random Forest,chronological,RandomizedSearchCV,expanded,0.6011,0.3563
+Random Forest,random,default,expanded,1.4712,1.1774
+Random Forest,random,RandomizedSearchCV,expanded,0.4062,0.2503
+Random Forest,chronological,default,full,1.5949,1.2532
+Random Forest,chronological,RandomizedSearchCV,full,0.5710,0.3362
+Random Forest,random,default,full,1.4661,1.1738
+Random Forest,random,RandomizedSearchCV,full,0.3633,0.2275
+LightGBM,chronological,default,basic,0.7586,0.4479
+LightGBM,chronological,Optuna,basic,0.7464,0.4513
+LightGBM,random,default,basic,0.5681,0.3684
+LightGBM,random,Optuna,basic,0.5736,0.3680
+LightGBM,chronological,default,expanded,0.6143,0.3769
+LightGBM,chronological,Optuna,expanded,0.5649,0.3641
+LightGBM,random,default,expanded,0.4167,0.2779
+LightGBM,random,Optuna,expanded,0.4299,0.2821
+LightGBM,chronological,default,full,0.5965,0.3560
+LightGBM,chronological,Optuna,full,0.5545,0.3493
+LightGBM,random,default,full,0.3799,0.2582
+LightGBM,random,Optuna,full,0.3488,0.2361

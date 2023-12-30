@@ -1,0 +1,5 @@
+,Split type,Tuning type,Set of features,RMSE,MAE
+0,chronological,default,full,1.5949483638561157,1.2531554907441684
+1,chronological,RandomizedSearchCV,full,0.5709893598417932,0.3362128552971576
+3,random,default,full,1.4660609886315543,1.1738411136130122
+4,random,RandomizedSearchCV,full,0.36332412709603384,0.2274870290116769

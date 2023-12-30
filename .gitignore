@@ -3,3 +3,7 @@
 .idea/
 __pycache__/
 node_modules
+.serverless/
+config/
+/notebooks/counterfactuals/orcs/results/
+/notebooks/counterfactuals/dragons/results/

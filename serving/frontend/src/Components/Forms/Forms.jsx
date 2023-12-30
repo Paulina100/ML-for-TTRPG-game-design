@@ -1,11 +1,8 @@
 import FileForm from "./FileForm";
 import PropertiesForm from "./PropertiesForm";
-import {useState} from "react";
 import {renderHeader} from "../../utils";
 
-const Forms = ({setResultsFunction}) => {
-    const [monsterProperties, setMonsterProperties] = useState({});
-
+const Forms = ({setResultsFunction, monsterProperties, setMonsterProperties}) => {
     const renderCaption = () => {
         return (
             <div className="page-info">
@@ -25,8 +22,8 @@ const Forms = ({setResultsFunction}) => {
         <div>
             {renderCaption()}
             <div id="forms-grid">
-                {PropertiesForm(monsterProperties, setMonsterProperties, setResultsFunction)}
                 {FileForm(setMonsterProperties, setResultsFunction)}
+                {PropertiesForm(monsterProperties, setMonsterProperties, setResultsFunction)}
             </div>
         </div>
     );

@@ -162,6 +162,12 @@ def extract_and_assign_chars(
     :param df: The DataFrame to which the extracted values will be assigned.
     :param replace_val:  A string to replace in characteristic names to determine the target column names in `df`.
     """
+    # there are books where all monsters don't have weaknesses
+    if path_to_char not in bestiary.columns:
+        for char in char_group:
+            df[char] = pd.Series(0, index=bestiary.index)
+        return
+
     for char in char_group:
         characteristic_name = char.replace(replace_val, "")
         get_value = lambda x: get_characteristic_from_list(x, characteristic_name)
@@ -207,6 +213,9 @@ def count_damage_expected_value(damage_dict: dict[dict]) -> float:
     for key, value in damage_dict.items():
         damage = value["damage"]
 
+        if not damage or damage == "varies by":
+            return 0
+
         if "d" not in damage:
             # constant damage value
             total_expected_val += int(damage)
@@ -216,8 +225,12 @@ def count_damage_expected_value(damage_dict: dict[dict]) -> float:
         add = 0
         if "+" in dice_type:
             # get possible positive additional value for damage
-            dice_type, add = dice_type.split("+")
-            add = int(add)
+            dice_type, all_additional_values = dice_type.split("+", 1)
+            # there are monsters with damage like: 3d10+12+2
+            all_additional_values = all_additional_values.split("+")
+            add = 0
+            for add_value in all_additional_values:
+                add += int(add_value)
         if "-" in dice_type:
             # get possible negative additional value for damage
             dice_type, add = dice_type.split("-")
@@ -284,29 +297,37 @@ def load_data(paths_to_books: list[str]) -> pd.DataFrame:
     return bestiary
 
 
-def load_and_preprocess_data(
-    paths_to_books: list[str],
-    characteristics: list[str],
-) -> pd.DataFrame:
+def preprocess_data(bestiary: pd.DataFrame, characteristics: list[str]) -> pd.DataFrame:
     """
-    Creates dataframe containing chosen characteristics, level and source book of monsters from chosen books
+    Creates dataframe containing chosen characteristics, level and source book of monsters from given bestiary.
 
-    :param paths_to_books: A list of file paths to books containing monster data in JSON format.
+    :param bestiary: A pandas DataFrame containing information about monsters.
     :param characteristics: A list of characteristics to load.
-    :return: DataFrame with monsters (NPC) from chosen books and with chosen characteristics and their origin book
+    :return: DataFrame with monsters from chosen books and with chosen characteristics and their origin book.
     """
     pd.options.mode.chained_assignment = None
     # silent warning (SettingWithCopyWarning) about view and copy
     # we don't need to go back to the original df - no matter if it is a view
 
-    bestiary = load_data(paths_to_books)
-
     characteristics_groups = split_characteristics_into_groups(set(characteristics))
 
     if "num_immunities" in characteristics_groups.characteristics_rename:
         immunities_path = CHARACTERISTICS_RENAME.get("num_immunities")
-        count_immunities = lambda x: 0 if x is np.nan else len(x)
-        bestiary[immunities_path] = bestiary[immunities_path].apply(count_immunities)
+        # There are books where all monsters don't have immunities
+        if immunities_path not in bestiary.columns:
+            bestiary[immunities_path] = pd.Series(0, index=bestiary.index)
+        else:
+            count_immunities = lambda x: 0 if x is np.nan else len(x)
+            bestiary[immunities_path] = bestiary[immunities_path].apply(
+                count_immunities
+            )
+
+    # There are books where all monsters don't have focus value
+    if "focus" in characteristics_groups.characteristics_rename:
+        if CHARACTERISTICS_RENAME.get("focus") not in bestiary.columns:
+            bestiary[CHARACTERISTICS_RENAME.get("focus")] = pd.Series(
+                0, index=bestiary.index
+            )
 
     COLS_TO_EXTRACT = pd.DataFrame(
         data=[
@@ -326,6 +347,9 @@ def load_and_preprocess_data(
 
     df = bestiary[raw_names]
     df.columns = target_names
+
+    if "hp" in characteristics_groups.characteristics_rename:
+        df["hp"] = df["hp"].astype(int)
 
     extract_and_assign_chars(
         characteristics_groups.resistances, RESISTANCE_PATH, bestiary, df, "_resistance"
@@ -366,4 +390,22 @@ def load_and_preprocess_data(
     df.loc[df["level"] > 20, "level"] = 21
 
     pd.reset_option("mode.chained_assignment")
+
     return df
+
+
+def load_and_preprocess_data(
+    paths_to_books: list[str],
+    characteristics: list[str],
+) -> pd.DataFrame:
+    """
+    Creates dataframe containing chosen characteristics, level and source book of monsters from chosen books
+
+    :param paths_to_books: A list of file paths to books containing monster data in JSON format.
+    :param characteristics: A list of characteristics to load.
+    :return: DataFrame with monsters (NPC) from chosen books and with chosen characteristics and their origin book
+    """
+
+    bestiary = load_data(paths_to_books)
+
+    return preprocess_data(bestiary, characteristics)

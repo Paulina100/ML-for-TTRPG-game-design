@@ -1,0 +1,42 @@
+# Define custom function directory
+ARG FUNCTION_DIR="/function"
+
+FROM python:3.10 as build-image
+
+# Include global arg in this stage of the build
+ARG FUNCTION_DIR
+
+# Copy function code
+RUN mkdir -p ${FUNCTION_DIR}
+COPY requirements.txt ${FUNCTION_DIR}
+COPY requirements_webserver.txt ${FUNCTION_DIR}
+COPY serving/backend ${FUNCTION_DIR}
+COPY training/creating_dataset.py ${FUNCTION_DIR}/training/creating_dataset.py
+COPY saved_models/current_model_full.pkl ${FUNCTION_DIR}/saved_models/
+COPY counterfactual_datasets/bestiaries_full.csv \
+    ${FUNCTION_DIR}/counterfactual_datasets/
+
+# Install the function's dependencies
+RUN pip install --target ${FUNCTION_DIR} awslambdaric
+RUN pip install --target ${FUNCTION_DIR}  \
+    -r ${FUNCTION_DIR}/requirements.txt  \
+    -r ${FUNCTION_DIR}/requirements_webserver.txt
+
+# Use a slim version of the base Python image to reduce the final image size
+FROM python:3.10.0-slim
+
+# Include global arg in this stage of the build
+ARG FUNCTION_DIR
+ENV TQDM_DISABLE=1
+
+# Set working directory to function root directory
+WORKDIR ${FUNCTION_DIR}
+
+# Copy in the built dependencies
+COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
+
+RUN apt-get update && apt-get install -y libgomp1
+
+# Set runtime interface client as default command for the container runtime
+ENTRYPOINT ["/usr/local/bin/python", "-m", "awslambdaric"]
+CMD ["server.handler"]

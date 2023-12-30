@@ -1,0 +1,81 @@
+service: monster-creator
+
+provider:
+  name: aws
+  deploymentMethod: direct
+
+  ecr:
+    images:
+      server:
+        path: .
+        file: ./docker/Dockerfile_aws
+
+  stage: ${opt:stage}
+  region: "us-east-1"
+  memorySize: 512
+  timeout: 30
+  logRetentionInDays: 14
+
+  environment: ${file(config/${self:provider.stage}.yml):}
+
+  deploymentBucket:
+    name: ${file(config/${self:provider.stage}.yml):AWS_DEPLOYMENT_BUCKET_NAME}
+
+  iam:
+    # Lambda execution role
+    role: ${file(config/${self:provider.stage}.yml):AWS_EXECUTION_ROLE_ARN}
+
+package:
+  patterns:
+    # excludes in addition to https://www.serverless.com/framework/docs/providers/aws/guide/packaging#patterns
+    - '!config/**'
+    - '!node_modules/**'
+    - '!.nvmrc'
+    - '!Makefile'
+    - '!package.json'
+    - '!package-lock.json'
+    - '!pyproject.toml'
+    - '!README.md'
+
+functions:
+  calculate:
+    image:
+      name: server
+
+resources:
+  Resources:
+    S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: BucketOwnerPreferred
+        BucketName: ${file(config/${self:provider.stage}.yml):AWS_BUCKET_NAME}
+    CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      DependsOn:
+        - S3Bucket
+      Properties:
+        DistributionConfig:
+          Origins:
+            - DomainName: ${file(config/${self:provider.stage}.yml):AWS_BUCKET_DOMAIN_NAME}
+              Id: ${file(config/${self:provider.stage}.yml):AWS_BUCKET_NAME}
+              S3OriginConfig:
+                OriginAccessIdentity: ""
+          Enabled: true
+          DefaultRootObject: index.html
+          HttpVersion: http2
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            Compress: true
+            TargetOriginId: ${file(config/${self:provider.stage}.yml):AWS_BUCKET_NAME}
+            ForwardedValues:
+              QueryString: false
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https

@@ -1,9 +1,10 @@
 import math
 
 import pandas as pd
+from constants import THRESHOLD
 
 
-def _round_monster_level(level: float, threshold=0.33) -> int:
+def _round_monster_level(level: float, threshold: float = THRESHOLD) -> int:
     """
     Rounds the monster's level based on a lower threshold.
 
@@ -33,5 +34,6 @@ def calculate_level(monster_stats: dict, model) -> int:
 
     monster_y = model.predict(monster_X)
     monster_y = _round_monster_level(monster_y[0])
+    monster_y = max(monster_y, -1)  # minimum possible level is -1
 
     return monster_y
