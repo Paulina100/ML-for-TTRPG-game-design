@@ -14,6 +14,7 @@ pen & paper RPG game design".
 * [Features](#features)
 * [Project Structure](#project-structure)
 * [Technologies](#technologies)
+* [User Interface](#user-interface)
 * [Setup](#setup)
 * [Testing](#testing)
 
@@ -21,8 +22,6 @@ pen & paper RPG game design".
 ## Features
 * calculating level based on given properties
 * for given monster and selected different level generating new sets of monster's properties similar to the original one
-* searching for similar monsters in Pathfinder's resources
-* suggesting hints of properties that can be added to user's monster based on similar monsters
 
 
 ## Project Structure
@@ -39,6 +38,26 @@ pen & paper RPG game design".
 * Jupyter Notebook
 * React.js
 * Docker
+
+
+## User Interface
+
+The webpage contains short project description and two form variants with instructions.
+
+![empty-forms](./readme_images/empty-forms.png)
+
+In manual form every field has question mark sign next to it. A prompt, with an acceptable range of values, will appear when hovering over it.
+
+![filled-forms](./readme_images/filled-forms.png)
+
+Calculated level value is displayed. Below appears new form for modifying level value.
+
+![results](./readme_images/results.png)
+
+Table with 5 possible modifications appears. Modified features in every set are marked with green bold color. 
+In addition, user can load new features to the form above or download it in JSON format.
+
+![results-cf](./readme_images/results-cf.png)
 
 
 ## Setup
