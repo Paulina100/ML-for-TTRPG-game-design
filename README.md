@@ -42,20 +42,20 @@ pen & paper RPG game design".
 
 ## User Interface
 
-The webpage contains short project description and two form variants with instructions.
+The webpage contains short project description and two forms with instructions.
 
 ![empty-forms](./readme_images/empty-forms.png)
 
-In manual form every field has question mark sign next to it. A prompt, with an acceptable range of values, will appear when hovering over it.
+In the manual-input form, every field has question mark sign next to it. Hovering over it displays a prompt showing the acceptable range of values.
 
 ![filled-forms](./readme_images/filled-forms.png)
 
-Calculated level value is displayed. Below appears new form for modifying level value.
+After submission, the calculated level value is displayed. Below appears a new form for modifying the level value.
 
 ![results](./readme_images/results.png)
 
-Table with 5 possible modifications appears. Modified features in every set are marked with green bold color. 
-In addition, user can load new features to the form above or download it in JSON format.
+A table with 5 possible modifications appears. Modified features in every set are marked with green bold font. 
+In addition, the user can load new features to the form above or download it in JSON format.
 
 ![results-cf](./readme_images/results-cf.png)
 
