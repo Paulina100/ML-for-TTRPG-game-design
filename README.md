@@ -15,14 +15,13 @@ pen & paper RPG game design".
 * [Project Structure](#project-structure)
 * [Technologies](#technologies)
 * [Setup](#setup)
+* [User Interface](#user-interface)
 * [Testing](#testing)
 
 
 ## Features
 * calculating level based on given properties
 * for given monster and selected different level generating new sets of monster's properties similar to the original one
-* searching for similar monsters in Pathfinder's resources
-* suggesting hints of properties that can be added to user's monster based on similar monsters
 
 
 ## Project Structure
@@ -86,6 +85,30 @@ to view logs of both containers, or to see logs of one of them:
 docker logs <container> -f
 ```
 where instead of `<container>` type container's name or prefix of its ID.
+
+
+## User Interface
+
+After app's successful startup you can see a webpage containing two blank forms with instructions.
+
+![empty-forms](./readme_images/empty-forms.png)
+
+First form accepts JSON files. After submission, the values of properties are automatically inserted into the manual-input form and can be modified if needed.
+
+In the manual-input form, every field has question mark sign next to it. Hovering over it displays an information showing the acceptable range of values.
+
+![filled-forms](./readme_images/filled-forms.png)
+
+After submission, the calculated level value is displayed. Submitted properties can be downloaded to a JSON file. 
+
+Below appears a new form for modifying the level value.
+
+![results](./readme_images/results.png)
+
+A table with 5 possible modifications appears. Modified properties in every set are marked with green bold font. 
+In addition, the user can load new properties to the form above or download them to a JSON file.
+
+![results-cf](./readme_images/results-cf.png)
 
 
 ## Testing
